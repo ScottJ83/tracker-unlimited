@@ -1,0 +1,47 @@
+type Props = {
+  label: string;
+  value: number;
+};
+
+export default function ProgressBar({ label, value }: Props) {
+  const safeValue = Math.max(0, Math.min(100, value));
+  const isBase = label.toLowerCase().includes("base");
+
+  return (
+    <div style={{ marginBottom: "14px" }}>
+      <div
+        style={{
+          marginBottom: "6px",
+          display: "flex",
+          justifyContent: "space-between",
+          color: "#cbd5e1",
+          fontSize: "13px",
+        }}
+      >
+        <span>{label}</span>
+        <span>{safeValue.toFixed(1)}%</span>
+      </div>
+
+      <div
+        style={{
+          width: "100%",
+          height: "12px",
+          border: "1px solid #334155",
+          borderRadius: "999px",
+          background: "#0f172a",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            width: `${safeValue}%`,
+            height: "100%",
+            background: isBase
+              ? "linear-gradient(90deg, #60a5fa 0%, #38bdf8 100%)"
+              : "linear-gradient(90deg, #a78bfa 0%, #c084fc 100%)",
+          }}
+        />
+      </div>
+    </div>
+  );
+}

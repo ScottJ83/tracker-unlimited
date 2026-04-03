@@ -1,0 +1,13 @@
+{
+  "name": "tracker-unlimited",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "csv-parse": "^6.2.1",
+    "dotenv": "^16.0.0",
+    "playwright": "^1.59.1"
+  }
+}

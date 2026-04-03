@@ -1,0 +1,10 @@
+set_code,name,subtitle,variant,card_number,aspect,arena,card_type,rarity
+SOR,Director Krennic,Death Star Overseer,Standard,1,Command|Villainy,-,Leader,Starter
+SOR,Director Krennic,Death Star Overseer,Standard Foil,1,Command|Villainy,-,Leader,Starter
+SOR,Darth Vader,Dark Lord of the Sith,Standard,87,Aggression|Villainy,Ground,Unit,Legendary
+SOR,Darth Vader,Dark Lord of the Sith,Hyperspace,87,Aggression|Villainy,Ground,Unit,Legendary
+SOR,Superlaser Blast,,Standard,233,Vigilance|Villainy,-,Event,Rare
+SOR,2-1B Surgical Droid,,Standard Foil,059,Vigilance,Ground,Unit,C
+SOR,2-1B Surgical Droid,,Hyperspace,324,Vigilance,Ground,Unit,C
+SOR,2-1B Surgical Droid,,Standard,059,Vigilance,Ground,Unit,C
+SOR,2-1B Surgical Droid,,Hyperspace Foil,324,Vigilance,Ground,Unit,C
