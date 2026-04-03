@@ -18,16 +18,20 @@ export default async function HomePage() {
     .eq("user_id", userId)
     .gt("quantity", 0);
 
-  const rows = collection || [];
+  const rows = (collection || []).map((item: any) => ({
+    ...item,
+    card: Array.isArray(item.cards) ? item.cards[0] : item.cards,
+  }));
+
   const totalValue = rows.reduce(
-    (sum: number, item: any) => sum + Number(item.quantity || 0) * Number(item.cards?.price || 0),
+    (sum: number, item: any) => sum + Number(item.quantity || 0) * Number(item.card?.price || 0),
     0
   );
 
   const highest = [...rows].sort(
     (a: any, b: any) =>
-      Number(b.cards?.price || 0) * Number(b.quantity || 0) -
-      Number(a.cards?.price || 0) * Number(a.quantity || 0)
+      Number(b.card?.price || 0) * Number(b.quantity || 0) -
+      Number(a.card?.price || 0) * Number(a.quantity || 0)
   )[0];
 
   return (
@@ -54,8 +58,8 @@ export default async function HomePage() {
             <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
             {highest ? (
               <div style={{ marginTop: "8px" }}>
-                Highest Value Card: {highest.cards?.name} ({highest.cards?.variant}) — $
-                {(Number(highest.cards?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}
+                Highest Value Card: {highest.card?.name} ({highest.card?.variant}) — $
+                {(Number(highest.card?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}
               </div>
             ) : null}
           </div>
