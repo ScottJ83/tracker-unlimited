@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import ProgressBar from "@/components/ProgressBar";
@@ -61,7 +63,7 @@ async function getAllCards(supabase: any) {
   while (true) {
     const { data, error } = await supabase
       .from("cards")
-      .select("id,set_code,variant")
+      .select("id,set_code,variant,price")
       .range(from, from + pageSize - 1);
 
     if (error) throw error;
@@ -98,7 +100,9 @@ export default async function SetsPage() {
 
   if (error) return <main>Error loading sets.</main>;
 
-  const ownedCardIds = new Set((collection || []).map((item: any) => item.card_id));
+  const collectionMap = new Map(
+    (collection || []).map((item: any) => [item.card_id, Number(item.quantity || 0)])
+  );
 
   const sortedSets = [...(sets || [])].sort((a, b) => {
     const aIndex = setOrder.indexOf(a.code);
@@ -129,12 +133,17 @@ export default async function SetsPage() {
           );
 
           const baseTotal = baseCards.length;
-          const baseOwned = baseCards.filter((card: any) => ownedCardIds.has(card.id)).length;
+          const baseOwned = baseCards.filter((card: any) => collectionMap.has(card.id)).length;
           const basePercent = baseTotal > 0 ? (baseOwned / baseTotal) * 100 : 0;
 
           const fullTotal = setCards.length;
-          const fullOwned = setCards.filter((card: any) => ownedCardIds.has(card.id)).length;
+          const fullOwned = setCards.filter((card: any) => collectionMap.has(card.id)).length;
           const fullPercent = fullTotal > 0 ? (fullOwned / fullTotal) * 100 : 0;
+
+          const setValue = setCards.reduce((sum: number, card: any) => {
+            const qty = collectionMap.get(card.id) || 0;
+            return sum + qty * Number(card.price || 0);
+          }, 0);
 
           return (
             <Link
@@ -163,6 +172,7 @@ export default async function SetsPage() {
               <div style={{ fontSize: "14px", color: "#cbd5e1", marginTop: "10px" }}>
                 <div>Base: {baseOwned} / {baseTotal}</div>
                 <div>Full: {fullOwned} / {fullTotal}</div>
+                <div>Set Value: ${setValue.toFixed(2)}</div>
               </div>
             </Link>
           );

@@ -32,6 +32,13 @@ export default async function HomePage() {
     card: Array.isArray(item.cards) ? item.cards[0] : item.cards,
   }));
 
+  const totalCardsOwned = rows.reduce(
+    (sum: number, item: any) => sum + Number(item.quantity || 0),
+    0
+  );
+
+  const totalUniqueCards = rows.length;
+
   const totalValue = rows.reduce(
     (sum: number, item: any) => sum + Number(item.quantity || 0) * Number(item.card?.price || 0),
     0
@@ -63,10 +70,12 @@ export default async function HomePage() {
             Track your collection, view set progress, and manage every collectible variant.
           </p>
 
-          <div style={{ marginTop: "20px", color: "#e5edf7" }}>
+          <div style={{ marginTop: "20px", color: "#e5edf7", display: "grid", gap: "8px" }}>
+            <div>Total Cards Owned: {totalCardsOwned}</div>
+            <div>Total Unique Cards Owned: {totalUniqueCards}</div>
             <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
             {highest ? (
-              <div style={{ marginTop: "8px" }}>
+              <div>
                 Highest Value Card: {highest.card?.name} ({highest.card?.variant}) — $
                 {(Number(highest.card?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}
               </div>
