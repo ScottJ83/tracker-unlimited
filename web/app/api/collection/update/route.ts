@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
   return Response.json({ ok: true, route: "collection/update" });
@@ -6,12 +6,24 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { user_id, card_id, delta } = body;
+    const supabase = await createClient();
 
-    if (!user_id || !card_id || typeof delta !== "number") {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { card_id, delta } = body;
+
+    if (!card_id || typeof delta !== "number") {
       return Response.json({ error: "Missing or invalid fields" }, { status: 400 });
     }
+
+    const user_id = user.id;
 
     const { data: existing, error: findError } = await supabase
       .from("collection_entries")

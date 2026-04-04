@@ -158,8 +158,7 @@ export default function CollectionClient({ data, userId }: any) {
                 </div>
               </div>
 
-              <AddCardButton userId={userId} cardId={item.card_id} />
-            </div>
+<AddCardButton cardId={item.card_id} />            </div>
           );
         })}
       </div>

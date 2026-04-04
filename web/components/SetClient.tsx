@@ -134,8 +134,7 @@ export default function SetClient({ cards, userId, collection }: any) {
                     <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "6px" }}>Qty: 0</div>
                   </div>
 
-                  <AddCardButton userId={userId} cardId={card.id} />
-                </>
+<AddCardButton cardId={card.id} />                </>
               ) : (
                 <>
                   <div>
@@ -182,8 +181,7 @@ export default function SetClient({ cards, userId, collection }: any) {
                     </div>
                   </div>
 
-                  <AddCardButton userId={userId} cardId={card.id} />
-                </>
+<AddCardButton cardId={card.id} />                </>
               )}
             </div>
           );

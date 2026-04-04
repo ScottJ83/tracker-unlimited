@@ -3,11 +3,10 @@
 import { useRouter } from "next/navigation";
 
 type Props = {
-  userId: string;
   cardId: string;
 };
 
-export default function AddCardButton({ userId, cardId }: Props) {
+export default function AddCardButton({ cardId }: Props) {
   const router = useRouter();
 
   async function update(delta: number) {
@@ -17,7 +16,6 @@ export default function AddCardButton({ userId, cardId }: Props) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        user_id: userId,
         card_id: cardId,
         delta,
       }),
