@@ -41,7 +41,7 @@ export default function SetClient({ cards, collection }: any) {
   const [showMissing, setShowMissing] = useState(false);
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
-  const [showImages, setShowImages] = useState(false);
+  const [showImages, setShowImages] = useState(true);
 
   function getQty(cardId: string) {
     const entry = collection?.find((c: any) => c.card_id === cardId && c.quantity > 0);

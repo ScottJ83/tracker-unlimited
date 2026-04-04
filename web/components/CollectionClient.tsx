@@ -41,7 +41,7 @@ export default function CollectionClient({ data }: any) {
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
   const [sortBy, setSortBy] = useState("price_desc");
-  const [showImages, setShowImages] = useState(false);
+  const [showImages, setShowImages] = useState(true);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

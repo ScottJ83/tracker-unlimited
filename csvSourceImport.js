@@ -88,6 +88,15 @@ function makeCardRow(row, setCode, variantOverride = null, priceOverride = null)
   const artist = clean(row.Artist ?? row.artist);
   const front_art = clean(row.FrontArt ?? row.frontArt);
 
+  if (setCode === "SHD" && card_number === 87) {
+    console.log("DEBUG SHD 087 PARSED:", {
+      traits,
+      cost,
+      power,
+      hp,
+    });
+  }
+
   if (!name || !variant) return null;
 
   return {
@@ -121,6 +130,10 @@ async function run() {
     const rows = loadRows(filePath);
 
     for (const row of rows) {
+      if (setCode === "SHD" && String(row.Number ?? row.number) === "087") {
+        console.log("DEBUG SHD 087 RAW ROW:", row);
+      }
+
       const baseCard = makeCardRow(row, setCode);
       if (!baseCard) continue;
 
