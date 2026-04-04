@@ -143,7 +143,7 @@ export default function SetClient({ cards, collection }: any) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(185px, 1fr))",
           gap: "12px",
         }}
       >
@@ -163,7 +163,7 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #334155",
                 borderRadius: "14px",
                 padding: hidden ? "8px" : "10px",
-                minHeight: hidden ? "145px" : showImages ? "255px" : "205px",
+                minHeight: hidden ? "135px" : showImages ? "235px" : "205px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -173,7 +173,7 @@ export default function SetClient({ cards, collection }: any) {
                   : owned
                   ? "0 0 0 1px rgba(34,197,94,0.15)"
                   : "none",
-                transform: hovered ? "scale(1.08)" : "scale(1)",
+                transform: hovered ? "scale(1.04)" : "scale(1)",
                 transition: "transform 0.16s ease, box-shadow 0.16s ease",
                 position: "relative",
                 zIndex: hovered ? 10 : 1,

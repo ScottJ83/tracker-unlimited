@@ -165,7 +165,7 @@ export default function CollectionClient({ data }: any) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(185px, 1fr))",
           gap: "12px",
         }}
       >
@@ -185,7 +185,7 @@ export default function CollectionClient({ data }: any) {
                 border: "1px solid #22c55e",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: showImages ? "290px" : "230px",
+                minHeight: showImages ? "255px" : "230px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -193,7 +193,7 @@ export default function CollectionClient({ data }: any) {
                 boxShadow: hovered
                   ? "0 12px 30px rgba(0,0,0,0.35)"
                   : "0 0 0 1px rgba(34,197,94,0.15)",
-                transform: hovered ? "scale(1.08)" : "scale(1)",
+                transform: hovered ? "scale(1.04)" : "scale(1)",
                 transition: "transform 0.16s ease, box-shadow 0.16s ease",
                 position: "relative",
                 zIndex: hovered ? 10 : 1,
