@@ -159,8 +159,7 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #334155",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: showImages ? "500px" : "330px",
-                display: "flex",
+minHeight: hidden ? "120px" : showImages ? "500px" : "330px",                display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 background: owned ? "#172033" : "#111827",
@@ -206,8 +205,7 @@ export default function SetClient({ cards, collection }: any) {
                           key={pill.name}
                           style={{
                             fontSize: "10px",
-                            padding: "2px 6px",
-                            borderRadius: "999px",
+padding: hidden ? "8px" : "10px",                            borderRadius: "999px",
                             background: `${pill.color}22`,
                             border: `1px solid ${pill.color}`,
                             color: pill.color,
