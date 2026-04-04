@@ -9,6 +9,31 @@ type Props = {
   params: Promise<{ code: string }>;
 };
 
+async function getSetCards(supabase: any, code: string) {
+  let allCards: any[] = [];
+  let from = 0;
+  const pageSize = 1000;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("cards")
+      .select("*")
+      .eq("set_code", code)
+      .range(from, from + pageSize - 1)
+      .order("card_number", { ascending: true });
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    allCards = [...allCards, ...data];
+
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allCards;
+}
+
 export default async function SetDetailPage({ params }: Props) {
   const { code } = await params;
   const supabase = await createClient();
@@ -21,11 +46,7 @@ export default async function SetDetailPage({ params }: Props) {
     redirect("/login");
   }
 
-  const { data: cards, error } = await supabase
-    .from("cards")
-    .select("*")
-    .eq("set_code", code)
-    .order("card_number", { ascending: true });
+  const cards = await getSetCards(supabase, code);
 
   const { data: setInfo } = await supabase
     .from("sets")
@@ -37,10 +58,6 @@ export default async function SetDetailPage({ params }: Props) {
     .from("collection_entries")
     .select("*")
     .eq("user_id", user.id);
-
-  if (error) {
-    return <main style={{ padding: "20px" }}>Error loading cards.</main>;
-  }
 
   const baseCards = (cards || []).filter((card: any) => card.variant === "Standard");
   const fullCards = cards || [];
