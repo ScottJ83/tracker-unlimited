@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { redirect } from "next/navigation";
 import ProgressBar from "@/components/ProgressBar";
 import SetClient from "@/components/SetClient";
