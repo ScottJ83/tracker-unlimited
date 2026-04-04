@@ -17,6 +17,26 @@ function getAspectPills(aspect: string | null | undefined) {
   return pills;
 }
 
+function StatPill({ label, value, color }: { label: string; value: any; color: string }) {
+  if (value === null || value === undefined || value === "") return null;
+
+  return (
+    <div
+      style={{
+        fontSize: "11px",
+        padding: "3px 8px",
+        borderRadius: "999px",
+        background: `${color}22`,
+        border: `1px solid ${color}`,
+        color,
+        fontWeight: 700,
+      }}
+    >
+      {label}: {value}
+    </div>
+  );
+}
+
 export default function SetClient({ cards, collection }: any) {
   const [showMissing, setShowMissing] = useState(false);
   const [search, setSearch] = useState("");
@@ -37,23 +57,31 @@ export default function SetClient({ cards, collection }: any) {
       const subtitle = String(card.subtitle || "").toLowerCase();
       const number = String(card.card_number || "").toLowerCase();
       const aspect = String(card.aspect || "").toLowerCase();
+      const traits = String(card.traits || "").toLowerCase();
 
       const frontText = String(card.front_text || "").toLowerCase();
       const rarity = String(card.rarity || "").toLowerCase();
       const artist = String(card.artist || "").toLowerCase();
+      const cost = String(card.cost ?? "").toLowerCase();
+      const power = String(card.power ?? "").toLowerCase();
+      const hp = String(card.hp ?? "").toLowerCase();
 
       const mainMatch =
         !q ||
         name.includes(q) ||
         subtitle.includes(q) ||
         number.includes(q) ||
-        aspect.includes(q);
+        aspect.includes(q) ||
+        traits.includes(q);
 
       const textMatch =
         !tq ||
         frontText.includes(tq) ||
         rarity.includes(tq) ||
-        artist.includes(tq);
+        artist.includes(tq) ||
+        cost.includes(tq) ||
+        power.includes(tq) ||
+        hp.includes(tq);
 
       return mainMatch && textMatch;
     });
@@ -64,7 +92,7 @@ export default function SetClient({ cards, collection }: any) {
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
           type="text"
-          placeholder="Search by number, name, or aspect"
+          placeholder="Search name, number, aspect, or traits"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -79,11 +107,11 @@ export default function SetClient({ cards, collection }: any) {
 
         <input
           type="text"
-          placeholder="Search text, rarity, or artist"
+          placeholder="Search text, rarity, artist, cost, power, or hp"
           value={textSearch}
           onChange={(e) => setTextSearch(e.target.value)}
           style={{
-            minWidth: "280px",
+            minWidth: "320px",
             padding: "10px",
             borderRadius: "10px",
             border: "1px solid #334155",
@@ -131,7 +159,7 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #334155",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: showImages ? "420px" : "260px",
+                minHeight: showImages ? "500px" : "330px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -155,22 +183,24 @@ export default function SetClient({ cards, collection }: any) {
                       <img
                         src={card.front_art}
                         alt={card.name}
-                        style={{
-                          width: "100%",
-                          borderRadius: "10px",
-                          marginBottom: "10px",
-                        }}
+                        style={{ width: "100%", borderRadius: "10px", marginBottom: "10px" }}
                       />
                     ) : null}
 
-                    <div style={{ fontWeight: 700, fontSize: "14px", color: owned ? "#e5edf7" : "#9ca3af" }}>
-                      {card.name}
-                    </div>
-                    <div style={{ color: owned ? "#94a3b8" : "#6b7280", fontSize: "12px", minHeight: "16px" }}>
-                      {card.subtitle || ""}
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", alignItems: "start" }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: "14px", color: owned ? "#e5edf7" : "#9ca3af" }}>
+                          {card.name}
+                        </div>
+                        <div style={{ color: owned ? "#94a3b8" : "#6b7280", fontSize: "12px", minHeight: "16px" }}>
+                          {card.subtitle || ""}
+                        </div>
+                      </div>
+
+                      <StatPill label="Cost" value={card.cost} color="#eab308" />
                     </div>
 
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "4px", marginBottom: "6px" }}>
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "6px", marginBottom: "6px" }}>
                       {aspectPills.map((pill) => (
                         <div
                           key={pill.name}
@@ -188,11 +218,17 @@ export default function SetClient({ cards, collection }: any) {
                       ))}
                     </div>
 
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "6px" }}>
+                      <StatPill label="Power" value={card.power} color="#dc2626" />
+                      <StatPill label="HP" value={card.hp} color="#2563eb" />
+                    </div>
+
                     <div style={{ fontSize: "12px", color: "#cbd5e1" }}>#{card.card_number ?? "-"}</div>
                     <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Variant: {card.variant}</div>
                     <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Rarity: {card.rarity || "-"}</div>
                     <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Artist: {card.artist || "-"}</div>
-                    <div style={{ fontSize: "12px", color: "#cbd5e1", marginTop: "6px" }}>
+                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Traits: {card.traits || "-"}</div>
+                    <div style={{ fontSize: "12px", color: "#cbd5e1", marginTop: "6px", whiteSpace: "pre-wrap" }}>
                       {card.front_text || ""}
                     </div>
                     <div style={{ fontSize: "12px", marginTop: "6px", color: owned ? "#86efac" : "#94a3b8", fontWeight: 700 }}>

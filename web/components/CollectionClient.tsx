@@ -17,6 +17,26 @@ function getAspectPills(aspect: string | null | undefined) {
   return pills;
 }
 
+function StatPill({ label, value, color }: { label: string; value: any; color: string }) {
+  if (value === null || value === undefined || value === "") return null;
+
+  return (
+    <div
+      style={{
+        fontSize: "11px",
+        padding: "3px 8px",
+        borderRadius: "999px",
+        background: `${color}22`,
+        border: `1px solid ${color}`,
+        color,
+        fontWeight: 700,
+      }}
+    >
+      {label}: {value}
+    </div>
+  );
+}
+
 export default function CollectionClient({ data }: any) {
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
@@ -35,10 +55,14 @@ export default function CollectionClient({ data }: any) {
       const setCode = String(card?.set_code || "").toLowerCase();
       const number = String(card?.card_number || "").toLowerCase();
       const aspect = String(card?.aspect || "").toLowerCase();
+      const traits = String(card?.traits || "").toLowerCase();
 
       const frontText = String(card?.front_text || "").toLowerCase();
       const rarity = String(card?.rarity || "").toLowerCase();
       const artist = String(card?.artist || "").toLowerCase();
+      const cost = String(card?.cost ?? "").toLowerCase();
+      const power = String(card?.power ?? "").toLowerCase();
+      const hp = String(card?.hp ?? "").toLowerCase();
 
       const mainMatch =
         !q ||
@@ -46,13 +70,17 @@ export default function CollectionClient({ data }: any) {
         subtitle.includes(q) ||
         setCode.includes(q) ||
         number.includes(q) ||
-        aspect.includes(q);
+        aspect.includes(q) ||
+        traits.includes(q);
 
       const textMatch =
         !tq ||
         frontText.includes(tq) ||
         rarity.includes(tq) ||
-        artist.includes(tq);
+        artist.includes(tq) ||
+        cost.includes(tq) ||
+        power.includes(tq) ||
+        hp.includes(tq);
 
       return mainMatch && textMatch;
     });
@@ -78,7 +106,7 @@ export default function CollectionClient({ data }: any) {
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
           type="text"
-          placeholder="Search by number, name, set, or aspect"
+          placeholder="Search name, set, number, aspect, or traits"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -93,7 +121,7 @@ export default function CollectionClient({ data }: any) {
 
         <input
           type="text"
-          placeholder="Search text, rarity, or artist"
+          placeholder="Search text, rarity, artist, cost, power, or hp"
           value={textSearch}
           onChange={(e) => setTextSearch(e.target.value)}
           style={{
@@ -153,7 +181,7 @@ export default function CollectionClient({ data }: any) {
                 border: "1px solid #22c55e",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: showImages ? "460px" : "300px",
+                minHeight: showImages ? "540px" : "380px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -166,19 +194,21 @@ export default function CollectionClient({ data }: any) {
                   <img
                     src={card.front_art}
                     alt={card?.name}
-                    style={{
-                      width: "100%",
-                      borderRadius: "10px",
-                      marginBottom: "10px",
-                    }}
+                    style={{ width: "100%", borderRadius: "10px", marginBottom: "10px" }}
                   />
                 ) : null}
 
-                <div style={{ fontWeight: 700, fontSize: "14px" }}>
-                  {card?.name || "Unknown card"}
-                </div>
-                <div style={{ color: "#94a3b8", marginBottom: "6px", fontSize: "12px" }}>
-                  {card?.subtitle || ""}
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", alignItems: "start" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "14px" }}>
+                      {card?.name || "Unknown card"}
+                    </div>
+                    <div style={{ color: "#94a3b8", marginBottom: "6px", fontSize: "12px" }}>
+                      {card?.subtitle || ""}
+                    </div>
+                  </div>
+
+                  <StatPill label="Cost" value={card?.cost} color="#eab308" />
                 </div>
 
                 <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "6px" }}>
@@ -199,12 +229,18 @@ export default function CollectionClient({ data }: any) {
                   ))}
                 </div>
 
+                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "6px" }}>
+                  <StatPill label="Power" value={card?.power} color="#dc2626" />
+                  <StatPill label="HP" value={card?.hp} color="#2563eb" />
+                </div>
+
                 <div style={{ fontSize: "12px" }}>Set: {card?.set_code || "-"}</div>
                 <div style={{ fontSize: "12px" }}>#{card?.card_number ?? "-"}</div>
                 <div style={{ fontSize: "12px" }}>Variant: {card?.variant || "-"}</div>
                 <div style={{ fontSize: "12px" }}>Rarity: {card?.rarity || "-"}</div>
                 <div style={{ fontSize: "12px" }}>Artist: {card?.artist || "-"}</div>
-                <div style={{ fontSize: "12px", marginTop: "6px" }}>{card?.front_text || ""}</div>
+                <div style={{ fontSize: "12px" }}>Traits: {card?.traits || "-"}</div>
+                <div style={{ fontSize: "12px", marginTop: "6px", whiteSpace: "pre-wrap" }}>{card?.front_text || ""}</div>
                 <div style={{ marginTop: "6px", color: "#86efac", fontWeight: 700, fontSize: "12px" }}>
                   Qty: {item.quantity}
                 </div>

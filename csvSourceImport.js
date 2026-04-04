@@ -76,9 +76,13 @@ function makeCardRow(row, setCode, variantOverride = null, priceOverride = null)
   const variant = variantOverride ?? mapVariant(row.VariantType ?? row.variantType ?? row.Variant ?? row.variant);
   const card_number = toInt(row.Number ?? row.number);
   const aspect = normalizeList(row.Aspects ?? row.aspects ?? row.Aspect ?? row.aspect);
+  const traits = normalizeList(row.Traits ?? row.traits ?? row.Trait ?? row.trait);
   const arena = normalizeList(row.Arenas ?? row.arenas ?? row.Arena ?? row.arena);
   const card_type = clean(row.Type ?? row.type);
   const rarity = clean(row.Rarity ?? row.rarity);
+  const cost = toInt(row.Cost ?? row.cost);
+  const power = toInt(row.Power ?? row.power);
+  const hp = toInt(row.HP ?? row.hp);
   const price = priceOverride ?? toNum(row.MarketPrice ?? row.marketPrice);
   const front_text = clean(row.FrontText ?? row.frontText);
   const artist = clean(row.Artist ?? row.artist);
@@ -93,9 +97,13 @@ function makeCardRow(row, setCode, variantOverride = null, priceOverride = null)
     variant,
     card_number,
     aspect,
+    traits,
     arena,
     card_type,
     rarity,
+    cost,
+    power,
+    hp,
     price,
     front_text,
     artist,

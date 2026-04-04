@@ -76,6 +76,12 @@ export default async function SetDetailPage({ params }: Props) {
   const fullOwned = fullCards.filter((card: any) => ownedCardIds.has(card.id)).length;
   const fullPercent = fullTotal === 0 ? 0 : (fullOwned / fullTotal) * 100;
 
+  const setValue = fullCards.reduce((sum: number, card: any) => {
+    const entry = (collection || []).find((item: any) => item.card_id === card.id);
+    const qty = Number(entry?.quantity || 0);
+    return sum + qty * Number(card.price || 0);
+  }, 0);
+
   return (
     <main style={{ padding: "20px" }}>
       <h1>{setInfo?.name || code}</h1>
@@ -94,6 +100,7 @@ export default async function SetDetailPage({ params }: Props) {
         <ProgressBar label="Full Set Completion" value={fullPercent} />
         <div>Base: {baseOwned} / {baseTotal}</div>
         <div>Full: {fullOwned} / {fullTotal}</div>
+        <div>Set Value: ${setValue.toFixed(2)}</div>
       </div>
 
       <SetClient cards={cards} collection={collection} />
