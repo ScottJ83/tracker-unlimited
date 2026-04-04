@@ -1,8 +1,17 @@
+import { redirect } from "next/navigation";
 import CollectionClient from "@/components/CollectionClient";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function CollectionPage() {
-  const userId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
 
   const { data, error } = await supabase
     .from("collection_entries")
@@ -20,7 +29,7 @@ export default async function CollectionPage() {
         price
       )
     `)
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .gt("quantity", 0);
 
   if (error) {
@@ -35,7 +44,7 @@ export default async function CollectionPage() {
   return (
     <main>
       <h1 style={{ marginBottom: "18px" }}>Collection</h1>
-      <CollectionClient data={data || []} userId={userId} />
+      <CollectionClient data={data || []} />
     </main>
   );
 }

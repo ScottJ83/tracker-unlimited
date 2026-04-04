@@ -1,6 +1,7 @@
+import { redirect } from "next/navigation";
 import ProgressBar from "@/components/ProgressBar";
-import { supabase } from "@/lib/supabase";
 import SetClient from "@/components/SetClient";
+import { createClient } from "@/lib/supabase/server";
 
 type Props = {
   params: Promise<{ code: string }>;
@@ -8,23 +9,32 @@ type Props = {
 
 export default async function SetDetailPage({ params }: Props) {
   const { code } = await params;
+  const supabase = await createClient();
 
-  const tempUserId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
 
   const { data: cards, error } = await supabase
     .from("cards")
     .select("*")
     .eq("set_code", code)
     .order("card_number", { ascending: true });
-const { data: setInfo } = await supabase
-  .from("sets")
-  .select("name")
-  .eq("code", code)
-  .single();
+
+  const { data: setInfo } = await supabase
+    .from("sets")
+    .select("name")
+    .eq("code", code)
+    .single();
+
   const { data: collection } = await supabase
     .from("collection_entries")
     .select("*")
-    .eq("user_id", tempUserId);
+    .eq("user_id", user.id);
 
   if (error) {
     return <main style={{ padding: "20px" }}>Error loading cards.</main>;
@@ -49,28 +59,25 @@ const { data: setInfo } = await supabase
 
   return (
     <main style={{ padding: "20px" }}>
-<h1>{setInfo?.name || code}</h1>
-<div
-  style={{
-    marginTop: "20px",
-    marginBottom: "20px",
-    border: "1px solid #334155",
-    borderRadius: "18px",
-    padding: "18px",
-    background: "linear-gradient(180deg, #172033, #111827)",
-  }}
->
-  <ProgressBar label="Base Set Completion" value={basePercent} />
-  <ProgressBar label="Full Set Completion" value={fullPercent} />
-  <div>Base: {baseOwned} / {baseTotal}</div>
-  <div>Full: {fullOwned} / {fullTotal}</div>
-</div>
+      <h1>{setInfo?.name || code}</h1>
 
-      <SetClient
-        cards={cards}
-        userId={tempUserId}
-        collection={collection}
-      />
+      <div
+        style={{
+          marginTop: "20px",
+          marginBottom: "20px",
+          border: "1px solid #334155",
+          borderRadius: "18px",
+          padding: "18px",
+          background: "linear-gradient(180deg, #172033, #111827)",
+        }}
+      >
+        <ProgressBar label="Base Set Completion" value={basePercent} />
+        <ProgressBar label="Full Set Completion" value={fullPercent} />
+        <div>Base: {baseOwned} / {baseTotal}</div>
+        <div>Full: {fullOwned} / {fullTotal}</div>
+      </div>
+
+      <SetClient cards={cards} collection={collection} />
     </main>
   );
 }

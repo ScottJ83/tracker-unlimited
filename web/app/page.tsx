@@ -1,8 +1,17 @@
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
-  const userId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
 
   const { data: collection } = await supabase
     .from("collection_entries")
@@ -15,7 +24,7 @@ export default async function HomePage() {
         set_code
       )
     `)
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .gt("quantity", 0);
 
   const rows = (collection || []).map((item: any) => ({
