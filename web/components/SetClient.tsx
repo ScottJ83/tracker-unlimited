@@ -143,7 +143,7 @@ export default function SetClient({ cards, collection }: any) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))",
           gap: "12px",
         }}
       >
@@ -163,7 +163,7 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #334155",
                 borderRadius: "14px",
                 padding: hidden ? "8px" : "10px",
-                minHeight: hidden ? "120px" : showImages ? "285px" : "215px",
+                minHeight: hidden ? "145px" : showImages ? "255px" : "205px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",

@@ -165,7 +165,7 @@ export default function CollectionClient({ data }: any) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))",
           gap: "12px",
         }}
       >
@@ -185,7 +185,7 @@ export default function CollectionClient({ data }: any) {
                 border: "1px solid #22c55e",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: showImages ? "330px" : "245px",
+                minHeight: showImages ? "290px" : "230px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
