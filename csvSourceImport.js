@@ -41,7 +41,9 @@ function toInt(v) {
 
 function toNum(v) {
   const s = String(v ?? "").trim();
-  return s === "" ? null : Number(s);
+  if (s === "") return null;
+  const n = Number(s);
+  return Number.isNaN(n) ? null : n;
 }
 
 function normalizeList(v) {
@@ -68,62 +70,97 @@ function loadRows(filePath) {
   });
 }
 
+function makeCardRow(row, setCode, variantOverride = null, priceOverride = null) {
+  const name = clean(row.Name ?? row.name);
+  const subtitle = clean(row.Subtitle ?? row.subtitle);
+  const variant = variantOverride ?? mapVariant(row.VariantType ?? row.variantType ?? row.Variant ?? row.variant);
+  const card_number = toInt(row.Number ?? row.number);
+  const aspect = normalizeList(row.Aspects ?? row.aspects ?? row.Aspect ?? row.aspect);
+  const arena = normalizeList(row.Arenas ?? row.arenas ?? row.Arena ?? row.arena);
+  const card_type = clean(row.Type ?? row.type);
+  const rarity = clean(row.Rarity ?? row.rarity);
+  const price = priceOverride ?? toNum(row.MarketPrice ?? row.marketPrice);
+  const front_text = clean(row.FrontText ?? row.frontText);
+  const artist = clean(row.Artist ?? row.artist);
+  const front_art = clean(row.FrontArt ?? row.frontArt);
+
+  if (!name || !variant) return null;
+
+  return {
+    set_code: setCode,
+    name,
+    subtitle,
+    variant,
+    card_number,
+    aspect,
+    arena,
+    card_type,
+    rarity,
+    price,
+    front_text,
+    artist,
+    front_art,
+  };
+}
+
 async function run() {
   let allCards = [];
 
   for (const setCode of SETS) {
     const filePath = path.join("data", `${setCode}.csv`);
-    if (!fs.existsSync(filePath)) {
-      console.log(`Missing file: ${filePath}`);
-      continue;
-    }
+    if (!fs.existsSync(filePath)) continue;
 
     const rows = loadRows(filePath);
 
     for (const row of rows) {
-      const name = clean(row.Name ?? row.name);
-      const subtitle = clean(row.Subtitle ?? row.subtitle);
-      const variant = mapVariant(row.VariantType ?? row.variantType ?? row.Variant ?? row.variant);
-      const card_number = toInt(row.Number ?? row.number);
-      const aspect = normalizeList(row.Aspects ?? row.aspects ?? row.Aspect ?? row.aspect);
-      const arena = normalizeList(row.Arenas ?? row.arenas ?? row.Arena ?? row.arena);
-      const card_type = clean(row.Type ?? row.type);
-      const rarity = clean(row.Rarity ?? row.rarity);
-      const price = toNum(row.MarketPrice ?? row.marketPrice);
+      const baseCard = makeCardRow(row, setCode);
+      if (!baseCard) continue;
 
-      if (!name || !variant) continue;
+      allCards.push(baseCard);
 
-      allCards.push({
-        set_code: setCode,
-        name,
-        subtitle,
-        variant,
-        card_number,
-        aspect,
-        arena,
-        card_type,
-        rarity,
-        price,
-      });
+      const originalVariant = mapVariant(row.VariantType ?? row.variantType ?? row.Variant ?? row.variant);
+      const foilPrice = toNum(row.FoilPrice ?? row.foilPrice);
+
+      if (setCode !== "IBH" && originalVariant === "Standard" && foilPrice !== null) {
+        allCards.push(makeCardRow(row, setCode, "Standard Foil", foilPrice));
+      }
+
+      if (setCode !== "IBH" && originalVariant === "Hyperspace" && foilPrice !== null) {
+        allCards.push(makeCardRow(row, setCode, "Hyperspace Foil", foilPrice));
+      }
     }
   }
+
+  const deduped = Array.from(
+    new Map(
+      allCards.map((card) => [
+        `${card.set_code}|${card.card_number}|${card.variant}`,
+        card,
+      ])
+    ).values()
+  );
 
   const chunkSize = 500;
 
-  for (let i = 0; i < allCards.length; i += chunkSize) {
-    const chunk = allCards.slice(i, i + chunkSize);
+  for (let i = 0; i < deduped.length; i += chunkSize) {
+    const chunk = deduped.slice(i, i + chunkSize);
 
-    const { error } = await supabase.from("cards").insert(chunk);
+    const { error } = await supabase
+      .from("cards")
+      .upsert(chunk, {
+        onConflict: "set_code,card_number,variant",
+        ignoreDuplicates: false,
+      });
 
     if (error) {
-      console.error("Insert failed:", error.message);
+      console.error("Upsert failed:", error.message);
       return;
     }
 
-    console.log(`Inserted ${Math.min(i + chunkSize, allCards.length)} / ${allCards.length}`);
+    console.log(`Upserted ${Math.min(i + chunkSize, deduped.length)} / ${deduped.length}`);
   }
 
-  console.log("Done:", allCards.length);
+  console.log("Done:", deduped.length);
 }
 
 run();

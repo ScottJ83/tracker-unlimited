@@ -17,9 +17,11 @@ function getAspectPills(aspect: string | null | undefined) {
   return pills;
 }
 
-export default function SetClient({ cards, userId, collection }: any) {
+export default function SetClient({ cards, collection }: any) {
   const [showMissing, setShowMissing] = useState(false);
   const [search, setSearch] = useState("");
+  const [textSearch, setTextSearch] = useState("");
+  const [showImages, setShowImages] = useState(false);
 
   function getQty(cardId: string) {
     const entry = collection?.find((c: any) => c.card_id === cardId && c.quantity > 0);
@@ -28,6 +30,7 @@ export default function SetClient({ cards, userId, collection }: any) {
 
   const filteredCards = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const tq = textSearch.trim().toLowerCase();
 
     return (cards || []).filter((card: any) => {
       const name = String(card.name || "").toLowerCase();
@@ -35,19 +38,26 @@ export default function SetClient({ cards, userId, collection }: any) {
       const number = String(card.card_number || "").toLowerCase();
       const aspect = String(card.aspect || "").toLowerCase();
 
-      if (
-        q &&
-        !name.includes(q) &&
-        !subtitle.includes(q) &&
-        !number.includes(q) &&
-        !aspect.includes(q)
-      ) {
-        return false;
-      }
+      const frontText = String(card.front_text || "").toLowerCase();
+      const rarity = String(card.rarity || "").toLowerCase();
+      const artist = String(card.artist || "").toLowerCase();
 
-      return true;
+      const mainMatch =
+        !q ||
+        name.includes(q) ||
+        subtitle.includes(q) ||
+        number.includes(q) ||
+        aspect.includes(q);
+
+      const textMatch =
+        !tq ||
+        frontText.includes(tq) ||
+        rarity.includes(tq) ||
+        artist.includes(tq);
+
+      return mainMatch && textMatch;
     });
-  }, [cards, search]);
+  }, [cards, search, textSearch]);
 
   return (
     <div>
@@ -67,20 +77,44 @@ export default function SetClient({ cards, userId, collection }: any) {
           }}
         />
 
+        <input
+          type="text"
+          placeholder="Search text, rarity, or artist"
+          value={textSearch}
+          onChange={(e) => setTextSearch(e.target.value)}
+          style={{
+            minWidth: "280px",
+            padding: "10px",
+            borderRadius: "10px",
+            border: "1px solid #334155",
+            background: "#0f172a",
+            color: "#e5edf7",
+          }}
+        />
+
         <label style={{ display: "flex", gap: "6px", alignItems: "center", color: "#cbd5e1" }}>
           <input
             type="checkbox"
             checked={showMissing}
             onChange={(e) => setShowMissing(e.target.checked)}
           />
-          Show Missing Cards
+          Show Missing
+        </label>
+
+        <label style={{ display: "flex", gap: "6px", alignItems: "center", color: "#cbd5e1" }}>
+          <input
+            type="checkbox"
+            checked={showImages}
+            onChange={(e) => setShowImages(e.target.checked)}
+          />
+          Show Images
         </label>
       </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
           gap: "12px",
         }}
       >
@@ -97,7 +131,7 @@ export default function SetClient({ cards, userId, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #334155",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: "190px",
+                minHeight: showImages ? "420px" : "260px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -108,36 +142,27 @@ export default function SetClient({ cards, userId, collection }: any) {
               {hidden ? (
                 <>
                   <div>
-                    <div style={{ height: "18px" }} />
-                    <div style={{ height: "18px" }} />
-
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "6px" }}>
-                      {aspectPills.map((pill) => (
-                        <div
-                          key={pill.name}
-                          style={{
-                            fontSize: "10px",
-                            padding: "2px 6px",
-                            borderRadius: "999px",
-                            background: `${pill.color}22`,
-                            border: `1px solid ${pill.color}`,
-                            color: pill.color,
-                          }}
-                        >
-                          {pill.name}
-                        </div>
-                      ))}
-                    </div>
-
                     <div style={{ fontSize: "12px", color: "#94a3b8" }}>#{card.card_number ?? "-"}</div>
                     <div style={{ fontSize: "12px", color: "#94a3b8" }}>Variant: {card.variant}</div>
                     <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "6px" }}>Qty: 0</div>
                   </div>
-
-<AddCardButton cardId={card.id} />                </>
+                  <AddCardButton cardId={card.id} />
+                </>
               ) : (
                 <>
                   <div>
+                    {showImages && card.front_art ? (
+                      <img
+                        src={card.front_art}
+                        alt={card.name}
+                        style={{
+                          width: "100%",
+                          borderRadius: "10px",
+                          marginBottom: "10px",
+                        }}
+                      />
+                    ) : null}
+
                     <div style={{ fontWeight: 700, fontSize: "14px", color: owned ? "#e5edf7" : "#9ca3af" }}>
                       {card.name}
                     </div>
@@ -163,25 +188,20 @@ export default function SetClient({ cards, userId, collection }: any) {
                       ))}
                     </div>
 
-                    <div style={{ fontSize: "12px", color: owned ? "#cbd5e1" : "#94a3b8" }}>
-                      #{card.card_number ?? "-"}
+                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>#{card.card_number ?? "-"}</div>
+                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Variant: {card.variant}</div>
+                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Rarity: {card.rarity || "-"}</div>
+                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Artist: {card.artist || "-"}</div>
+                    <div style={{ fontSize: "12px", color: "#cbd5e1", marginTop: "6px" }}>
+                      {card.front_text || ""}
                     </div>
-                    <div style={{ fontSize: "12px", color: owned ? "#cbd5e1" : "#94a3b8" }}>
-                      Variant: {card.variant}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "12px",
-                        marginTop: "6px",
-                        color: owned ? "#86efac" : "#94a3b8",
-                        fontWeight: 700,
-                      }}
-                    >
+                    <div style={{ fontSize: "12px", marginTop: "6px", color: owned ? "#86efac" : "#94a3b8", fontWeight: 700 }}>
                       Qty: {qty}
                     </div>
                   </div>
 
-<AddCardButton cardId={card.id} />                </>
+                  <AddCardButton cardId={card.id} />
+                </>
               )}
             </div>
           );
