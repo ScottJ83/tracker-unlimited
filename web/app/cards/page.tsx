@@ -2,6 +2,31 @@ import { redirect } from "next/navigation";
 import SetClient from "@/components/SetClient";
 import { createClient } from "@/lib/supabase/server";
 
+async function getAllCards(supabase: any) {
+  let allCards: any[] = [];
+  let from = 0;
+  const pageSize = 1000;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("cards")
+      .select("*")
+      .range(from, from + pageSize - 1)
+      .order("set_code", { ascending: true })
+      .order("card_number", { ascending: true });
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    allCards = [...allCards, ...data];
+
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allCards;
+}
+
 export default async function CardsPage() {
   const supabase = await createClient();
 
@@ -13,20 +38,12 @@ export default async function CardsPage() {
     redirect("/login");
   }
 
-  const { data: cards, error } = await supabase
-    .from("cards")
-    .select("*")
-    .order("set_code", { ascending: true })
-    .order("card_number", { ascending: true });
+  const cards = await getAllCards(supabase);
 
   const { data: collection } = await supabase
     .from("collection_entries")
     .select("*")
     .eq("user_id", user.id);
-
-  if (error) {
-    return <main style={{ padding: "20px" }}>Error loading cards.</main>;
-  }
 
   return (
     <main style={{ padding: "20px" }}>
