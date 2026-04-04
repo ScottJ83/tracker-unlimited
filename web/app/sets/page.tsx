@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { redirect } from "next/navigation";
 import ProgressBar from "@/components/ProgressBar";
+import { createClient } from "@/lib/supabase/server";
 
 const setOrder = [
   "LAW",
@@ -52,7 +53,7 @@ const setColors: Record<string, string> = {
   TS26: "#00bcd4",
 };
 
-async function getAllCards() {
+async function getAllCards(supabase: any) {
   let allCards: any[] = [];
   let from = 0;
   const pageSize = 1000;
@@ -76,14 +77,23 @@ async function getAllCards() {
 }
 
 export default async function SetsPage() {
-  const userId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
 
   const { data: sets, error } = await supabase.from("sets").select("*");
-  const cards = await getAllCards();
+  const cards = await getAllCards(supabase);
+
   const { data: collection } = await supabase
     .from("collection_entries")
     .select("card_id,quantity")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .gt("quantity", 0);
 
   if (error) return <main>Error loading sets.</main>;
