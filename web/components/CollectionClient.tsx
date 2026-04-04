@@ -23,8 +23,8 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   return (
     <div
       style={{
-        fontSize: "11px",
-        padding: "3px 8px",
+        fontSize: "10px",
+        padding: "2px 6px",
         borderRadius: "999px",
         background: `${color}22`,
         border: `1px solid ${color}`,
@@ -42,6 +42,7 @@ export default function CollectionClient({ data }: any) {
   const [textSearch, setTextSearch] = useState("");
   const [sortBy, setSortBy] = useState("price_desc");
   const [showImages, setShowImages] = useState(true);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -164,7 +165,7 @@ export default function CollectionClient({ data }: any) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
           gap: "12px",
         }}
       >
@@ -173,20 +174,29 @@ export default function CollectionClient({ data }: any) {
           const aspectPills = getAspectPills(card?.aspect);
           const unitValue = Number(card?.price || 0);
           const totalValue = unitValue * Number(item.quantity || 0);
+          const hovered = hoveredId === item.id;
 
           return (
             <div
               key={item.id}
+              onMouseEnter={() => setHoveredId(item.id)}
+              onMouseLeave={() => setHoveredId(null)}
               style={{
                 border: "1px solid #22c55e",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: showImages ? "540px" : "380px",
+                minHeight: showImages ? "330px" : "245px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 background: "#172033",
-                boxShadow: "0 0 0 1px rgba(34,197,94,0.15)",
+                boxShadow: hovered
+                  ? "0 12px 30px rgba(0,0,0,0.35)"
+                  : "0 0 0 1px rgba(34,197,94,0.15)",
+                transform: hovered ? "scale(1.08)" : "scale(1)",
+                transition: "transform 0.16s ease, box-shadow 0.16s ease",
+                position: "relative",
+                zIndex: hovered ? 10 : 1,
               }}
             >
               <div>
@@ -194,16 +204,16 @@ export default function CollectionClient({ data }: any) {
                   <img
                     src={card.front_art}
                     alt={card?.name}
-                    style={{ width: "100%", borderRadius: "10px", marginBottom: "10px" }}
+                    style={{ width: "100%", borderRadius: "10px", marginBottom: "8px" }}
                   />
                 ) : null}
 
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", alignItems: "start" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "start" }}>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: "14px" }}>
+                    <div style={{ fontWeight: 700, fontSize: "13px" }}>
                       {card?.name || "Unknown card"}
                     </div>
-                    <div style={{ color: "#94a3b8", marginBottom: "6px", fontSize: "12px" }}>
+                    <div style={{ color: "#94a3b8", marginBottom: "6px", fontSize: "11px" }}>
                       {card?.subtitle || ""}
                     </div>
                   </div>
@@ -211,13 +221,13 @@ export default function CollectionClient({ data }: any) {
                   <StatPill label="Cost" value={card?.cost} color="#eab308" />
                 </div>
 
-                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "6px" }}>
+                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
                   {aspectPills.map((pill) => (
                     <div
                       key={pill.name}
                       style={{
-                        fontSize: "10px",
-                        padding: "2px 6px",
+                        fontSize: "9px",
+                        padding: "2px 5px",
                         borderRadius: "999px",
                         background: `${pill.color}22`,
                         border: `1px solid ${pill.color}`,
@@ -229,25 +239,22 @@ export default function CollectionClient({ data }: any) {
                   ))}
                 </div>
 
-                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "6px" }}>
+                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
                   <StatPill label="Power" value={card?.power} color="#dc2626" />
                   <StatPill label="HP" value={card?.hp} color="#2563eb" />
                 </div>
 
-                <div style={{ fontSize: "12px" }}>Set: {card?.set_code || "-"}</div>
-                <div style={{ fontSize: "12px" }}>#{card?.card_number ?? "-"}</div>
-                <div style={{ fontSize: "12px" }}>Variant: {card?.variant || "-"}</div>
-                <div style={{ fontSize: "12px" }}>Rarity: {card?.rarity || "-"}</div>
-                <div style={{ fontSize: "12px" }}>Artist: {card?.artist || "-"}</div>
-                <div style={{ fontSize: "12px" }}>Traits: {card?.traits || "-"}</div>
-                <div style={{ fontSize: "12px", marginTop: "6px", whiteSpace: "pre-wrap" }}>{card?.front_text || ""}</div>
-                <div style={{ marginTop: "6px", color: "#86efac", fontWeight: 700, fontSize: "12px" }}>
+                <div style={{ fontSize: "11px" }}>Set: {card?.set_code || "-"}</div>
+                <div style={{ fontSize: "11px" }}>#{card?.card_number ?? "-"}</div>
+                <div style={{ fontSize: "11px" }}>Variant: {card?.variant || "-"}</div>
+                <div style={{ fontSize: "11px" }}>Traits: {card?.traits || "-"}</div>
+                <div style={{ marginTop: "6px", color: "#86efac", fontWeight: 700, fontSize: "11px" }}>
                   Qty: {item.quantity}
                 </div>
-                <div style={{ fontSize: "12px", marginTop: "6px" }}>
+                <div style={{ fontSize: "11px", marginTop: "6px" }}>
                   Unit: ${unitValue.toFixed(2)}
                 </div>
-                <div style={{ fontSize: "12px", fontWeight: 700 }}>
+                <div style={{ fontSize: "11px", fontWeight: 700 }}>
                   Total: ${totalValue.toFixed(2)}
                 </div>
               </div>

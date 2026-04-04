@@ -23,8 +23,8 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   return (
     <div
       style={{
-        fontSize: "11px",
-        padding: "3px 8px",
+        fontSize: "10px",
+        padding: "2px 6px",
         borderRadius: "999px",
         background: `${color}22`,
         border: `1px solid ${color}`,
@@ -42,6 +42,7 @@ export default function SetClient({ cards, collection }: any) {
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
   const [showImages, setShowImages] = useState(true);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   function getQty(cardId: string) {
     const entry = collection?.find((c: any) => c.card_id === cardId && c.quantity > 0);
@@ -142,7 +143,7 @@ export default function SetClient({ cards, collection }: any) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
           gap: "12px",
         }}
       >
@@ -151,25 +152,38 @@ export default function SetClient({ cards, collection }: any) {
           const owned = qty > 0;
           const hidden = !showMissing && !owned;
           const aspectPills = getAspectPills(card.aspect);
+          const hovered = hoveredId === card.id;
 
           return (
             <div
               key={card.id}
+              onMouseEnter={() => setHoveredId(card.id)}
+              onMouseLeave={() => setHoveredId(null)}
               style={{
                 border: owned ? "1px solid #22c55e" : "1px solid #334155",
                 borderRadius: "14px",
-                padding: "10px",
-minHeight: hidden ? "120px" : showImages ? "500px" : "330px",                display: "flex",
+                padding: hidden ? "8px" : "10px",
+                minHeight: hidden ? "120px" : showImages ? "285px" : "215px",
+                display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 background: owned ? "#172033" : "#111827",
-                boxShadow: owned ? "0 0 0 1px rgba(34,197,94,0.15)" : "none",
+                boxShadow: hovered
+                  ? "0 12px 30px rgba(0,0,0,0.35)"
+                  : owned
+                  ? "0 0 0 1px rgba(34,197,94,0.15)"
+                  : "none",
+                transform: hovered ? "scale(1.08)" : "scale(1)",
+                transition: "transform 0.16s ease, box-shadow 0.16s ease",
+                position: "relative",
+                zIndex: hovered ? 10 : 1,
               }}
             >
               {hidden ? (
                 <>
                   <div>
                     <div style={{ fontSize: "12px", color: "#94a3b8" }}>#{card.card_number ?? "-"}</div>
+                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>{card.name}</div>
                     <div style={{ fontSize: "12px", color: "#94a3b8" }}>Variant: {card.variant}</div>
                     <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "6px" }}>Qty: 0</div>
                   </div>
@@ -182,16 +196,20 @@ minHeight: hidden ? "120px" : showImages ? "500px" : "330px",                dis
                       <img
                         src={card.front_art}
                         alt={card.name}
-                        style={{ width: "100%", borderRadius: "10px", marginBottom: "10px" }}
+                        style={{
+                          width: "100%",
+                          borderRadius: "10px",
+                          marginBottom: "8px",
+                        }}
                       />
                     ) : null}
 
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", alignItems: "start" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "start" }}>
                       <div>
-                        <div style={{ fontWeight: 700, fontSize: "14px", color: owned ? "#e5edf7" : "#9ca3af" }}>
+                        <div style={{ fontWeight: 700, fontSize: "13px", color: owned ? "#e5edf7" : "#9ca3af" }}>
                           {card.name}
                         </div>
-                        <div style={{ color: owned ? "#94a3b8" : "#6b7280", fontSize: "12px", minHeight: "16px" }}>
+                        <div style={{ color: owned ? "#94a3b8" : "#6b7280", fontSize: "11px", minHeight: "14px" }}>
                           {card.subtitle || ""}
                         </div>
                       </div>
@@ -199,13 +217,14 @@ minHeight: hidden ? "120px" : showImages ? "500px" : "330px",                dis
                       <StatPill label="Cost" value={card.cost} color="#eab308" />
                     </div>
 
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "6px", marginBottom: "6px" }}>
+                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "6px", marginBottom: "6px" }}>
                       {aspectPills.map((pill) => (
                         <div
                           key={pill.name}
                           style={{
-                            fontSize: "10px",
-padding: hidden ? "8px" : "10px",                            borderRadius: "999px",
+                            fontSize: "9px",
+                            padding: "2px 5px",
+                            borderRadius: "999px",
                             background: `${pill.color}22`,
                             border: `1px solid ${pill.color}`,
                             color: pill.color,
@@ -216,20 +235,15 @@ padding: hidden ? "8px" : "10px",                            borderRadius: "999p
                       ))}
                     </div>
 
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "6px" }}>
+                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
                       <StatPill label="Power" value={card.power} color="#dc2626" />
                       <StatPill label="HP" value={card.hp} color="#2563eb" />
                     </div>
 
-                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>#{card.card_number ?? "-"}</div>
-                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Variant: {card.variant}</div>
-                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Rarity: {card.rarity || "-"}</div>
-                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Artist: {card.artist || "-"}</div>
-                    <div style={{ fontSize: "12px", color: "#cbd5e1" }}>Traits: {card.traits || "-"}</div>
-                    <div style={{ fontSize: "12px", color: "#cbd5e1", marginTop: "6px", whiteSpace: "pre-wrap" }}>
-                      {card.front_text || ""}
-                    </div>
-                    <div style={{ fontSize: "12px", marginTop: "6px", color: owned ? "#86efac" : "#94a3b8", fontWeight: 700 }}>
+                    <div style={{ fontSize: "11px", color: "#cbd5e1" }}>#{card.card_number ?? "-"}</div>
+                    <div style={{ fontSize: "11px", color: "#cbd5e1" }}>Variant: {card.variant}</div>
+                    <div style={{ fontSize: "11px", color: "#cbd5e1" }}>Traits: {card.traits || "-"}</div>
+                    <div style={{ fontSize: "11px", marginTop: "6px", color: owned ? "#86efac" : "#94a3b8", fontWeight: 700 }}>
                       Qty: {qty}
                     </div>
                   </div>
