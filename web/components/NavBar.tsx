@@ -1,6 +1,13 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import AuthButton from "./AuthButton";
 
-export default function NavBar() {
+export default async function NavBar() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <header
       style={{
@@ -26,11 +33,15 @@ export default function NavBar() {
           TRACKER UNLIMITED
         </Link>
 
-        <nav style={{ display: "flex", gap: "18px", color: "#cbd5e1" }}>
-          <Link href="/">Home</Link>
-          <Link href="/sets">Sets</Link>
-          <Link href="/collection">Collection</Link>
-        </nav>
+        <div style={{ display: "flex", gap: "18px", alignItems: "center" }}>
+          <nav style={{ display: "flex", gap: "18px", color: "#cbd5e1" }}>
+            <Link href="/">Home</Link>
+            <Link href="/sets">Sets</Link>
+            <Link href="/collection">Collection</Link>
+          </nav>
+
+          <AuthButton email={user?.email ?? null} />
+        </div>
       </div>
     </header>
   );
