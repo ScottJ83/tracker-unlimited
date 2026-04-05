@@ -199,7 +199,7 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
                 padding: "12px",
-                minHeight: "100px",
+                Height: "100px",
                 background: owned ? "#0f172a" : "#05070d",
                 display: "flex",
                 justifyContent: "space-between",
@@ -207,9 +207,9 @@ export default function SetClient({ cards, collection }: any) {
               }}
             >
               {/* LEFT SIDE (IMAGE) */}
-              {!hidden && (
-                <CardImage src={card.front_art} name={card.name} />
-              )}
+<div style={{ width: "60px", minWidth: "60px" }}>
+  {!hidden ? <CardImage src={card.front_art} name={card.name} /> : null}
+</div>
 
               {/* RIGHT SIDE */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
