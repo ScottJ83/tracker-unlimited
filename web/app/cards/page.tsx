@@ -49,7 +49,7 @@ export default async function CardsPage() {
     <main>
       <h1 className="page-title">All Cards</h1>
 
-      <SetClient cards={cards} collection={collection} />
+<SetClient cards={cards} collection={collection ?? []} />
     </main>
   );
 }
