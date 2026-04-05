@@ -37,49 +37,70 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   );
 }
 
-/* 🔥 NEW IMAGE COMPONENT */
-function CardImage({ src, name }: { src?: string | null; name: string }) {
+function CardImage({ src, name, hidden }: { src?: string | null; name: string; hidden?: boolean }) {
   const [hover, setHover] = useState(false);
-
-  if (!src) return null;
 
   return (
     <div
-      style={{ position: "relative" }}
-      onMouseEnter={() => setHover(true)}
+      style={{
+        position: "relative",
+        width: "60px",
+        minWidth: "60px",
+        height: "84px",
+        borderRadius: "8px",
+        border: "1px solid #334155",
+        background: hidden ? "#030712" : "#0b1220",
+        overflow: "visible",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onMouseEnter={() => !hidden && src && setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      {/* SMALL IMAGE */}
-      <img
-        src={src}
-        alt={name}
-        style={{
-          width: "60px",
-          height: "84px",
-          objectFit: "cover",
-          borderRadius: "8px",
-          border: "1px solid #334155",
-          cursor: "pointer",
-        }}
-      />
+      {!hidden && src ? (
+        <>
+          <img
+            src={src}
+            alt={name}
+            style={{
+              width: "60px",
+              height: "84px",
+              objectFit: "cover",
+              borderRadius: "8px",
+              cursor: "pointer",
+              display: "block",
+            }}
+          />
 
-      {/* HOVER PREVIEW */}
-      {hover && (
-        <img
-          src={src}
-          alt={name}
+          {hover && (
+            <img
+              src={src}
+              alt={name}
+              style={{
+                position: "absolute",
+                top: "-20px",
+                left: "70px",
+                width: "240px",
+                borderRadius: "12px",
+                border: "1px solid #334155",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+                zIndex: 999,
+                background: "#02040a",
+              }}
+            />
+          )}
+        </>
+      ) : (
+        <div
           style={{
-            position: "absolute",
-            top: "-20px",
-            left: "70px",
-            width: "240px",
-            borderRadius: "12px",
-            border: "1px solid #334155",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
-            zIndex: 999,
-            background: "#02040a",
+            fontSize: "10px",
+            color: "#475569",
+            userSelect: "none",
           }}
-        />
+        >
+          —
+        </div>
       )}
     </div>
   );
@@ -136,7 +157,6 @@ export default function SetClient({ cards, collection }: any) {
 
   return (
     <div>
-      {/* SEARCH UI (unchanged) */}
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
           type="text"
@@ -178,7 +198,6 @@ export default function SetClient({ cards, collection }: any) {
         </label>
       </div>
 
-      {/* 🔥 GRID UPDATED (4 per row feel) */}
       <div
         style={{
           display: "grid",
@@ -199,79 +218,111 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
                 padding: "12px",
-                minHeight: "150px",
+                minHeight: "190px",
                 background: owned ? "#0f172a" : "#05070d",
                 display: "flex",
                 justifyContent: "space-between",
                 gap: "12px",
               }}
             >
-              {/* LEFT SIDE (IMAGE) */}
-              {!hidden && (
-                <CardImage src={card.front_art} name={card.name} />
-              )}
+              <CardImage src={card.front_art} name={card.name} hidden={hidden} />
 
-              {/* RIGHT SIDE */}
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
                 {hidden ? (
-                  <>
+                  <div>
                     <div style={{ fontSize: "12px", color: "#94a3b8" }}>
                       #{card.card_number ?? "-"}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                    <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "4px" }}>
                       Variant: {card.variant}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                    <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "6px", fontWeight: 700 }}>
                       Qty: 0
                     </div>
-                  </>
+                  </div>
                 ) : (
-                  <>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: "14px", color: "#e5edf7" }}>
-                        {card.name}
-                      </div>
-                      <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-                        {card.subtitle || ""}
-                      </div>
-
-                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "6px" }}>
-                        {aspectPills.map((pill) => (
-                          <div
-                            key={pill.name}
-                            style={{
-                              fontSize: "9px",
-                              padding: "2px 5px",
-                              borderRadius: "999px",
-                              background: `${pill.color}22`,
-                              border: `1px solid ${pill.color}`,
-                              color: pill.color,
-                            }}
-                          >
-                            {pill.name}
-                          </div>
-                        ))}
-                      </div>
-
-                      <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
-                        <StatPill label="Cost" value={card.cost} color="#eab308" />
-                        <StatPill label="Power" value={card.power} color="#dc2626" />
-                        <StatPill label="HP" value={card.hp} color="#2563eb" />
-                      </div>
-
-                      <div style={{ fontSize: "11px", marginTop: "6px", color: "#cbd5e1" }}>
-                        #{card.card_number} • {card.variant}
-                      </div>
-
-                      <div style={{ fontSize: "11px", color: "#cbd5e1" }}>
-                        Traits: {card.traits || "-"}
-                      </div>
-
-                      <div style={{ fontSize: "12px", marginTop: "6px", color: "#86efac", fontWeight: 700 }}>
-                        Qty: {qty}
-                      </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "14px", color: "#e5edf7" }}>
+                      {card.name}
                     </div>
-                  </>
+
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#94a3b8",
+                        minHeight: "14px",
+                        marginTop: "1px",
+                      }}
+                    >
+                      {card.subtitle || ""}
+                    </div>
+
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "6px" }}>
+                      {aspectPills.map((pill) => (
+                        <div
+                          key={pill.name}
+                          style={{
+                            fontSize: "9px",
+                            padding: "2px 5px",
+                            borderRadius: "999px",
+                            background: `${pill.color}22`,
+                            border: `1px solid ${pill.color}`,
+                            color: pill.color,
+                          }}
+                        >
+                          {pill.name}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ display: "flex", gap: "6px", marginTop: "6px", flexWrap: "wrap" }}>
+                      <StatPill label="Cost" value={card.cost} color="#eab308" />
+                      <StatPill label="Power" value={card.power} color="#dc2626" />
+                      <StatPill label="HP" value={card.hp} color="#2563eb" />
+                    </div>
+
+                    <div style={{ fontSize: "11px", marginTop: "6px", color: "#cbd5e1" }}>
+                      #{card.card_number} • {card.variant}
+                    </div>
+
+                    <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "2px" }}>
+                      Traits: {card.traits || "-"}
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "10px",
+                        lineHeight: 1.35,
+                        color: "#cbd5e1",
+                        marginTop: "6px",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {card.front_text || "-"}
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        marginTop: "6px",
+                        color: "#86efac",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Qty: {qty}
+                    </div>
+                  </div>
                 )}
 
                 <AddCardButton cardId={card.id} />
