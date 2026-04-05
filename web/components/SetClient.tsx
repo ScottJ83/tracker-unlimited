@@ -236,6 +236,7 @@ export default function SetClient({ cards, collection }: any) {
                 gap: "10px",
                 overflow: "hidden",
                 boxSizing: "border-box",
+                position: "relative",
               }}
             >
               <div style={{ width: "56px", minWidth: "56px" }}>
@@ -248,169 +249,181 @@ export default function SetClient({ cards, collection }: any) {
                   minWidth: 0,
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "space-between",
+                  paddingBottom: "40px",
                 }}
               >
                 {hidden ? (
-                  <>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: "13px", color: "#94a3b8" }}>
-                        #{card.card_number ?? "-"}
-                      </div>
-                      <div style={{ fontSize: "13px", color: "#94a3b8", marginTop: "4px" }}>
-                        Variant: {card.variant}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "13px",
-                          color: "#94a3b8",
-                          marginTop: "6px",
-                          fontWeight: 700,
-                        }}
-                      >
-                        Qty: 0
-                      </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: "13px", color: "#94a3b8" }}>
+                      #{card.card_number ?? "-"}
                     </div>
-
-                    <div style={{ flexShrink: 0 }}>
-                      <AddCardButton cardId={card.id} />
+                    <div style={{ fontSize: "13px", color: "#94a3b8", marginTop: "4px" }}>
+                      Variant: {card.variant}
                     </div>
-                  </>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        color: "#94a3b8",
+                        marginTop: "6px",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Qty: 0
+                    </div>
+                  </div>
                 ) : (
-                  <>
-                    <div style={{ minWidth: 0 }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        gap: "8px",
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            fontSize: "14px",
+                            color: "#e5edf7",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {card.name}
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize: "11px",
+                            color: "#94a3b8",
+                            minHeight: "14px",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {card.subtitle || ""}
+                        </div>
+                      </div>
+
                       <div
                         style={{
                           display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          gap: "8px",
+                          flexDirection: "column",
+                          alignItems: "flex-end",
+                          gap: "4px",
+                          flexShrink: 0,
+                          maxWidth: "120px",
                         }}
                       >
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div
-                            style={{
-                              fontWeight: 700,
-                              fontSize: "14px",
-                              color: "#e5edf7",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            {card.name}
-                          </div>
-
-                          <div
-                            style={{
-                              fontSize: "11px",
-                              color: "#94a3b8",
-                              minHeight: "14px",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            {card.subtitle || ""}
-                          </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "4px",
+                            flexWrap: "wrap",
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          <StatPill label="Cost" value={card.cost} color="#eab308" />
+                          <StatPill label="Power" value={card.power} color="#dc2626" />
+                          <StatPill label="HP" value={card.hp} color="#2563eb" />
                         </div>
 
                         <div
                           style={{
                             display: "flex",
-                            flexDirection: "column",
-                            alignItems: "flex-end",
                             gap: "4px",
-                            flexShrink: 0,
-                            maxWidth: "120px",
+                            flexWrap: "wrap",
+                            justifyContent: "flex-end",
                           }}
                         >
-                          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                            <StatPill label="Cost" value={card.cost} color="#eab308" />
-                            <StatPill label="Power" value={card.power} color="#dc2626" />
-                            <StatPill label="HP" value={card.hp} color="#2563eb" />
-                          </div>
-
-                          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                            {aspectPills.map((pill) => (
-                              <div
-                                key={pill.name}
-                                style={{
-                                  fontSize: "9px",
-                                  lineHeight: 1,
-                                  padding: "3px 5px",
-                                  borderRadius: "999px",
-                                  background: `${pill.color}22`,
-                                  border: `1px solid ${pill.color}`,
-                                  color: pill.color,
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                {pill.name}
-                              </div>
-                            ))}
-                          </div>
+                          {aspectPills.map((pill) => (
+                            <div
+                              key={pill.name}
+                              style={{
+                                fontSize: "9px",
+                                lineHeight: 1,
+                                padding: "3px 5px",
+                                borderRadius: "999px",
+                                background: `${pill.color}22`,
+                                border: `1px solid ${pill.color}`,
+                                color: pill.color,
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {pill.name}
+                            </div>
+                          ))}
                         </div>
                       </div>
-
-                      <div
-                        style={{
-                          fontSize: "11px",
-                          marginTop: "5px",
-                          color: "#cbd5e1",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        #{card.card_number} • {card.variant}
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: "11px",
-                          color: "#cbd5e1",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        Traits: {card.traits || "-"}
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          lineHeight: 1.25,
-                          color: "#cbd5e1",
-                          marginTop: "5px",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          maxHeight: "26px",
-                        }}
-                      >
-                        {card.front_text || "-"}
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: "12px",
-                          marginTop: "5px",
-                          color: "#86efac",
-                          fontWeight: 700,
-                        }}
-                      >
-                        Qty: {qty}
-                      </div>
                     </div>
 
-                    <div style={{ flexShrink: 0, marginTop: "6px" }}>
-                      <AddCardButton cardId={card.id} />
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        marginTop: "5px",
+                        color: "#cbd5e1",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      #{card.card_number} • {card.variant}
                     </div>
-                  </>
+
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#cbd5e1",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      Traits: {card.traits || "-"}
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "10px",
+                        lineHeight: 1.25,
+                        color: "#cbd5e1",
+                        marginTop: "5px",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        maxHeight: "26px",
+                      }}
+                    >
+                      {card.front_text || "-"}
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        marginTop: "5px",
+                        color: "#86efac",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Qty: {qty}
+                    </div>
+                  </div>
                 )}
+              </div>
+
+              <div
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  bottom: "8px",
+                }}
+              >
+                <AddCardButton cardId={card.id} />
               </div>
             </div>
           );
