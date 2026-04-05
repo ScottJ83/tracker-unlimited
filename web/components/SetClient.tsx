@@ -37,42 +37,42 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   );
 }
 
-function ImagePreview({ frontArt, name }: { frontArt?: string | null; name: string }) {
-  const [showPreview, setShowPreview] = useState(false);
+/* 🔥 NEW IMAGE COMPONENT */
+function CardImage({ src, name }: { src?: string | null; name: string }) {
+  const [hover, setHover] = useState(false);
 
-  if (!frontArt) return null;
+  if (!src) return null;
 
   return (
     <div
       style={{ position: "relative" }}
-      onMouseEnter={() => setShowPreview(true)}
-      onMouseLeave={() => setShowPreview(false)}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
     >
-      <div
+      {/* SMALL IMAGE */}
+      <img
+        src={src}
+        alt={name}
         style={{
-          fontSize: "12px",
-          padding: "2px 6px",
-          borderRadius: "6px",
+          width: "60px",
+          height: "84px",
+          objectFit: "cover",
+          borderRadius: "8px",
           border: "1px solid #334155",
-          background: "#02040a",
-          color: "#e5edf7",
           cursor: "pointer",
-          userSelect: "none",
         }}
-        title="Preview image"
-      >
-        🖼
-      </div>
+      />
 
-      {showPreview ? (
+      {/* HOVER PREVIEW */}
+      {hover && (
         <img
-          src={frontArt}
+          src={src}
           alt={name}
           style={{
             position: "absolute",
-            top: "-10px",
-            left: "110%",
-            width: "230px",
+            top: "-20px",
+            left: "70px",
+            width: "240px",
             borderRadius: "12px",
             border: "1px solid #334155",
             boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
@@ -80,7 +80,7 @@ function ImagePreview({ frontArt, name }: { frontArt?: string | null; name: stri
             background: "#02040a",
           }}
         />
-      ) : null}
+      )}
     </div>
   );
 }
@@ -89,7 +89,6 @@ export default function SetClient({ cards, collection }: any) {
   const [showMissing, setShowMissing] = useState(false);
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
-  const [showImages, setShowImages] = useState(true);
 
   function getQty(cardId: string) {
     const entry = collection?.find((c: any) => c.card_id === cardId && c.quantity > 0);
@@ -137,6 +136,7 @@ export default function SetClient({ cards, collection }: any) {
 
   return (
     <div>
+      {/* SEARCH UI (unchanged) */}
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
           type="text"
@@ -176,22 +176,14 @@ export default function SetClient({ cards, collection }: any) {
           />
           Show Missing
         </label>
-
-        <label style={{ display: "flex", gap: "6px", alignItems: "center", color: "#cbd5e1" }}>
-          <input
-            type="checkbox"
-            checked={showImages}
-            onChange={(e) => setShowImages(e.target.checked)}
-          />
-          Show Preview Icon
-        </label>
       </div>
 
+      {/* 🔥 GRID UPDATED (4 per row feel) */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(185px, 1fr))",
-          gap: "12px",
+          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+          gap: "14px",
         }}
       >
         {filteredCards.map((card: any) => {
@@ -206,79 +198,84 @@ export default function SetClient({ cards, collection }: any) {
               style={{
                 border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
-                padding: hidden ? "8px" : "10px",
-                minHeight: hidden ? "135px" : "205px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
+                padding: "12px",
+                minHeight: "150px",
                 background: owned ? "#0f172a" : "#05070d",
-                boxShadow: owned ? "0 0 0 1px rgba(34,197,94,0.15)" : "none",
-                position: "relative",
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "12px",
               }}
             >
-              {hidden ? (
-                <>
-                  <div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>#{card.card_number ?? "-"}</div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>{card.name}</div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>Variant: {card.variant}</div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "6px" }}>Qty: 0</div>
-                  </div>
-                  <AddCardButton cardId={card.id} />
-                </>
-              ) : (
-                <>
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "start" }}>
-                      <div>
-                        <div style={{ fontWeight: 700, fontSize: "13px", color: owned ? "#e5edf7" : "#9ca3af" }}>
-                          {card.name}
-                        </div>
-                        <div style={{ color: owned ? "#94a3b8" : "#6b7280", fontSize: "11px", minHeight: "14px" }}>
-                          {card.subtitle || ""}
-                        </div>
-                      </div>
-
-                      <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                        <StatPill label="Cost" value={card.cost} color="#eab308" />
-                        {showImages ? <ImagePreview frontArt={card.front_art} name={card.name} /> : null}
-                      </div>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "6px", marginBottom: "6px" }}>
-                      {aspectPills.map((pill) => (
-                        <div
-                          key={pill.name}
-                          style={{
-                            fontSize: "9px",
-                            padding: "2px 5px",
-                            borderRadius: "999px",
-                            background: `${pill.color}22`,
-                            border: `1px solid ${pill.color}`,
-                            color: pill.color,
-                          }}
-                        >
-                          {pill.name}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
-                      <StatPill label="Power" value={card.power} color="#dc2626" />
-                      <StatPill label="HP" value={card.hp} color="#2563eb" />
-                    </div>
-
-                    <div style={{ fontSize: "11px", color: "#cbd5e1" }}>#{card.card_number ?? "-"}</div>
-                    <div style={{ fontSize: "11px", color: "#cbd5e1" }}>Variant: {card.variant}</div>
-                    <div style={{ fontSize: "11px", color: "#cbd5e1" }}>Traits: {card.traits || "-"}</div>
-                    <div style={{ fontSize: "11px", marginTop: "6px", color: owned ? "#86efac" : "#94a3b8", fontWeight: 700 }}>
-                      Qty: {qty}
-                    </div>
-                  </div>
-
-                  <AddCardButton cardId={card.id} />
-                </>
+              {/* LEFT SIDE (IMAGE) */}
+              {!hidden && (
+                <CardImage src={card.front_art} name={card.name} />
               )}
+
+              {/* RIGHT SIDE */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                {hidden ? (
+                  <>
+                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                      #{card.card_number ?? "-"}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                      Variant: {card.variant}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                      Qty: 0
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: "14px", color: "#e5edf7" }}>
+                        {card.name}
+                      </div>
+                      <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                        {card.subtitle || ""}
+                      </div>
+
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "6px" }}>
+                        {aspectPills.map((pill) => (
+                          <div
+                            key={pill.name}
+                            style={{
+                              fontSize: "9px",
+                              padding: "2px 5px",
+                              borderRadius: "999px",
+                              background: `${pill.color}22`,
+                              border: `1px solid ${pill.color}`,
+                              color: pill.color,
+                            }}
+                          >
+                            {pill.name}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
+                        <StatPill label="Cost" value={card.cost} color="#eab308" />
+                        <StatPill label="Power" value={card.power} color="#dc2626" />
+                        <StatPill label="HP" value={card.hp} color="#2563eb" />
+                      </div>
+
+                      <div style={{ fontSize: "11px", marginTop: "6px", color: "#cbd5e1" }}>
+                        #{card.card_number} • {card.variant}
+                      </div>
+
+                      <div style={{ fontSize: "11px", color: "#cbd5e1" }}>
+                        Traits: {card.traits || "-"}
+                      </div>
+
+                      <div style={{ fontSize: "12px", marginTop: "6px", color: "#86efac", fontWeight: 700 }}>
+                        Qty: {qty}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <AddCardButton cardId={card.id} />
+              </div>
             </div>
           );
         })}
