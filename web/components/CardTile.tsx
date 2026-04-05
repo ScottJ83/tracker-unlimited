@@ -167,9 +167,9 @@ export default function CardTile({
 }: Props) {
   const aspectPills = getAspectPills(card?.aspect);
 
-  const borderColor = owned
-    ? "rgba(53, 228, 161, 0.75)"
-    : "rgba(110, 126, 149, 0.3)";
+const borderColor = owned
+  ? "rgba(255,255,255,0.35)"
+  : "rgba(255,255,255,0.15)";
 
   const panelBackground = owned
     ? "linear-gradient(180deg, rgba(10, 19, 38, 0.96), rgba(6, 11, 22, 0.96))"
@@ -179,18 +179,16 @@ export default function CardTile({
     <div
       style={{
         border: `1px solid ${borderColor}`,
-        borderRadius: "14px",
+borderRadius: "6px",
         padding: "10px",
         minHeight,
-        background: panelBackground,
+background: "linear-gradient(180deg, #060c18, #02060c)",
         display: "flex",
         gap: "10px",
         overflow: "hidden",
         boxSizing: "border-box",
         position: "relative",
-        boxShadow: owned
-          ? "0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 18px rgba(34,197,94,0.10)"
-          : "0 0 0 1px rgba(255,255,255,0.02) inset",
+boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)",
       }}
     >
       <div style={{ width: "56px", minWidth: "56px" }}>
@@ -331,7 +329,7 @@ export default function CardTile({
                         fontSize: "9px",
                         lineHeight: 1,
                         padding: "3px 5px",
-                        borderRadius: "999px",
+                        borderRadius: "6px",
                         background: `linear-gradient(180deg, ${pill.color}20, ${pill.color}0f)`,
                         border: `1px solid ${pill.color}`,
                         color: pill.color,
