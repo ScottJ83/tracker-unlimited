@@ -23,9 +23,9 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   return (
     <div
       style={{
-        fontSize: "9px",
+        fontSize: "10px",
         lineHeight: 1,
-        padding: "2px 5px",
+        padding: "3px 6px",
         borderRadius: "999px",
         background: `${color}22`,
         border: `1px solid ${color}`,
@@ -34,7 +34,7 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
         whiteSpace: "nowrap",
       }}
     >
-      {label}:{value}
+      {label}: {value}
     </div>
   );
 }
@@ -54,9 +54,9 @@ function CardImage({
     <div
       style={{
         position: "relative",
-        width: "52px",
-        minWidth: "52px",
-        height: "72px",
+        width: "56px",
+        minWidth: "56px",
+        height: "78px",
         borderRadius: "8px",
         border: "1px solid #334155",
         background: "#0b1220",
@@ -76,8 +76,8 @@ function CardImage({
             src={src}
             alt={name}
             style={{
-              width: "52px",
-              height: "72px",
+              width: "56px",
+              height: "78px",
               objectFit: "cover",
               borderRadius: "8px",
               cursor: "pointer",
@@ -92,7 +92,7 @@ function CardImage({
               style={{
                 position: "absolute",
                 top: "-18px",
-                left: "62px",
+                left: "66px",
                 width: "220px",
                 borderRadius: "12px",
                 border: "1px solid #334155",
@@ -230,7 +230,7 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
                 padding: "10px",
-                height: "130px",
+                height: "155px",
                 background: owned ? "#0f172a" : "#05070d",
                 display: "flex",
                 gap: "10px",
@@ -238,7 +238,7 @@ export default function SetClient({ cards, collection }: any) {
                 boxSizing: "border-box",
               }}
             >
-              <div style={{ width: "52px", minWidth: "52px" }}>
+              <div style={{ width: "56px", minWidth: "56px" }}>
                 <CardImage src={card.front_art} name={card.name} hidden={hidden} />
               </div>
 
@@ -254,17 +254,17 @@ export default function SetClient({ cards, collection }: any) {
                 {hidden ? (
                   <>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                      <div style={{ fontSize: "13px", color: "#94a3b8" }}>
                         #{card.card_number ?? "-"}
                       </div>
-                      <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "3px" }}>
+                      <div style={{ fontSize: "13px", color: "#94a3b8", marginTop: "4px" }}>
                         Variant: {card.variant}
                       </div>
                       <div
                         style={{
-                          fontSize: "12px",
+                          fontSize: "13px",
                           color: "#94a3b8",
-                          marginTop: "5px",
+                          marginTop: "6px",
                           fontWeight: 700,
                         }}
                       >
@@ -281,74 +281,82 @@ export default function SetClient({ cards, collection }: any) {
                     <div style={{ minWidth: 0 }}>
                       <div
                         style={{
-                          fontWeight: 700,
-                          fontSize: "12px",
-                          color: "#e5edf7",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {card.name}
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          color: "#94a3b8",
-                          minHeight: "12px",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {card.subtitle || ""}
-                      </div>
-
-                      <div
-                        style={{
                           display: "flex",
-                          gap: "4px",
-                          flexWrap: "wrap",
-                          marginTop: "4px",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          gap: "8px",
                         }}
                       >
-                        {aspectPills.map((pill) => (
+                        <div style={{ flex: 1, minWidth: 0 }}>
                           <div
-                            key={pill.name}
                             style={{
-                              fontSize: "8px",
-                              lineHeight: 1,
-                              padding: "2px 4px",
-                              borderRadius: "999px",
-                              background: `${pill.color}22`,
-                              border: `1px solid ${pill.color}`,
-                              color: pill.color,
+                              fontWeight: 700,
+                              fontSize: "14px",
+                              color: "#e5edf7",
                               whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
                             }}
                           >
-                            {pill.name}
+                            {card.name}
                           </div>
-                        ))}
+
+                          <div
+                            style={{
+                              fontSize: "11px",
+                              color: "#94a3b8",
+                              minHeight: "14px",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {card.subtitle || ""}
+                          </div>
+                        </div>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-end",
+                            gap: "4px",
+                            flexShrink: 0,
+                            maxWidth: "120px",
+                          }}
+                        >
+                          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                            <StatPill label="Cost" value={card.cost} color="#eab308" />
+                            <StatPill label="Power" value={card.power} color="#dc2626" />
+                            <StatPill label="HP" value={card.hp} color="#2563eb" />
+                          </div>
+
+                          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                            {aspectPills.map((pill) => (
+                              <div
+                                key={pill.name}
+                                style={{
+                                  fontSize: "9px",
+                                  lineHeight: 1,
+                                  padding: "3px 5px",
+                                  borderRadius: "999px",
+                                  background: `${pill.color}22`,
+                                  border: `1px solid ${pill.color}`,
+                                  color: pill.color,
+                                  whiteSpace: "nowrap",
+                                }}
+                              >
+                                {pill.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
 
                       <div
                         style={{
-                          display: "flex",
-                          gap: "4px",
-                          flexWrap: "wrap",
-                          marginTop: "4px",
-                        }}
-                      >
-                        <StatPill label="Cost" value={card.cost} color="#eab308" />
-                        <StatPill label="Power" value={card.power} color="#dc2626" />
-                        <StatPill label="HP" value={card.hp} color="#2563eb" />
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          marginTop: "4px",
+                          fontSize: "11px",
+                          marginTop: "5px",
                           color: "#cbd5e1",
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -360,7 +368,7 @@ export default function SetClient({ cards, collection }: any) {
 
                       <div
                         style={{
-                          fontSize: "10px",
+                          fontSize: "11px",
                           color: "#cbd5e1",
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -372,15 +380,15 @@ export default function SetClient({ cards, collection }: any) {
 
                       <div
                         style={{
-                          fontSize: "9px",
-                          lineHeight: 1.2,
+                          fontSize: "10px",
+                          lineHeight: 1.25,
                           color: "#cbd5e1",
-                          marginTop: "4px",
+                          marginTop: "5px",
                           display: "-webkit-box",
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: "vertical",
                           overflow: "hidden",
-                          maxHeight: "22px",
+                          maxHeight: "26px",
                         }}
                       >
                         {card.front_text || "-"}
@@ -388,8 +396,8 @@ export default function SetClient({ cards, collection }: any) {
 
                       <div
                         style={{
-                          fontSize: "11px",
-                          marginTop: "4px",
+                          fontSize: "12px",
+                          marginTop: "5px",
                           color: "#86efac",
                           fontWeight: 700,
                         }}
@@ -398,7 +406,7 @@ export default function SetClient({ cards, collection }: any) {
                       </div>
                     </div>
 
-                    <div style={{ flexShrink: 0 }}>
+                    <div style={{ flexShrink: 0, marginTop: "6px" }}>
                       <AddCardButton cardId={card.id} />
                     </div>
                   </>
