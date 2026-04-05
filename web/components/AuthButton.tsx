@@ -25,11 +25,12 @@ export default function AuthButton({ email }: Props) {
           type="button"
           onClick={handleLogout}
           style={{
-            padding: "8px 12px",
-            borderRadius: "10px",
-            border: "1px solid #475569",
-            background: "#1e293b",
+            padding: "6px 10px",
+            borderRadius: "8px",
+            border: "1px solid #2a3445",
+            background: "#0f172a",
             color: "#e5edf7",
+            fontSize: "12px",
             cursor: "pointer",
           }}
         >

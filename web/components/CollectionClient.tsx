@@ -37,12 +37,59 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   );
 }
 
+function ImagePreview({ frontArt, name }: { frontArt?: string | null; name: string }) {
+  const [showPreview, setShowPreview] = useState(false);
+
+  if (!frontArt) return null;
+
+  return (
+    <div
+      style={{ position: "relative" }}
+      onMouseEnter={() => setShowPreview(true)}
+      onMouseLeave={() => setShowPreview(false)}
+    >
+      <div
+        style={{
+          fontSize: "12px",
+          padding: "2px 6px",
+          borderRadius: "6px",
+          border: "1px solid #334155",
+          background: "#02040a",
+          color: "#e5edf7",
+          cursor: "pointer",
+          userSelect: "none",
+        }}
+        title="Preview image"
+      >
+        🖼
+      </div>
+
+      {showPreview ? (
+        <img
+          src={frontArt}
+          alt={name}
+          style={{
+            position: "absolute",
+            top: "-10px",
+            left: "110%",
+            width: "230px",
+            borderRadius: "12px",
+            border: "1px solid #334155",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+            zIndex: 999,
+            background: "#02040a",
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
 export default function CollectionClient({ data }: any) {
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
   const [sortBy, setSortBy] = useState("price_desc");
   const [showImages, setShowImages] = useState(true);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -158,7 +205,7 @@ export default function CollectionClient({ data }: any) {
             checked={showImages}
             onChange={(e) => setShowImages(e.target.checked)}
           />
-          Show Images
+          Show Preview Icon
         </label>
       </div>
 
@@ -174,40 +221,24 @@ export default function CollectionClient({ data }: any) {
           const aspectPills = getAspectPills(card?.aspect);
           const unitValue = Number(card?.price || 0);
           const totalValue = unitValue * Number(item.quantity || 0);
-          const hovered = hoveredId === item.id;
 
           return (
             <div
               key={item.id}
-              onMouseEnter={() => setHoveredId(item.id)}
-              onMouseLeave={() => setHoveredId(null)}
               style={{
                 border: "1px solid #22c55e",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: showImages ? "255px" : "230px",
+                minHeight: "255px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                background: "#172033",
-                boxShadow: hovered
-                  ? "0 12px 30px rgba(0,0,0,0.35)"
-                  : "0 0 0 1px rgba(34,197,94,0.15)",
-                transform: hovered ? "scale(1.04)" : "scale(1)",
-                transition: "transform 0.16s ease, box-shadow 0.16s ease",
+                background: "#0f172a",
+                boxShadow: "0 0 0 1px rgba(34,197,94,0.15)",
                 position: "relative",
-                zIndex: hovered ? 10 : 1,
               }}
             >
               <div>
-                {showImages && card?.front_art ? (
-                  <img
-                    src={card.front_art}
-                    alt={card?.name}
-                    style={{ width: "100%", borderRadius: "10px", marginBottom: "8px" }}
-                  />
-                ) : null}
-
                 <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "start" }}>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: "13px" }}>
@@ -218,7 +249,10 @@ export default function CollectionClient({ data }: any) {
                     </div>
                   </div>
 
-                  <StatPill label="Cost" value={card?.cost} color="#eab308" />
+                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                    <StatPill label="Cost" value={card?.cost} color="#eab308" />
+                    {showImages ? <ImagePreview frontArt={card?.front_art} name={card?.name || "Card"} /> : null}
+                  </div>
                 </div>
 
                 <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>

@@ -11,12 +11,11 @@ export default async function NavBar() {
   return (
     <header
       style={{
-        borderBottom: "1px solid #334155",
-        background: "rgba(11, 17, 32, 0.88)",
-        backdropFilter: "blur(8px)",
+        borderBottom: "1px solid #1f2937",
+        background: "#05070d",
         position: "sticky",
         top: 0,
-        zIndex: 20,
+        zIndex: 50,
       }}
     >
       <div
@@ -29,12 +28,12 @@ export default async function NavBar() {
           alignItems: "center",
         }}
       >
-        <Link href="/" style={{ fontWeight: 700, letterSpacing: "0.08em" }}>
+        <Link href="/" style={{ fontWeight: 800, letterSpacing: "0.12em" }}>
           TRACKER UNLIMITED
         </Link>
 
         <div style={{ display: "flex", gap: "18px", alignItems: "center" }}>
-          <nav style={{ display: "flex", gap: "18px", color: "#cbd5e1" }}>
+          <nav style={{ display: "flex", gap: "20px", color: "#94a3b8" }}>
             <Link href="/">Home</Link>
             <Link href="/sets">Sets</Link>
             <Link href="/collection">Collection</Link>
