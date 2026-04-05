@@ -37,12 +37,59 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   );
 }
 
+function ImagePreview({ frontArt, name }: { frontArt?: string | null; name: string }) {
+  const [showPreview, setShowPreview] = useState(false);
+
+  if (!frontArt) return null;
+
+  return (
+    <div
+      style={{ position: "relative" }}
+      onMouseEnter={() => setShowPreview(true)}
+      onMouseLeave={() => setShowPreview(false)}
+    >
+      <div
+        style={{
+          fontSize: "12px",
+          padding: "2px 6px",
+          borderRadius: "6px",
+          border: "1px solid #334155",
+          background: "#02040a",
+          color: "#e5edf7",
+          cursor: "pointer",
+          userSelect: "none",
+        }}
+        title="Preview image"
+      >
+        🖼
+      </div>
+
+      {showPreview ? (
+        <img
+          src={frontArt}
+          alt={name}
+          style={{
+            position: "absolute",
+            top: "-10px",
+            left: "110%",
+            width: "230px",
+            borderRadius: "12px",
+            border: "1px solid #334155",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+            zIndex: 999,
+            background: "#02040a",
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
 export default function SetClient({ cards, collection }: any) {
   const [showMissing, setShowMissing] = useState(false);
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
   const [showImages, setShowImages] = useState(true);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   function getQty(cardId: string) {
     const entry = collection?.find((c: any) => c.card_id === cardId && c.quantity > 0);
@@ -136,7 +183,7 @@ export default function SetClient({ cards, collection }: any) {
             checked={showImages}
             onChange={(e) => setShowImages(e.target.checked)}
           />
-          Show Images
+          Show Preview Icon
         </label>
       </div>
 
@@ -152,31 +199,21 @@ export default function SetClient({ cards, collection }: any) {
           const owned = qty > 0;
           const hidden = !showMissing && !owned;
           const aspectPills = getAspectPills(card.aspect);
-          const hovered = hoveredId === card.id;
 
           return (
             <div
               key={card.id}
-              onMouseEnter={() => setHoveredId(card.id)}
-              onMouseLeave={() => setHoveredId(null)}
               style={{
-                border: owned ? "1px solid #22c55e" : "1px solid #334155",
+                border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
                 padding: hidden ? "8px" : "10px",
-                minHeight: hidden ? "135px" : showImages ? "235px" : "205px",
+                minHeight: hidden ? "135px" : "205px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                background: owned ? "#172033" : "#111827",
-                boxShadow: hovered
-                  ? "0 12px 30px rgba(0,0,0,0.35)"
-                  : owned
-                  ? "0 0 0 1px rgba(34,197,94,0.15)"
-                  : "none",
-                transform: hovered ? "scale(1.04)" : "scale(1)",
-                transition: "transform 0.16s ease, box-shadow 0.16s ease",
+                background: owned ? "#0f172a" : "#05070d",
+                boxShadow: owned ? "0 0 0 1px rgba(34,197,94,0.15)" : "none",
                 position: "relative",
-                zIndex: hovered ? 10 : 1,
               }}
             >
               {hidden ? (
@@ -192,42 +229,6 @@ export default function SetClient({ cards, collection }: any) {
               ) : (
                 <>
                   <div>
-<div style={{ position: "relative" }}>
-  {card.front_art && (
-    <div
-      style={{
-        position: "absolute",
-        top: "0",
-        right: "0",
-        fontSize: "12px",
-        padding: "2px 6px",
-        borderRadius: "6px",
-        border: "1px solid #334155",
-        background: "#02040a",
-      }}
-    >
-      🖼
-    </div>
-  )}
-
-  {hovered && card.front_art && (
-    <img
-      src={card.front_art}
-      alt={card.name}
-      style={{
-        position: "absolute",
-        top: "-20px",
-        left: "110%",
-        width: "220px",
-        borderRadius: "12px",
-        border: "1px solid #334155",
-        boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
-        zIndex: 999,
-      }}
-    />
-  )}
-</div>
-
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "start" }}>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: "13px", color: owned ? "#e5edf7" : "#9ca3af" }}>
@@ -238,7 +239,10 @@ export default function SetClient({ cards, collection }: any) {
                         </div>
                       </div>
 
-                      <StatPill label="Cost" value={card.cost} color="#eab308" />
+                      <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                        <StatPill label="Cost" value={card.cost} color="#eab308" />
+                        {showImages ? <ImagePreview frontArt={card.front_art} name={card.name} /> : null}
+                      </div>
                     </div>
 
                     <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "6px", marginBottom: "6px" }}>
