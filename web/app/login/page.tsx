@@ -36,70 +36,43 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={{ padding: "24px" }}>
-      <div
-        style={{
-          maxWidth: "420px",
-          margin: "40px auto",
-          border: "1px solid #334155",
-          borderRadius: "18px",
-          padding: "24px",
-          background: "#111827",
-        }}
-      >
-        <h1 style={{ marginBottom: "18px" }}>Log In</h1>
+    <main>
+      <div className="auth-wrapper">
+        <div className="auth-card">
+          <div className="auth-header">
+            <div className="auth-eyebrow">STAR WARS UNLIMITED</div>
+            <h1>Access Terminal</h1>
+          </div>
 
-        <form onSubmit={handleLogin} style={{ display: "grid", gap: "12px" }}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{
-              padding: "10px 12px",
-              borderRadius: "10px",
-              border: "1px solid #334155",
-              background: "#0f172a",
-              color: "#e5edf7",
-            }}
-          />
+          <form onSubmit={handleLogin} className="auth-form">
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="input"
+            />
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{
-              padding: "10px 12px",
-              borderRadius: "10px",
-              border: "1px solid #334155",
-              background: "#0f172a",
-              color: "#e5edf7",
-            }}
-          />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="input"
+            />
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: "10px 12px",
-              borderRadius: "10px",
-              border: "1px solid #475569",
-              background: "#1e293b",
-              color: "#e5edf7",
-              cursor: "pointer",
-            }}
-          >
-            {loading ? "Logging in..." : "Log In"}
-          </button>
-        </form>
+            <button type="submit" disabled={loading} className="btn-primary">
+              {loading ? "Authenticating..." : "Log In"}
+            </button>
+          </form>
 
-        {error ? <div style={{ color: "#fca5a5", marginTop: "12px" }}>{error}</div> : null}
+          {error && <div className="error">{error}</div>}
 
-        <div style={{ marginTop: "14px", color: "#cbd5e1" }}>
-          Need an account? <Link href="/signup">Sign up</Link>
+          <div className="auth-footer">
+            Need access? <Link href="/signup">Create Account</Link>
+          </div>
         </div>
       </div>
     </main>

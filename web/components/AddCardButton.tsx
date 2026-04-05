@@ -26,22 +26,23 @@ export default function AddCardButton({ cardId }: Props) {
     }
   }
 
-  const btnStyle = {
-    width: "34px",
-    height: "34px",
-    border: "1px solid #475569",
-    borderRadius: "10px",
-    background: "#1e293b",
-    color: "#e5edf7",
-    cursor: "pointer",
-  } as const;
-
   return (
-    <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
-      <button type="button" onClick={() => update(-1)} style={btnStyle}>
-        -
+    <div className="swu-card-actions">
+      <button
+        type="button"
+        onClick={() => update(-1)}
+        className="swu-stepper-btn"
+        aria-label="Remove one"
+      >
+        −
       </button>
-      <button type="button" onClick={() => update(1)} style={btnStyle}>
+
+      <button
+        type="button"
+        onClick={() => update(1)}
+        className="swu-stepper-btn swu-stepper-btn--primary"
+        aria-label="Add one"
+      >
         +
       </button>
     </div>

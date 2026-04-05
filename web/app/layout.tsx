@@ -14,8 +14,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <NavBar />
-        {children}
+        <div className="site-shell">
+          <NavBar />
+          {children}
+        </div>
       </body>
     </html>
   );

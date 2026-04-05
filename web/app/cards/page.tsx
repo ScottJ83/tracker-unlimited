@@ -36,9 +36,7 @@ export default async function CardsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
   const cards = await getAllCards(supabase);
 
@@ -48,8 +46,9 @@ export default async function CardsPage() {
     .eq("user_id", user.id);
 
   return (
-    <main style={{ padding: "20px" }}>
-      <h1 style={{ marginBottom: "18px" }}>All Cards</h1>
+    <main>
+      <h1 className="page-title">All Cards</h1>
+
       <SetClient cards={cards} collection={collection} />
     </main>
   );

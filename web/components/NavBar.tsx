@@ -9,35 +9,31 @@ export default async function NavBar() {
   } = await supabase.auth.getUser();
 
   return (
-    <header
-      style={{
-        borderBottom: "1px solid #1f2937",
-        background: "#05070d",
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "16px 24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Link href="/" style={{ fontWeight: 800, letterSpacing: "0.12em" }}>
-          TRACKER UNLIMITED
+    <header className="topbar">
+      <div className="topbar-inner">
+        <Link href="/" className="brand">
+          <div className="brand-mark">SWU</div>
+
+          <div className="brand-text">
+            <div className="brand-title">Tracker Unlimited</div>
+            <div className="brand-subtitle">Star Wars Unlimited Collection App</div>
+          </div>
         </Link>
 
-        <div style={{ display: "flex", gap: "18px", alignItems: "center" }}>
-          <nav style={{ display: "flex", gap: "20px", color: "#94a3b8" }}>
-            <Link href="/">Home</Link>
-            <Link href="/sets">Sets</Link>
-            <Link href="/collection">Collection</Link>
-            <Link href="/cards">Cards</Link>
+        <div className="topbar-right">
+          <nav className="nav-pills">
+            <Link href="/" className="nav-pill">
+              Home
+            </Link>
+            <Link href="/sets" className="nav-pill">
+              Sets
+            </Link>
+            <Link href="/collection" className="nav-pill">
+              Collection
+            </Link>
+            <Link href="/cards" className="nav-pill">
+              Cards
+            </Link>
           </nav>
 
           <AuthButton email={user?.email ?? null} />

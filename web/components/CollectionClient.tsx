@@ -3,99 +3,91 @@
 import { useMemo, useState } from "react";
 import AddCardButton from "./AddCardButton";
 
+type Row = {
+  id: string;
+  quantity: number;
+  card_id: string;
+  cards:
+    | {
+        name?: string | null;
+        subtitle?: string | null;
+        set_code?: string | null;
+        card_number?: string | number | null;
+        variant?: string | null;
+        aspect?: string | null;
+        traits?: string | null;
+        rarity?: string | null;
+        artist?: string | null;
+        cost?: string | number | null;
+        power?: string | number | null;
+        hp?: string | number | null;
+        front_text?: string | null;
+        front_art?: string | null;
+        price?: string | number | null;
+      }
+    | any[];
+};
+
 function getAspectPills(aspect: string | null | undefined) {
   const text = String(aspect || "").toLowerCase();
-  const pills: { name: string; color: string }[] = [];
+  const pills: { name: string; tone: string }[] = [];
 
-  if (text.includes("vigilance")) pills.push({ name: "Vigilance", color: "#3b82f6" });
-  if (text.includes("command")) pills.push({ name: "Command", color: "#16a34a" });
-  if (text.includes("aggression")) pills.push({ name: "Aggression", color: "#dc2626" });
-  if (text.includes("cunning")) pills.push({ name: "Cunning", color: "#d97706" });
-  if (text.includes("heroism")) pills.push({ name: "Heroism", color: "#d4d4aa" });
-  if (text.includes("villainy")) pills.push({ name: "Villainy", color: "#4c1d95" });
+  if (text.includes("vigilance")) pills.push({ name: "Vigilance", tone: "vigilance" });
+  if (text.includes("command")) pills.push({ name: "Command", tone: "command" });
+  if (text.includes("aggression")) pills.push({ name: "Aggression", tone: "aggression" });
+  if (text.includes("cunning")) pills.push({ name: "Cunning", tone: "cunning" });
+  if (text.includes("heroism")) pills.push({ name: "Heroism", tone: "heroism" });
+  if (text.includes("villainy")) pills.push({ name: "Villainy", tone: "villainy" });
 
   return pills;
 }
 
-function StatPill({ label, value, color }: { label: string; value: any; color: string }) {
+function InfoChip({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number | null | undefined;
+}) {
   if (value === null || value === undefined || value === "") return null;
 
   return (
-    <div
-      style={{
-        fontSize: "10px",
-        padding: "2px 6px",
-        borderRadius: "999px",
-        background: `${color}22`,
-        border: `1px solid ${color}`,
-        color,
-        fontWeight: 700,
-      }}
-    >
-      {label}: {value}
+    <div className="swu-info-chip">
+      <span className="swu-info-chip-label">{label}</span>
+      <span>{value}</span>
     </div>
   );
 }
 
-function ImagePreview({ frontArt, name }: { frontArt?: string | null; name: string }) {
-  const [showPreview, setShowPreview] = useState(false);
-
-  if (!frontArt) return null;
+function ArtThumb({ frontArt, name }: { frontArt?: string | null; name: string }) {
+  if (!frontArt) {
+    return (
+      <div className="swu-art-thumb swu-art-thumb--empty">
+        <span>No Art</span>
+      </div>
+    );
+  }
 
   return (
-    <div
-      style={{ position: "relative" }}
-      onMouseEnter={() => setShowPreview(true)}
-      onMouseLeave={() => setShowPreview(false)}
-    >
-      <div
-        style={{
-          fontSize: "12px",
-          padding: "2px 6px",
-          borderRadius: "6px",
-          border: "1px solid #334155",
-          background: "#02040a",
-          color: "#e5edf7",
-          cursor: "pointer",
-          userSelect: "none",
-        }}
-        title="Preview image"
-      >
-        🖼
+    <div className="swu-art-preview">
+      <img src={frontArt} alt={name} className="swu-art-thumb" />
+      <div className="swu-art-popover">
+        <img src={frontArt} alt={name} className="swu-art-popover-image" />
       </div>
-
-      {showPreview ? (
-        <img
-          src={frontArt}
-          alt={name}
-          style={{
-            position: "absolute",
-            top: "-10px",
-            left: "110%",
-            width: "230px",
-            borderRadius: "12px",
-            border: "1px solid #334155",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
-            zIndex: 999,
-            background: "#02040a",
-          }}
-        />
-      ) : null}
     </div>
   );
 }
 
-export default function CollectionClient({ data }: any) {
+export default function CollectionClient({ data }: { data: Row[] }) {
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
   const [sortBy, setSortBy] = useState("price_desc");
-  const [showImages, setShowImages] = useState(true);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const tq = textSearch.trim().toLowerCase();
 
-    let rows = (data || []).filter((item: any) => {
+    const rows = (data || []).filter((item) => {
       const card = Array.isArray(item.cards) ? item.cards[0] : item.cards;
 
       const name = String(card?.name || "").toLowerCase();
@@ -103,6 +95,7 @@ export default function CollectionClient({ data }: any) {
       const setCode = String(card?.set_code || "").toLowerCase();
       const number = String(card?.card_number || "").toLowerCase();
       const aspect = String(card?.aspect || "").toLowerCase();
+      const variant = String(card?.variant || "").toLowerCase();
       const traits = String(card?.traits || "").toLowerCase();
 
       const frontText = String(card?.front_text || "").toLowerCase();
@@ -119,6 +112,7 @@ export default function CollectionClient({ data }: any) {
         setCode.includes(q) ||
         number.includes(q) ||
         aspect.includes(q) ||
+        variant.includes(q) ||
         traits.includes(q);
 
       const textMatch =
@@ -133,7 +127,7 @@ export default function CollectionClient({ data }: any) {
       return mainMatch && textMatch;
     });
 
-    rows.sort((a: any, b: any) => {
+    rows.sort((a, b) => {
       const ac = Array.isArray(a.cards) ? a.cards[0] : a.cards;
       const bc = Array.isArray(b.cards) ? b.cards[0] : b.cards;
 
@@ -141,8 +135,14 @@ export default function CollectionClient({ data }: any) {
       const bp = Number(bc?.price || 0) * Number(b.quantity || 0);
 
       if (sortBy === "price_asc") return ap - bp;
-      if (sortBy === "name_asc") return String(ac?.name || "").localeCompare(String(bc?.name || ""));
-      if (sortBy === "name_desc") return String(bc?.name || "").localeCompare(String(ac?.name || ""));
+      if (sortBy === "name_asc") {
+        return String(ac?.name || "").localeCompare(String(bc?.name || ""));
+      }
+      if (sortBy === "name_desc") {
+        return String(bc?.name || "").localeCompare(String(ac?.name || ""));
+      }
+      if (sortBy === "qty_desc") return Number(b.quantity || 0) - Number(a.quantity || 0);
+      if (sortBy === "qty_asc") return Number(a.quantity || 0) - Number(b.quantity || 0);
       return bp - ap;
     });
 
@@ -150,151 +150,122 @@ export default function CollectionClient({ data }: any) {
   }, [data, search, textSearch, sortBy]);
 
   return (
-    <div>
-      <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
-        <input
-          type="text"
-          placeholder="Search name, set, number, aspect, or traits"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            minWidth: "320px",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
-        />
-
-        <input
-          type="text"
-          placeholder="Search text, rarity, artist, cost, power, or hp"
-          value={textSearch}
-          onChange={(e) => setTextSearch(e.target.value)}
-          style={{
-            minWidth: "320px",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
-        />
-
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          style={{
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
-        >
-          <option value="price_desc">Price High-Low</option>
-          <option value="price_asc">Price Low-High</option>
-          <option value="name_asc">Name A-Z</option>
-          <option value="name_desc">Name Z-A</option>
-        </select>
-
-        <label style={{ display: "flex", gap: "6px", alignItems: "center", color: "#cbd5e1" }}>
+    <div className="swu-stack-16">
+      <section className="swu-toolbar-panel">
+        <div className="swu-toolbar-grid">
           <input
-            type="checkbox"
-            checked={showImages}
-            onChange={(e) => setShowImages(e.target.checked)}
+            type="text"
+            placeholder="Search name, set, number, variant, aspect, or traits"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="swu-input"
           />
-          Show Preview Icon
-        </label>
-      </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(185px, 1fr))",
-          gap: "12px",
-        }}
-      >
-        {filtered.map((item: any) => {
+          <input
+            type="text"
+            placeholder="Search text, rarity, artist, cost, power, or hp"
+            value={textSearch}
+            onChange={(e) => setTextSearch(e.target.value)}
+            className="swu-input"
+          />
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="swu-select"
+          >
+            <option value="price_desc">Value High–Low</option>
+            <option value="price_asc">Value Low–High</option>
+            <option value="name_asc">Name A–Z</option>
+            <option value="name_desc">Name Z–A</option>
+            <option value="qty_desc">Qty High–Low</option>
+            <option value="qty_asc">Qty Low–High</option>
+          </select>
+        </div>
+      </section>
+
+      <div className="swu-card-list">
+        {filtered.map((item) => {
           const card = Array.isArray(item.cards) ? item.cards[0] : item.cards;
           const aspectPills = getAspectPills(card?.aspect);
           const unitValue = Number(card?.price || 0);
           const totalValue = unitValue * Number(item.quantity || 0);
 
           return (
-            <div
-              key={item.id}
-              style={{
-                border: "1px solid #22c55e",
-                borderRadius: "14px",
-                padding: "10px",
-                minHeight: "255px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                background: "#0f172a",
-                boxShadow: "0 0 0 1px rgba(34,197,94,0.15)",
-                position: "relative",
-              }}
-            >
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "start" }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: "13px" }}>
-                      {card?.name || "Unknown card"}
+            <article key={item.id} className="swu-card-row is-owned">
+              <div className="swu-card-row-art">
+                <ArtThumb frontArt={card?.front_art} name={card?.name || "Card"} />
+              </div>
+
+              <div className="swu-card-row-main">
+                <div className="swu-card-row-top">
+                  <div className="swu-card-title-wrap">
+                    <div className="swu-card-title-line">
+                      <h3 className="swu-card-title">{card?.name || "Unknown Card"}</h3>
+                      <span className="swu-card-number">#{card?.card_number ?? "-"}</span>
                     </div>
-                    <div style={{ color: "#94a3b8", marginBottom: "6px", fontSize: "11px" }}>
-                      {card?.subtitle || ""}
-                    </div>
+
+                    {card?.subtitle ? (
+                      <div className="swu-card-subtitle">{card.subtitle}</div>
+                    ) : null}
                   </div>
 
-                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                    <StatPill label="Cost" value={card?.cost} color="#eab308" />
-                    {showImages ? <ImagePreview frontArt={card?.front_art} name={card?.name || "Card"} /> : null}
+                  <div className="swu-card-meta-right">
+                    <div className="swu-qty-badge is-owned">Qty {item.quantity}</div>
+                    <div className="swu-price-badge">Unit ${unitValue.toFixed(2)}</div>
+                    <div className="swu-price-badge swu-price-badge--strong">
+                      Total ${totalValue.toFixed(2)}
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
-                  {aspectPills.map((pill) => (
-                    <div
-                      key={pill.name}
-                      style={{
-                        fontSize: "9px",
-                        padding: "2px 5px",
-                        borderRadius: "999px",
-                        background: `${pill.color}22`,
-                        border: `1px solid ${pill.color}`,
-                        color: pill.color,
-                      }}
-                    >
-                      {pill.name}
-                    </div>
-                  ))}
+                <div className="swu-aspect-row">
+                  {aspectPills.length > 0 ? (
+                    aspectPills.map((pill) => (
+                      <span
+                        key={pill.name}
+                        className={`swu-aspect-pill swu-aspect-pill--${pill.tone}`}
+                      >
+                        {pill.name}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="swu-aspect-pill swu-aspect-pill--neutral">
+                      No Aspect
+                    </span>
+                  )}
                 </div>
 
-                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
-                  <StatPill label="Power" value={card?.power} color="#dc2626" />
-                  <StatPill label="HP" value={card?.hp} color="#2563eb" />
+                <div className="swu-info-chip-row">
+                  <InfoChip label="Set" value={card?.set_code} />
+                  <InfoChip label="Variant" value={card?.variant} />
+                  <InfoChip label="Rarity" value={card?.rarity} />
+                  <InfoChip label="Cost" value={card?.cost} />
+                  <InfoChip label="Power" value={card?.power} />
+                  <InfoChip label="HP" value={card?.hp} />
                 </div>
 
-                <div style={{ fontSize: "11px" }}>Set: {card?.set_code || "-"}</div>
-                <div style={{ fontSize: "11px" }}>#{card?.card_number ?? "-"}</div>
-                <div style={{ fontSize: "11px" }}>Variant: {card?.variant || "-"}</div>
-                <div style={{ fontSize: "11px" }}>Traits: {card?.traits || "-"}</div>
-                <div style={{ marginTop: "6px", color: "#86efac", fontWeight: 700, fontSize: "11px" }}>
-                  Qty: {item.quantity}
+                <div className="swu-card-detail-grid">
+                  <div className="swu-card-detail-block">
+                    <div className="swu-card-detail-label">Traits</div>
+                    <div className="swu-card-detail-value">{card?.traits || "—"}</div>
+                  </div>
+
+                  <div className="swu-card-detail-block">
+                    <div className="swu-card-detail-label">Artist</div>
+                    <div className="swu-card-detail-value">{card?.artist || "—"}</div>
+                  </div>
                 </div>
-                <div style={{ fontSize: "11px", marginTop: "6px" }}>
-                  Unit: ${unitValue.toFixed(2)}
-                </div>
-                <div style={{ fontSize: "11px", fontWeight: 700 }}>
-                  Total: ${totalValue.toFixed(2)}
+
+                <div className="swu-card-text-box">
+                  {card?.front_text || "No card text available."}
                 </div>
               </div>
 
-              <AddCardButton cardId={item.card_id} />
-            </div>
+              <div className="swu-card-row-side">
+                <AddCardButton cardId={item.card_id} />
+              </div>
+            </article>
           );
         })}
       </div>

@@ -9,11 +9,9 @@ export default async function CollectionPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("collection_entries")
     .select(`
       id,
@@ -40,15 +38,6 @@ export default async function CollectionPage() {
     .eq("user_id", user.id)
     .gt("quantity", 0);
 
-  if (error) {
-    return (
-      <main>
-        <h1>Collection</h1>
-        <div>{error.message}</div>
-      </main>
-    );
-  }
-
   const rows = (data || []).map((item: any) => ({
     ...item,
     card: Array.isArray(item.cards) ? item.cards[0] : item.cards,
@@ -67,46 +56,29 @@ export default async function CollectionPage() {
     0
   );
 
-  const topCards = [...rows]
-    .sort(
-      (a: any, b: any) =>
-        Number(b.card?.price || 0) * Number(b.quantity || 0) -
-        Number(a.card?.price || 0) * Number(a.quantity || 0)
-    )
-    .slice(0, 5);
-
   return (
     <main>
-      <h1 style={{ marginBottom: "18px" }}>Collection</h1>
+      <h1 className="page-title">Collection</h1>
 
-      <div
-        style={{
-          border: "1px solid #334155",
-          borderRadius: "18px",
-          padding: "18px",
-          background: "linear-gradient(180deg, #172033, #111827)",
-          marginBottom: "18px",
-        }}
-      >
-        <div>Total Cards Owned: {totalCardsOwned}</div>
-        <div>Total Unique Cards Owned: {totalUniqueCards}</div>
-        <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
-
-        {topCards.length > 0 ? (
-          <div style={{ marginTop: "12px" }}>
-            <div style={{ fontWeight: 700, marginBottom: "6px" }}>
-              Highest Value Cards
-            </div>
-            {topCards.map((item: any) => (
-              <div key={item.id} style={{ fontSize: "14px", color: "#cbd5e1" }}>
-                {item.card?.name} ({item.card?.variant}) — $
-                {(
-                  Number(item.card?.price || 0) * Number(item.quantity || 0)
-                ).toFixed(2)}
-              </div>
-            ))}
+      <div className="panel">
+        <div className="stats-grid">
+          <div>
+            <div className="stat-label">Total Cards</div>
+            <div className="stat-value">{totalCardsOwned}</div>
           </div>
-        ) : null}
+
+          <div>
+            <div className="stat-label">Unique Cards</div>
+            <div className="stat-value">{totalUniqueCards}</div>
+          </div>
+
+          <div>
+            <div className="stat-label">Collection Value</div>
+            <div className="stat-value">
+              ${totalValue.toFixed(2)}
+            </div>
+          </div>
+        </div>
       </div>
 
       <CollectionClient data={data || []} />

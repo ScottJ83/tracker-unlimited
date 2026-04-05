@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -19,21 +20,9 @@ export default function AuthButton({ email }: Props) {
 
   if (email) {
     return (
-      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-        <span style={{ color: "#94a3b8", fontSize: "12px" }}>{email}</span>
-        <button
-          type="button"
-          onClick={handleLogout}
-          style={{
-            padding: "6px 10px",
-            borderRadius: "8px",
-            border: "1px solid #2a3445",
-            background: "#0f172a",
-            color: "#e5edf7",
-            fontSize: "12px",
-            cursor: "pointer",
-          }}
-        >
+      <div className="swu-auth">
+        <span className="swu-auth-email">{email}</span>
+        <button type="button" onClick={handleLogout} className="swu-nav-btn">
           Log Out
         </button>
       </div>
@@ -41,9 +30,13 @@ export default function AuthButton({ email }: Props) {
   }
 
   return (
-    <div style={{ display: "flex", gap: "12px" }}>
-      <a href="/login">Log In</a>
-      <a href="/signup">Sign Up</a>
+    <div className="swu-auth">
+      <Link href="/login" className="swu-nav-link swu-nav-link--button">
+        Log In
+      </Link>
+      <Link href="/signup" className="swu-nav-link swu-nav-link--button">
+        Sign Up
+      </Link>
     </div>
   );
 }
