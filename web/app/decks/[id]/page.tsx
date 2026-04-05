@@ -161,11 +161,11 @@ export default async function DeckDetailPage({ params }: Props) {
 
   return (
     <main>
-      <DeckEditorClient
-        initialDeck={deck}
-        initialCollection={collection || []}
-        initialDeckCards={deckCards || []}
-      />
+<DeckEditorClient
+  deck={deck}
+  collectionEntries={collection || []}
+  initialDeckCards={deckCards || []}
+/>
     </main>
   );
 }
