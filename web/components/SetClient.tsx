@@ -23,63 +23,96 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   return (
     <div
       style={{
-        fontSize: "10px",
-        padding: "2px 6px",
+        fontSize: "9px",
+        lineHeight: 1,
+        padding: "2px 5px",
         borderRadius: "999px",
         background: `${color}22`,
         border: `1px solid ${color}`,
         color,
         fontWeight: 700,
+        whiteSpace: "nowrap",
       }}
     >
-      {label}: {value}
+      {label}:{value}
     </div>
   );
 }
 
-/* 🔥 NEW IMAGE COMPONENT */
-function CardImage({ src, name }: { src?: string | null; name: string }) {
+function CardImage({
+  src,
+  name,
+  hidden,
+}: {
+  src?: string | null;
+  name: string;
+  hidden?: boolean;
+}) {
   const [hover, setHover] = useState(false);
-
-  if (!src) return null;
 
   return (
     <div
-      style={{ position: "relative" }}
-      onMouseEnter={() => setHover(true)}
+      style={{
+        position: "relative",
+        width: "52px",
+        minWidth: "52px",
+        height: "72px",
+        borderRadius: "8px",
+        border: "1px solid #334155",
+        background: "#0b1220",
+        overflow: "visible",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onMouseEnter={() => {
+        if (!hidden && src) setHover(true);
+      }}
       onMouseLeave={() => setHover(false)}
     >
-      {/* SMALL IMAGE */}
-      <img
-        src={src}
-        alt={name}
-        style={{
-          width: "60px",
-          height: "84px",
-          objectFit: "cover",
-          borderRadius: "8px",
-          border: "1px solid #334155",
-          cursor: "pointer",
-        }}
-      />
+      {!hidden && src ? (
+        <>
+          <img
+            src={src}
+            alt={name}
+            style={{
+              width: "52px",
+              height: "72px",
+              objectFit: "cover",
+              borderRadius: "8px",
+              cursor: "pointer",
+              display: "block",
+            }}
+          />
 
-      {/* HOVER PREVIEW */}
-      {hover && (
-        <img
-          src={src}
-          alt={name}
+          {hover ? (
+            <img
+              src={src}
+              alt={name}
+              style={{
+                position: "absolute",
+                top: "-18px",
+                left: "62px",
+                width: "220px",
+                borderRadius: "12px",
+                border: "1px solid #334155",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+                zIndex: 999,
+                background: "#02040a",
+              }}
+            />
+          ) : null}
+        </>
+      ) : (
+        <div
           style={{
-            position: "absolute",
-            top: "-20px",
-            left: "70px",
-            width: "240px",
-            borderRadius: "12px",
-            border: "1px solid #334155",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
-            zIndex: 999,
-            background: "#02040a",
+            fontSize: "10px",
+            color: "#475569",
+            userSelect: "none",
           }}
-        />
+        >
+          —
+        </div>
       )}
     </div>
   );
@@ -136,7 +169,6 @@ export default function SetClient({ cards, collection }: any) {
 
   return (
     <div>
-      {/* SEARCH UI (unchanged) */}
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
           type="text"
@@ -178,7 +210,6 @@ export default function SetClient({ cards, collection }: any) {
         </label>
       </div>
 
-      {/* 🔥 GRID UPDATED (4 per row feel) */}
       <div
         style={{
           display: "grid",
@@ -198,54 +229,102 @@ export default function SetClient({ cards, collection }: any) {
               style={{
                 border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
-                padding: "12px",
-                height: "150px",
+                padding: "10px",
+                height: "130px",
                 background: owned ? "#0f172a" : "#05070d",
                 display: "flex",
-                justifyContent: "space-between",
-                gap: "12px",
+                gap: "10px",
+                overflow: "hidden",
+                boxSizing: "border-box",
               }}
             >
-              {/* LEFT SIDE (IMAGE) */}
-              {!hidden && (
-                <CardImage src={card.front_art} name={card.name} />
-              )}
+              <div style={{ width: "52px", minWidth: "52px" }}>
+                <CardImage src={card.front_art} name={card.name} hidden={hidden} />
+              </div>
 
-              {/* RIGHT SIDE */}
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
                 {hidden ? (
                   <>
-                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
-                      #{card.card_number ?? "-"}
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                        #{card.card_number ?? "-"}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "3px" }}>
+                        Variant: {card.variant}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          color: "#94a3b8",
+                          marginTop: "5px",
+                          fontWeight: 700,
+                        }}
+                      >
+                        Qty: 0
+                      </div>
                     </div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
-                      Variant: {card.variant}
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
-                      Qty: 0
+
+                    <div style={{ flexShrink: 0 }}>
+                      <AddCardButton cardId={card.id} />
                     </div>
                   </>
                 ) : (
                   <>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: "14px", color: "#e5edf7" }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontWeight: 700,
+                          fontSize: "12px",
+                          color: "#e5edf7",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
                         {card.name}
                       </div>
-                      <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          color: "#94a3b8",
+                          minHeight: "12px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
                         {card.subtitle || ""}
                       </div>
 
-                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "6px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "4px",
+                          flexWrap: "wrap",
+                          marginTop: "4px",
+                        }}
+                      >
                         {aspectPills.map((pill) => (
                           <div
                             key={pill.name}
                             style={{
-                              fontSize: "9px",
-                              padding: "2px 5px",
+                              fontSize: "8px",
+                              lineHeight: 1,
+                              padding: "2px 4px",
                               borderRadius: "999px",
                               background: `${pill.color}22`,
                               border: `1px solid ${pill.color}`,
                               color: pill.color,
+                              whiteSpace: "nowrap",
                             }}
                           >
                             {pill.name}
@@ -253,28 +332,77 @@ export default function SetClient({ cards, collection }: any) {
                         ))}
                       </div>
 
-                      <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "4px",
+                          flexWrap: "wrap",
+                          marginTop: "4px",
+                        }}
+                      >
                         <StatPill label="Cost" value={card.cost} color="#eab308" />
                         <StatPill label="Power" value={card.power} color="#dc2626" />
                         <StatPill label="HP" value={card.hp} color="#2563eb" />
                       </div>
 
-                      <div style={{ fontSize: "11px", marginTop: "6px", color: "#cbd5e1" }}>
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          marginTop: "4px",
+                          color: "#cbd5e1",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
                         #{card.card_number} • {card.variant}
                       </div>
 
-                      <div style={{ fontSize: "11px", color: "#cbd5e1" }}>
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          color: "#cbd5e1",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
                         Traits: {card.traits || "-"}
                       </div>
 
-                      <div style={{ fontSize: "12px", marginTop: "6px", color: "#86efac", fontWeight: 700 }}>
+                      <div
+                        style={{
+                          fontSize: "9px",
+                          lineHeight: 1.2,
+                          color: "#cbd5e1",
+                          marginTop: "4px",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          maxHeight: "22px",
+                        }}
+                      >
+                        {card.front_text || "-"}
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize: "11px",
+                          marginTop: "4px",
+                          color: "#86efac",
+                          fontWeight: 700,
+                        }}
+                      >
                         Qty: {qty}
                       </div>
                     </div>
+
+                    <div style={{ flexShrink: 0 }}>
+                      <AddCardButton cardId={card.id} />
+                    </div>
                   </>
                 )}
-
-                <AddCardButton cardId={card.id} />
               </div>
             </div>
           );
