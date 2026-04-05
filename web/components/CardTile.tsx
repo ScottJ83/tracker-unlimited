@@ -1,5 +1,7 @@
 "use client";
+
 import { useState } from "react";
+
 type FooterItem = {
   label: string;
   value: string | number;
@@ -50,13 +52,12 @@ function StatPill({
         fontSize: "10px",
         lineHeight: 1,
         padding: "4px 7px",
-        borderRadius: "999px",
+        borderRadius: "6px",
         background: `linear-gradient(180deg, ${color}24, ${color}10)`,
         border: `1px solid ${color}`,
         color,
         fontWeight: 700,
         whiteSpace: "nowrap",
-        boxShadow: `0 0 10px ${color}22`,
       }}
     >
       {label}: {value}
@@ -73,7 +74,8 @@ function CardImage({
   name: string;
   hidden?: boolean;
 }) {
-const [hover, setHover] = useState(false);
+  const [hover, setHover] = useState(false);
+
   return (
     <div
       style={{
@@ -82,14 +84,12 @@ const [hover, setHover] = useState(false);
         minWidth: "56px",
         height: "78px",
         borderRadius: "8px",
-        border: "1px solid rgba(148, 163, 184, 0.35)",
-        background:
-          "linear-gradient(180deg, rgba(10, 16, 28, 0.98), rgba(4, 8, 16, 0.98))",
+        border: "1px solid rgba(255,255,255,0.18)",
+        background: "linear-gradient(180deg, #0a1019, #04070d)",
         overflow: "visible",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        boxShadow: "0 0 0 1px rgba(255,255,255,0.03) inset",
       }}
       onMouseEnter={() => {
         if (!hidden && src) setHover(true);
@@ -121,9 +121,8 @@ const [hover, setHover] = useState(false);
                 left: "66px",
                 width: "220px",
                 borderRadius: "12px",
-                border: "1px solid rgba(125, 211, 252, 0.35)",
-                boxShadow:
-                  "0 20px 50px rgba(0,0,0,0.65), 0 0 24px rgba(125, 211, 252, 0.18)",
+                border: "1px solid rgba(255,255,255,0.22)",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.65)",
                 zIndex: 999,
                 background: "#02040a",
               }}
@@ -163,32 +162,28 @@ export default function CardTile({
   footerItems = [],
   actionSlot,
   minHeight = 155,
-  bottomPadding = 46,
+  bottomPadding = 50,
 }: Props) {
   const aspectPills = getAspectPills(card?.aspect);
 
-const borderColor = owned
-  ? "rgba(255,255,255,0.35)"
-  : "rgba(255,255,255,0.15)";
-
-  const panelBackground = owned
-    ? "linear-gradient(180deg, rgba(10, 19, 38, 0.96), rgba(6, 11, 22, 0.96))"
-    : "linear-gradient(180deg, rgba(7, 10, 16, 0.96), rgba(4, 7, 12, 0.96))";
+  const borderColor = owned
+    ? "rgba(255,255,255,0.32)"
+    : "rgba(255,255,255,0.14)";
 
   return (
     <div
       style={{
         border: `1px solid ${borderColor}`,
-borderRadius: "6px",
+        borderRadius: "8px",
         padding: "10px",
         minHeight,
-background: "linear-gradient(180deg, #060c18, #02060c)",
+        background: "linear-gradient(180deg, #060c18, #02060c)",
         display: "flex",
         gap: "10px",
-        overflow: "hidden",
+        overflow: "visible",
         boxSizing: "border-box",
         position: "relative",
-boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)",
+        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)",
       }}
     >
       <div style={{ width: "56px", minWidth: "56px" }}>
@@ -267,7 +262,7 @@ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)",
                   style={{
                     fontWeight: 700,
                     fontSize: "14px",
-                    color: "#edf4ff",
+                    color: "#ffffff",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -334,7 +329,6 @@ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)",
                         border: `1px solid ${pill.color}`,
                         color: pill.color,
                         whiteSpace: "nowrap",
-                        boxShadow: `0 0 10px ${pill.color}1f`,
                       }}
                     >
                       {pill.name}
@@ -448,6 +442,10 @@ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)",
             position: "absolute",
             right: "10px",
             bottom: "8px",
+            zIndex: 3,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
           }}
         >
           {actionSlot}

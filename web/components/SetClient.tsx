@@ -19,6 +19,13 @@ export default function SetClient({ cards, collection }: any) {
     const tq = textSearch.trim().toLowerCase();
 
     return (cards || []).filter((card: any) => {
+      const qty = getQty(card.id);
+      const owned = qty > 0;
+
+      if (!showMissing && !owned) {
+        return false;
+      }
+
       const name = String(card.name || "").toLowerCase();
       const subtitle = String(card.subtitle || "").toLowerCase();
       const number = String(card.card_number || "").toLowerCase();
@@ -51,7 +58,7 @@ export default function SetClient({ cards, collection }: any) {
 
       return mainMatch && textMatch;
     });
-  }, [cards, search, textSearch]);
+  }, [cards, collection, search, textSearch, showMissing]);
 
   const controlStyle = {
     padding: "10px 12px",
@@ -102,7 +109,6 @@ export default function SetClient({ cards, collection }: any) {
         {filteredCards.map((card: any) => {
           const qty = getQty(card.id);
           const owned = qty > 0;
-          const hidden = !showMissing && !owned;
           const unitValue = Number(card?.price || 0);
           const totalValue = unitValue * qty;
 
@@ -111,7 +117,7 @@ export default function SetClient({ cards, collection }: any) {
               key={card.id}
               card={card}
               owned={owned}
-              hidden={hidden}
+              hidden={false}
               footerItems={[
                 { label: "Qty", value: qty, color: owned ? "#8ef0ba" : "#9fb0c8", bold: true },
                 { label: "Unit", value: `$${unitValue.toFixed(2)}`, color: "#d6e3f3" },
