@@ -172,7 +172,6 @@ export default async function SetsPage() {
               <div style={{ fontSize: "14px", color: "#cbd5e1", marginTop: "10px" }}>
                 <div>Base: {baseOwned} / {baseTotal}</div>
                 <div>Full: {fullOwned} / {fullTotal}</div>
-                <div>Value: ${setValue.toFixed(2)}</div>
               </div>
             </Link>
           );

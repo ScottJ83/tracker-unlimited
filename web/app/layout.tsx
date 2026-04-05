@@ -1,1 +1,22 @@
-import "./globals.css"; import NavBar from "@/components/NavBar"; export const metadata = { title: "Tracker Unlimited", description: "Star Wars Unlimited collection tracker", }; export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) { return ( <html lang="en"> <body> <NavBar /> {children} </body> </html> ); }
+import "./globals.css";
+import NavBar from "@/components/NavBar";
+
+export const metadata = {
+  title: "Tracker Unlimited",
+  description: "Star Wars Unlimited collection tracker",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>
+        <NavBar />
+        {children}
+      </body>
+    </html>
+  );
+}

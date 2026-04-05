@@ -1,1 +1,49 @@
-:root { --bg: #05070d; --bg-soft: #0b1120; --panel: #0f172a; --panel-2: #111827; --border: #2a3445; --text: #e5edf7; --muted: #94a3b8; --accent: #7dd3fc; --success: #22c55e; } * { box-sizing: border-box; } html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #0b1120, #02040a 80%); color: var(--text); font-family: system-ui, Arial, sans-serif; } main { max-width: 1280px; margin: 0 auto; padding: 24px; } button { cursor: pointer; }
+:root {
+  --bg: #0b1120;
+  --bg-soft: #111827;
+  --panel: #172033;
+  --panel-2: #1e293b;
+  --border: #334155;
+  --text: #e5edf7;
+  --muted: #94a3b8;
+  --accent: #7dd3fc;
+  --accent-2: #c4b5fd;
+  --success: #86efac;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(circle at bottom, rgba(125, 211, 252, 0.18), transparent 22%),
+    linear-gradient(180deg, #060b16 0%, #0b1120 45%, #111827 100%);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+button {
+  color: var(--text);
+}
