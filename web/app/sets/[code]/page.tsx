@@ -103,7 +103,7 @@ export default async function SetDetailPage({ params }: Props) {
         <div>Set Value: ${setValue.toFixed(2)}</div>
       </div>
 
-      <SetClient cards={cards} collection={collection} />
+<SetClient cards={cards} collection={collection ?? []} />
     </main>
   );
 }
