@@ -3,7 +3,157 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import CardTile from "./CardTile";
+
+function getAspectPills(aspect: string | null | undefined) {
+  const text = String(aspect || "").toLowerCase();
+  const pills: { name: string; color: string }[] = [];
+
+  if (text.includes("vigilance")) pills.push({ name: "Vigilance", color: "#3b82f6" });
+  if (text.includes("command")) pills.push({ name: "Command", color: "#16a34a" });
+  if (text.includes("aggression")) pills.push({ name: "Aggression", color: "#dc2626" });
+  if (text.includes("cunning")) pills.push({ name: "Cunning", color: "#d97706" });
+  if (text.includes("heroism")) pills.push({ name: "Heroism", color: "#d4d4aa" });
+  if (text.includes("villainy")) pills.push({ name: "Villainy", color: "#4c1d95" });
+
+  return pills;
+}
+
+function StatPill({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: any;
+  color: string;
+}) {
+  if (value === null || value === undefined || value === "") return null;
+
+  return (
+    <div
+      style={{
+        fontSize: "10px",
+        lineHeight: 1,
+        padding: "3px 6px",
+        borderRadius: "999px",
+        background: `${color}22`,
+        border: `1px solid ${color}`,
+        color,
+        fontWeight: 700,
+        whiteSpace: "nowrap",
+      }}
+    >
+      {label}: {value}
+    </div>
+  );
+}
+
+function CardImage({
+  src,
+  name,
+}: {
+  src?: string | null;
+  name: string;
+}) {
+  const [hover, setHover] = useState(false);
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: "56px",
+        minWidth: "56px",
+        height: "78px",
+        borderRadius: "8px",
+        border: "1px solid #334155",
+        background: "#0b1220",
+        overflow: "visible",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onMouseEnter={() => {
+        if (src) setHover(true);
+      }}
+      onMouseLeave={() => setHover(false)}
+    >
+      {src ? (
+        <>
+          <img
+            src={src}
+            alt={name}
+            style={{
+              width: "56px",
+              height: "78px",
+              objectFit: "cover",
+              borderRadius: "8px",
+              cursor: "pointer",
+              display: "block",
+            }}
+          />
+
+          {hover ? (
+            <img
+              src={src}
+              alt={name}
+              style={{
+                position: "absolute",
+                top: "-18px",
+                left: "66px",
+                width: "220px",
+                borderRadius: "12px",
+                border: "1px solid #334155",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+                zIndex: 999,
+                background: "#02040a",
+              }}
+            />
+          ) : null}
+        </>
+      ) : (
+        <div
+          style={{
+            fontSize: "10px",
+            color: "#475569",
+            userSelect: "none",
+          }}
+        >
+          —
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MiniActionButton({
+  children,
+  onClick,
+  disabled,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        padding: "6px 8px",
+        borderRadius: "8px",
+        border: "1px solid #475569",
+        background: disabled ? "#0f172a" : "#1e293b",
+        color: disabled ? "#64748b" : "#e5edf7",
+        cursor: disabled ? "not-allowed" : "pointer",
+        fontSize: "11px",
+        fontWeight: 700,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
 function getCardTypeLabel(card: any) {
   return String(card?.card_type || card?.type || "").trim();
@@ -46,42 +196,6 @@ function normalizeJoinedCard(item: any) {
   return Array.isArray(item?.cards) ? item.cards[0] : item?.cards;
 }
 
-function MiniActionButton({
-  children,
-  onClick,
-  disabled,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        padding: "6px 8px",
-        borderRadius: "8px",
-        border: "1px solid rgba(148, 163, 184, 0.38)",
-        background:
-          disabled
-            ? "linear-gradient(180deg, rgba(10, 16, 28, 0.98), rgba(6, 10, 18, 0.98))"
-            : "linear-gradient(180deg, rgba(21, 35, 64, 0.98), rgba(10, 18, 33, 0.98))",
-        color: disabled ? "#64748b" : "#edf4ff",
-        cursor: disabled ? "not-allowed" : "pointer",
-        fontSize: "11px",
-        fontWeight: 700,
-        boxShadow: disabled
-          ? "none"
-          : "0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 12px rgba(125,211,252,0.08)",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
 function DeckCardTile({
   card,
   quantity,
@@ -93,26 +207,204 @@ function DeckCardTile({
   onAdd: () => void;
   onRemove: () => void;
 }) {
-  const unitValue = Number(card?.price || 0);
-  const totalValue = unitValue * Number(quantity || 0);
+  const aspectPills = getAspectPills(card?.aspect);
 
   return (
-    <CardTile
-      card={card}
-      owned
-      showTypeLine
-      footerItems={[
-        { label: "Qty", value: quantity, color: "#8ef0ba", bold: true },
-        { label: "Unit", value: `$${unitValue.toFixed(2)}`, color: "#d6e3f3" },
-        { label: "Total", value: `$${totalValue.toFixed(2)}`, color: "#edf4ff", bold: true },
-      ]}
-      actionSlot={
-        <div style={{ display: "flex", gap: "8px" }}>
-          <MiniActionButton onClick={onRemove}>−</MiniActionButton>
-          <MiniActionButton onClick={onAdd}>+</MiniActionButton>
+    <div
+      style={{
+        border: "1px solid #22c55e",
+        borderRadius: "14px",
+        padding: "10px",
+        minHeight: "155px",
+        background: "#0f172a",
+        display: "flex",
+        gap: "10px",
+        overflow: "hidden",
+        boxSizing: "border-box",
+        position: "relative",
+      }}
+    >
+      <div style={{ width: "56px", minWidth: "56px" }}>
+        <CardImage src={card?.front_art} name={card?.name || "Card"} />
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          display: "flex",
+          flexDirection: "column",
+          paddingBottom: "46px",
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: "8px",
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  color: "#e5edf7",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {card?.name || "Unknown card"}
+              </div>
+
+              <div
+                style={{
+                  fontSize: "11px",
+                  color: "#94a3b8",
+                  minHeight: "14px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {card?.subtitle || ""}
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                gap: "4px",
+                flexShrink: 0,
+                maxWidth: "120px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "4px",
+                  flexWrap: "wrap",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <StatPill label="Cost" value={card?.cost} color="#eab308" />
+                <StatPill label="Power" value={card?.power} color="#dc2626" />
+                <StatPill label="HP" value={card?.hp} color="#2563eb" />
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "4px",
+                  flexWrap: "wrap",
+                  justifyContent: "flex-end",
+                }}
+              >
+                {aspectPills.map((pill) => (
+                  <div
+                    key={pill.name}
+                    style={{
+                      fontSize: "9px",
+                      lineHeight: 1,
+                      padding: "3px 5px",
+                      borderRadius: "999px",
+                      background: `${pill.color}22`,
+                      border: `1px solid ${pill.color}`,
+                      color: pill.color,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {pill.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              fontSize: "11px",
+              marginTop: "5px",
+              color: "#cbd5e1",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            #{card?.card_number ?? "-"} • {card?.variant || "-"}
+          </div>
+
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#cbd5e1",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            Type: {getCardTypeLabel(card) || "-"}{getArenaLabel(card) ? ` • ${getArenaLabel(card)}` : ""}
+          </div>
+
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#cbd5e1",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            Traits: {card?.traits || "-"}
+          </div>
+
+          <div
+            style={{
+              fontSize: "10px",
+              lineHeight: 1.25,
+              color: "#cbd5e1",
+              marginTop: "5px",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              maxHeight: "26px",
+            }}
+          >
+            {card?.front_text || "-"}
+          </div>
+
+          <div
+            style={{
+              fontSize: "12px",
+              marginTop: "5px",
+              color: "#86efac",
+              fontWeight: 700,
+            }}
+          >
+            In Deck: {quantity}
+          </div>
         </div>
-      }
-    />
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          right: "10px",
+          bottom: "8px",
+          display: "flex",
+          gap: "8px",
+        }}
+      >
+        <MiniActionButton onClick={onRemove}>-</MiniActionButton>
+        <MiniActionButton onClick={onAdd}>+</MiniActionButton>
+      </div>
+    </div>
   );
 }
 
@@ -135,63 +427,234 @@ function CollectionCardTile({
   onSetBase: () => void;
   onAddToDeck: () => void;
 }) {
+  const aspectPills = getAspectPills(card?.aspect);
   const leaderEligible = isLeader(card);
   const baseEligible = isBase(card);
-  const unitValue = Number(card?.price || 0);
-  const totalValue = unitValue * Number(ownedQty || 0);
 
   return (
-    <CardTile
-      card={card}
-      owned
-      showSetLine
-      showTypeLine
-      minHeight={188}
-      bottomPadding={72}
-      footerItems={[
-        { label: "Owned", value: ownedQty, color: "#8ef0ba", bold: true },
-        { label: "Available", value: availableQty, color: "#edf4ff", bold: true },
-        { label: "Unit", value: `$${unitValue.toFixed(2)}`, color: "#d6e3f3" },
-        { label: "Total", value: `$${totalValue.toFixed(2)}`, color: "#edf4ff", bold: true },
-        ...(leaderSelected ? [{ label: "Status", value: "Leader", color: "#7dd3fc", bold: true }] : []),
-        ...(baseSelected ? [{ label: "Status", value: "Base", color: "#fca5a5", bold: true }] : []),
-      ]}
-      actionSlot={
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "flex-end",
-            gap: "6px",
-            maxWidth: "210px",
-          }}
-        >
-          {leaderEligible ? (
-            <MiniActionButton
-              onClick={onSetLeader}
-              disabled={availableQty <= 0 && !leaderSelected}
-            >
-              {leaderSelected ? "Leader ✓" : "Set Leader"}
-            </MiniActionButton>
-          ) : null}
+    <div
+      style={{
+        border: "1px solid #22c55e",
+        borderRadius: "14px",
+        padding: "10px",
+        minHeight: "188px",
+        background: "#0f172a",
+        display: "flex",
+        gap: "10px",
+        overflow: "hidden",
+        boxSizing: "border-box",
+        position: "relative",
+      }}
+    >
+      <div style={{ width: "56px", minWidth: "56px" }}>
+        <CardImage src={card?.front_art} name={card?.name || "Card"} />
+      </div>
 
-          {baseEligible ? (
-            <MiniActionButton
-              onClick={onSetBase}
-              disabled={availableQty <= 0 && !baseSelected}
-            >
-              {baseSelected ? "Base ✓" : "Set Base"}
-            </MiniActionButton>
-          ) : null}
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          display: "flex",
+          flexDirection: "column",
+          paddingBottom: "72px",
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: "8px",
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  color: "#e5edf7",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {card?.name || "Unknown card"}
+              </div>
 
-          {!leaderEligible && !baseEligible ? (
-            <MiniActionButton onClick={onAddToDeck} disabled={availableQty <= 0}>
-              Add to Deck
-            </MiniActionButton>
-          ) : null}
+              <div
+                style={{
+                  fontSize: "11px",
+                  color: "#94a3b8",
+                  minHeight: "14px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {card?.subtitle || ""}
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                gap: "4px",
+                flexShrink: 0,
+                maxWidth: "120px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "4px",
+                  flexWrap: "wrap",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <StatPill label="Cost" value={card?.cost} color="#eab308" />
+                <StatPill label="Power" value={card?.power} color="#dc2626" />
+                <StatPill label="HP" value={card?.hp} color="#2563eb" />
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "4px",
+                  flexWrap: "wrap",
+                  justifyContent: "flex-end",
+                }}
+              >
+                {aspectPills.map((pill) => (
+                  <div
+                    key={pill.name}
+                    style={{
+                      fontSize: "9px",
+                      lineHeight: 1,
+                      padding: "3px 5px",
+                      borderRadius: "999px",
+                      background: `${pill.color}22`,
+                      border: `1px solid ${pill.color}`,
+                      color: pill.color,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {pill.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              fontSize: "11px",
+              marginTop: "5px",
+              color: "#cbd5e1",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            #{card?.card_number ?? "-"} • {card?.variant || "-"}
+          </div>
+
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#cbd5e1",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            Type: {getCardTypeLabel(card) || "-"}{getArenaLabel(card) ? ` • ${getArenaLabel(card)}` : ""}
+          </div>
+
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#cbd5e1",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            Traits: {card?.traits || "-"}
+          </div>
+
+          <div
+            style={{
+              fontSize: "10px",
+              lineHeight: 1.25,
+              color: "#cbd5e1",
+              marginTop: "5px",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              maxHeight: "26px",
+            }}
+          >
+            {card?.front_text || "-"}
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+              marginTop: "5px",
+              fontSize: "11px",
+            }}
+          >
+            <div style={{ color: "#86efac", fontWeight: 700 }}>Owned: {ownedQty}</div>
+            <div style={{ color: "#e5edf7", fontWeight: 700 }}>Available: {availableQty}</div>
+            {leaderSelected ? <div style={{ color: "#7dd3fc", fontWeight: 700 }}>Leader</div> : null}
+            {baseSelected ? <div style={{ color: "#fca5a5", fontWeight: 700 }}>Base</div> : null}
+          </div>
         </div>
-      }
-    />
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          right: "10px",
+          bottom: "8px",
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "flex-end",
+          gap: "6px",
+          maxWidth: "210px",
+        }}
+      >
+        {leaderEligible ? (
+          <MiniActionButton
+            onClick={onSetLeader}
+            disabled={availableQty <= 0 && !leaderSelected}
+          >
+            {leaderSelected ? "Leader ✓" : "Set Leader"}
+          </MiniActionButton>
+        ) : null}
+
+        {baseEligible ? (
+          <MiniActionButton
+            onClick={onSetBase}
+            disabled={availableQty <= 0 && !baseSelected}
+          >
+            {baseSelected ? "Base ✓" : "Set Base"}
+          </MiniActionButton>
+        ) : null}
+
+        {!leaderEligible && !baseEligible ? (
+          <MiniActionButton onClick={onAddToDeck} disabled={availableQty <= 0}>
+            Add to Deck
+          </MiniActionButton>
+        ) : null}
+      </div>
+    </div>
   );
 }
 
@@ -506,16 +969,6 @@ export default function DeckEditorClient({
     router.refresh();
   }
 
-  const controlStyle = {
-    padding: "10px 12px",
-    borderRadius: "10px",
-    border: "1px solid rgba(148, 163, 184, 0.28)",
-    background:
-      "linear-gradient(180deg, rgba(10, 18, 33, 0.98), rgba(7, 12, 24, 0.98))",
-    color: "#edf4ff",
-    boxShadow: "0 0 0 1px rgba(255,255,255,0.02) inset",
-  } as const;
-
   return (
     <div
       style={{
@@ -527,18 +980,16 @@ export default function DeckEditorClient({
     >
       <section
         style={{
-          border: "1px solid rgba(148, 163, 184, 0.22)",
+          border: "1px solid #334155",
           borderRadius: "18px",
           padding: "18px",
-          background:
-            "linear-gradient(180deg, rgba(9, 18, 34, 0.97), rgba(5, 10, 21, 0.97))",
+          background: "linear-gradient(180deg, #172033, #111827)",
           minHeight: "70vh",
-          boxShadow: "0 0 0 1px rgba(255,255,255,0.02) inset",
         }}
       >
         <div style={{ marginBottom: "16px" }}>
           <h2 style={{ margin: 0, marginBottom: "6px" }}>Collection Browser</h2>
-          <div style={{ color: "#9fb0c8" }}>
+          <div style={{ color: "#94a3b8" }}>
             Search and add cards from your collection.
           </div>
         </div>
@@ -549,7 +1000,14 @@ export default function DeckEditorClient({
             placeholder="Search name, set, number, aspect, traits, type, or arena"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ ...controlStyle, minWidth: "280px" }}
+            style={{
+              minWidth: "280px",
+              padding: "10px 12px",
+              borderRadius: "10px",
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#e5edf7",
+            }}
           />
 
           <input
@@ -557,13 +1015,26 @@ export default function DeckEditorClient({
             placeholder="Search text, rarity, artist, cost, power, or hp"
             value={textSearch}
             onChange={(e) => setTextSearch(e.target.value)}
-            style={{ ...controlStyle, minWidth: "280px" }}
+            style={{
+              minWidth: "280px",
+              padding: "10px 12px",
+              borderRadius: "10px",
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#e5edf7",
+            }}
           />
 
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            style={controlStyle}
+            style={{
+              padding: "10px 12px",
+              borderRadius: "10px",
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#e5edf7",
+            }}
           >
             <option value="all">All Types</option>
             <option value="leader">Leader</option>
@@ -576,7 +1047,13 @@ export default function DeckEditorClient({
           <select
             value={arenaFilter}
             onChange={(e) => setArenaFilter(e.target.value)}
-            style={controlStyle}
+            style={{
+              padding: "10px 12px",
+              borderRadius: "10px",
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#e5edf7",
+            }}
           >
             <option value="all">All Arenas</option>
             <option value="ground">Ground</option>
@@ -618,16 +1095,14 @@ export default function DeckEditorClient({
 
       <section
         style={{
-          border: "1px solid rgba(148, 163, 184, 0.22)",
+          border: "1px solid #334155",
           borderRadius: "18px",
           padding: "18px",
-          background:
-            "linear-gradient(180deg, rgba(9, 18, 34, 0.97), rgba(5, 10, 21, 0.97))",
+          background: "linear-gradient(180deg, #172033, #111827)",
           minHeight: "70vh",
           display: "flex",
           flexDirection: "column",
           gap: "18px",
-          boxShadow: "0 0 0 1px rgba(255,255,255,0.02) inset",
         }}
       >
         <div>
@@ -650,10 +1125,9 @@ export default function DeckEditorClient({
                 minWidth: "240px",
                 padding: "12px 14px",
                 borderRadius: "12px",
-                border: "1px solid rgba(148, 163, 184, 0.28)",
-                background:
-                  "linear-gradient(180deg, rgba(10, 18, 33, 0.98), rgba(7, 12, 24, 0.98))",
-                color: "#edf4ff",
+                border: "1px solid #334155",
+                background: "#0f172a",
+                color: "#e5edf7",
                 fontSize: "18px",
                 fontWeight: 700,
               }}
@@ -666,10 +1140,9 @@ export default function DeckEditorClient({
               style={{
                 padding: "12px 16px",
                 borderRadius: "12px",
-                border: "1px solid rgba(148, 163, 184, 0.38)",
-                background:
-                  "linear-gradient(180deg, rgba(21, 35, 64, 0.98), rgba(10, 18, 33, 0.98))",
-                color: "#edf4ff",
+                border: "1px solid #475569",
+                background: "#1e293b",
+                color: "#e5edf7",
                 cursor: saving ? "not-allowed" : "pointer",
                 fontWeight: 700,
               }}
@@ -715,18 +1188,17 @@ export default function DeckEditorClient({
         >
           <div
             style={{
-              border: "1px solid rgba(148, 163, 184, 0.22)",
+              border: "1px solid #334155",
               borderRadius: "14px",
               padding: "14px",
-              background:
-                "linear-gradient(180deg, rgba(10, 18, 33, 0.96), rgba(6, 11, 22, 0.96))",
+              background: "#0f172a",
             }}
           >
-            <div style={{ color: "#9fb0c8", fontSize: "12px", marginBottom: "8px" }}>Leader</div>
+            <div style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "8px" }}>Leader</div>
             {leaderCard ? (
               <>
                 <div style={{ fontWeight: 700 }}>{leaderCard.name}</div>
-                <div style={{ color: "#d6e3f3", fontSize: "13px", marginTop: "4px" }}>
+                <div style={{ color: "#cbd5e1", fontSize: "13px", marginTop: "4px" }}>
                   {leaderCard.subtitle || ""}
                 </div>
                 <button
@@ -736,10 +1208,9 @@ export default function DeckEditorClient({
                     marginTop: "10px",
                     padding: "8px 10px",
                     borderRadius: "10px",
-                    border: "1px solid rgba(148, 163, 184, 0.38)",
-                    background:
-                      "linear-gradient(180deg, rgba(21, 35, 64, 0.98), rgba(10, 18, 33, 0.98))",
-                    color: "#edf4ff",
+                    border: "1px solid #475569",
+                    background: "#1e293b",
+                    color: "#e5edf7",
                     cursor: "pointer",
                     fontWeight: 700,
                     fontSize: "12px",
@@ -755,18 +1226,17 @@ export default function DeckEditorClient({
 
           <div
             style={{
-              border: "1px solid rgba(148, 163, 184, 0.22)",
+              border: "1px solid #334155",
               borderRadius: "14px",
               padding: "14px",
-              background:
-                "linear-gradient(180deg, rgba(10, 18, 33, 0.96), rgba(6, 11, 22, 0.96))",
+              background: "#0f172a",
             }}
           >
-            <div style={{ color: "#9fb0c8", fontSize: "12px", marginBottom: "8px" }}>Base</div>
+            <div style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "8px" }}>Base</div>
             {baseCard ? (
               <>
                 <div style={{ fontWeight: 700 }}>{baseCard.name}</div>
-                <div style={{ color: "#d6e3f3", fontSize: "13px", marginTop: "4px" }}>
+                <div style={{ color: "#cbd5e1", fontSize: "13px", marginTop: "4px" }}>
                   {baseCard.subtitle || ""}
                 </div>
                 <button
@@ -776,10 +1246,9 @@ export default function DeckEditorClient({
                     marginTop: "10px",
                     padding: "8px 10px",
                     borderRadius: "10px",
-                    border: "1px solid rgba(148, 163, 184, 0.38)",
-                    background:
-                      "linear-gradient(180deg, rgba(21, 35, 64, 0.98), rgba(10, 18, 33, 0.98))",
-                    color: "#edf4ff",
+                    border: "1px solid #475569",
+                    background: "#1e293b",
+                    color: "#e5edf7",
                     cursor: "pointer",
                     fontWeight: 700,
                     fontSize: "12px",
@@ -796,11 +1265,10 @@ export default function DeckEditorClient({
 
         <div
           style={{
-            border: "1px solid rgba(148, 163, 184, 0.22)",
+            border: "1px solid #334155",
             borderRadius: "14px",
             padding: "14px",
-            background:
-              "linear-gradient(180deg, rgba(10, 18, 33, 0.96), rgba(6, 11, 22, 0.96))",
+            background: "#0f172a",
           }}
         >
           <div style={{ fontWeight: 700, marginBottom: "10px" }}>Deck Summary</div>
@@ -811,7 +1279,7 @@ export default function DeckEditorClient({
               gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
               gap: "10px",
               fontSize: "14px",
-              color: "#d6e3f3",
+              color: "#cbd5e1",
             }}
           >
             <div>Main Deck: {mainDeckCount} / 50</div>
@@ -824,11 +1292,10 @@ export default function DeckEditorClient({
 
         <div
           style={{
-            border: "1px solid rgba(148, 163, 184, 0.22)",
+            border: "1px solid #334155",
             borderRadius: "14px",
             padding: "14px",
-            background:
-              "linear-gradient(180deg, rgba(10, 18, 33, 0.96), rgba(6, 11, 22, 0.96))",
+            background: "#0f172a",
             flex: 1,
             minHeight: 0,
             display: "flex",
@@ -847,12 +1314,12 @@ export default function DeckEditorClient({
           >
             <div>
               <div style={{ fontWeight: 700 }}>Main Deck</div>
-              <div style={{ color: "#9fb0c8", fontSize: "13px" }}>
+              <div style={{ color: "#94a3b8", fontSize: "13px" }}>
                 Cards currently in this deck
               </div>
             </div>
 
-            <div style={{ color: "#edf4ff", fontWeight: 700 }}>
+            <div style={{ color: "#e5edf7", fontWeight: 700 }}>
               {mainDeckCount} / 50
             </div>
           </div>
@@ -862,7 +1329,7 @@ export default function DeckEditorClient({
               style={{
                 color: "#64748b",
                 fontSize: "14px",
-                border: "1px dashed rgba(148, 163, 184, 0.22)",
+                border: "1px dashed #334155",
                 borderRadius: "12px",
                 padding: "18px",
               }}

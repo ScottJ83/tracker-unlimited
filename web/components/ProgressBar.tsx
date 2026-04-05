@@ -25,9 +25,10 @@ export default function ProgressBar({ label, value }: Props) {
       <div
         style={{
           width: "100%",
-          height: "10px",
-          border: "1px solid rgba(255,255,255,0.15)",
-          background: "#02060c",
+          height: "12px",
+          border: "1px solid #334155",
+          borderRadius: "999px",
+          background: "#0f172a",
           overflow: "hidden",
         }}
       >
@@ -35,7 +36,9 @@ export default function ProgressBar({ label, value }: Props) {
           style={{
             width: `${safeValue}%`,
             height: "100%",
-            background: isBase ? "#4ea3ff" : "#8b5cf6",
+            background: isBase
+              ? "linear-gradient(90deg, #60a5fa 0%, #38bdf8 100%)"
+              : "linear-gradient(90deg, #a78bfa 0%, #c084fc 100%)",
           }}
         />
       </div>
