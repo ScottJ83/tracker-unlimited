@@ -17,19 +17,20 @@ function getAspectPills(aspect: string | null | undefined) {
   return pills;
 }
 
-function StatPill({ label, value, color }: { label: string; value: any; color: string }) {
+function StatPill({ label, value, color }: any) {
   if (value === null || value === undefined || value === "") return null;
 
   return (
     <div
       style={{
         fontSize: "10px",
-        padding: "2px 6px",
+        padding: "3px 6px",
         borderRadius: "999px",
         background: `${color}22`,
         border: `1px solid ${color}`,
         color,
         fontWeight: 700,
+        whiteSpace: "nowrap",
       }}
     >
       {label}: {value}
@@ -37,50 +38,54 @@ function StatPill({ label, value, color }: { label: string; value: any; color: s
   );
 }
 
-function ImagePreview({ frontArt, name }: { frontArt?: string | null; name: string }) {
-  const [showPreview, setShowPreview] = useState(false);
-
-  if (!frontArt) return null;
+function CardImage({ src, name }: any) {
+  const [hover, setHover] = useState(false);
 
   return (
     <div
-      style={{ position: "relative" }}
-      onMouseEnter={() => setShowPreview(true)}
-      onMouseLeave={() => setShowPreview(false)}
+      style={{
+        position: "relative",
+        width: "56px",
+        minWidth: "56px",
+        height: "78px",
+        borderRadius: "8px",
+        border: "1px solid #334155",
+        background: "#0b1220",
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
     >
-      <div
-        style={{
-          fontSize: "12px",
-          padding: "2px 6px",
-          borderRadius: "6px",
-          border: "1px solid #334155",
-          background: "#02040a",
-          color: "#e5edf7",
-          cursor: "pointer",
-          userSelect: "none",
-        }}
-        title="Preview image"
-      >
-        🖼
-      </div>
+      {src && (
+        <>
+          <img
+            src={src}
+            alt={name}
+            style={{
+              width: "56px",
+              height: "78px",
+              objectFit: "cover",
+              borderRadius: "8px",
+            }}
+          />
 
-      {showPreview ? (
-        <img
-          src={frontArt}
-          alt={name}
-          style={{
-            position: "absolute",
-            top: "-10px",
-            left: "110%",
-            width: "230px",
-            borderRadius: "12px",
-            border: "1px solid #334155",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
-            zIndex: 999,
-            background: "#02040a",
-          }}
-        />
-      ) : null}
+          {hover && (
+            <img
+              src={src}
+              alt={name}
+              style={{
+                position: "absolute",
+                top: "-18px",
+                left: "66px",
+                width: "220px",
+                borderRadius: "12px",
+                border: "1px solid #334155",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+                zIndex: 999,
+              }}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }
@@ -89,60 +94,28 @@ export default function CollectionClient({ data }: any) {
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
   const [sortBy, setSortBy] = useState("price_desc");
-  const [showImages, setShowImages] = useState(true);
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    const tq = textSearch.trim().toLowerCase();
+    const q = search.toLowerCase();
+    const tq = textSearch.toLowerCase();
 
     let rows = (data || []).filter((item: any) => {
-      const card = Array.isArray(item.cards) ? item.cards[0] : item.cards;
+      const card = item.cards?.[0] || item.cards;
 
-      const name = String(card?.name || "").toLowerCase();
-      const subtitle = String(card?.subtitle || "").toLowerCase();
-      const setCode = String(card?.set_code || "").toLowerCase();
-      const number = String(card?.card_number || "").toLowerCase();
-      const aspect = String(card?.aspect || "").toLowerCase();
-      const traits = String(card?.traits || "").toLowerCase();
+      const name = card?.name?.toLowerCase() || "";
+      const text = card?.front_text?.toLowerCase() || "";
 
-      const frontText = String(card?.front_text || "").toLowerCase();
-      const rarity = String(card?.rarity || "").toLowerCase();
-      const artist = String(card?.artist || "").toLowerCase();
-      const cost = String(card?.cost ?? "").toLowerCase();
-      const power = String(card?.power ?? "").toLowerCase();
-      const hp = String(card?.hp ?? "").toLowerCase();
-
-      const mainMatch =
-        !q ||
-        name.includes(q) ||
-        subtitle.includes(q) ||
-        setCode.includes(q) ||
-        number.includes(q) ||
-        aspect.includes(q) ||
-        traits.includes(q);
-
-      const textMatch =
-        !tq ||
-        frontText.includes(tq) ||
-        rarity.includes(tq) ||
-        artist.includes(tq) ||
-        cost.includes(tq) ||
-        power.includes(tq) ||
-        hp.includes(tq);
-
-      return mainMatch && textMatch;
+      return (!q || name.includes(q)) && (!tq || text.includes(tq));
     });
 
     rows.sort((a: any, b: any) => {
-      const ac = Array.isArray(a.cards) ? a.cards[0] : a.cards;
-      const bc = Array.isArray(b.cards) ? b.cards[0] : b.cards;
+      const ac = a.cards?.[0] || a.cards;
+      const bc = b.cards?.[0] || b.cards;
 
-      const ap = Number(ac?.price || 0) * Number(a.quantity || 0);
-      const bp = Number(bc?.price || 0) * Number(b.quantity || 0);
+      const ap = (ac?.price || 0) * a.quantity;
+      const bp = (bc?.price || 0) * b.quantity;
 
       if (sortBy === "price_asc") return ap - bp;
-      if (sortBy === "name_asc") return String(ac?.name || "").localeCompare(String(bc?.name || ""));
-      if (sortBy === "name_desc") return String(bc?.name || "").localeCompare(String(ac?.name || ""));
       return bp - ap;
     });
 
@@ -151,76 +124,34 @@ export default function CollectionClient({ data }: any) {
 
   return (
     <div>
+      {/* SEARCH */}
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
-          type="text"
-          placeholder="Search name, set, number, aspect, or traits"
+          placeholder="Search name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            minWidth: "320px",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
+          style={{ padding: "10px", borderRadius: "10px" }}
         />
 
         <input
-          type="text"
-          placeholder="Search text, rarity, artist, cost, power, or hp"
+          placeholder="Search text..."
           value={textSearch}
           onChange={(e) => setTextSearch(e.target.value)}
-          style={{
-            minWidth: "320px",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
+          style={{ padding: "10px", borderRadius: "10px" }}
         />
-
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          style={{
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
-        >
-          <option value="price_desc">Price High-Low</option>
-          <option value="price_asc">Price Low-High</option>
-          <option value="name_asc">Name A-Z</option>
-          <option value="name_desc">Name Z-A</option>
-        </select>
-
-        <label style={{ display: "flex", gap: "6px", alignItems: "center", color: "#cbd5e1" }}>
-          <input
-            type="checkbox"
-            checked={showImages}
-            onChange={(e) => setShowImages(e.target.checked)}
-          />
-          Show Preview Icon
-        </label>
       </div>
 
+      {/* GRID */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(185px, 1fr))",
-          gap: "12px",
+          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+          gap: "14px",
         }}
       >
         {filtered.map((item: any) => {
-          const card = Array.isArray(item.cards) ? item.cards[0] : item.cards;
+          const card = item.cards?.[0] || item.cards;
           const aspectPills = getAspectPills(card?.aspect);
-          const unitValue = Number(card?.price || 0);
-          const totalValue = unitValue * Number(item.quantity || 0);
 
           return (
             <div
@@ -229,71 +160,60 @@ export default function CollectionClient({ data }: any) {
                 border: "1px solid #22c55e",
                 borderRadius: "14px",
                 padding: "10px",
-                minHeight: "255px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
+                height: "155px",
                 background: "#0f172a",
-                boxShadow: "0 0 0 1px rgba(34,197,94,0.15)",
+                display: "flex",
+                gap: "10px",
                 position: "relative",
               }}
             >
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "start" }}>
+              <CardImage src={card?.front_art} name={card?.name} />
+
+              <div style={{ flex: 1, paddingBottom: "40px" }}>
+                {/* TOP */}
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: "13px" }}>
-                      {card?.name || "Unknown card"}
-                    </div>
-                    <div style={{ color: "#94a3b8", marginBottom: "6px", fontSize: "11px" }}>
-                      {card?.subtitle || ""}
+                    <div style={{ fontWeight: 700 }}>{card?.name}</div>
+                    <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                      {card?.subtitle}
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                    <StatPill label="Cost" value={card?.cost} color="#eab308" />
-                    {showImages ? <ImagePreview frontArt={card?.front_art} name={card?.name || "Card"} /> : null}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+                    <div style={{ display: "flex", gap: "4px" }}>
+                      <StatPill label="Cost" value={card?.cost} color="#eab308" />
+                      <StatPill label="Power" value={card?.power} color="#dc2626" />
+                      <StatPill label="HP" value={card?.hp} color="#2563eb" />
+                    </div>
+
+                    <div style={{ display: "flex", gap: "4px" }}>
+                      {aspectPills.map((pill) => (
+                        <div key={pill.name} style={{ fontSize: "9px" }}>
+                          {pill.name}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
-                  {aspectPills.map((pill) => (
-                    <div
-                      key={pill.name}
-                      style={{
-                        fontSize: "9px",
-                        padding: "2px 5px",
-                        borderRadius: "999px",
-                        background: `${pill.color}22`,
-                        border: `1px solid ${pill.color}`,
-                        color: pill.color,
-                      }}
-                    >
-                      {pill.name}
-                    </div>
-                  ))}
+                {/* MIDDLE */}
+                <div style={{ fontSize: "11px", marginTop: "6px" }}>
+                  #{card?.card_number} • {card?.variant}
                 </div>
 
-                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "6px" }}>
-                  <StatPill label="Power" value={card?.power} color="#dc2626" />
-                  <StatPill label="HP" value={card?.hp} color="#2563eb" />
-                </div>
-
-                <div style={{ fontSize: "11px" }}>Set: {card?.set_code || "-"}</div>
-                <div style={{ fontSize: "11px" }}>#{card?.card_number ?? "-"}</div>
-                <div style={{ fontSize: "11px" }}>Variant: {card?.variant || "-"}</div>
-                <div style={{ fontSize: "11px" }}>Traits: {card?.traits || "-"}</div>
-                <div style={{ marginTop: "6px", color: "#86efac", fontWeight: 700, fontSize: "11px" }}>
+                <div style={{ fontSize: "11px" }}>
                   Qty: {item.quantity}
                 </div>
-                <div style={{ fontSize: "11px", marginTop: "6px" }}>
-                  Unit: ${unitValue.toFixed(2)}
-                </div>
-                <div style={{ fontSize: "11px", fontWeight: 700 }}>
-                  Total: ${totalValue.toFixed(2)}
+
+                <div style={{ fontSize: "11px" }}>
+                  Value: ${(card?.price || 0 * item.quantity).toFixed(2)}
                 </div>
               </div>
 
-              <AddCardButton cardId={item.card_id} />
+              {/* BUTTONS */}
+              <div style={{ position: "absolute", right: "10px", bottom: "8px" }}>
+                <AddCardButton cardId={item.card_id} />
+              </div>
             </div>
           );
         })}
