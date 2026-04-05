@@ -17,13 +17,14 @@ function getAspectPills(aspect: string | null | undefined) {
   return pills;
 }
 
-function StatPill({ label, value, color }: any) {
+function StatPill({ label, value, color }: { label: string; value: any; color: string }) {
   if (value === null || value === undefined || value === "") return null;
 
   return (
     <div
       style={{
         fontSize: "10px",
+        lineHeight: 1,
         padding: "3px 6px",
         borderRadius: "999px",
         background: `${color}22`,
@@ -38,7 +39,13 @@ function StatPill({ label, value, color }: any) {
   );
 }
 
-function CardImage({ src, name }: any) {
+function CardImage({
+  src,
+  name,
+}: {
+  src?: string | null;
+  name: string;
+}) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -51,11 +58,17 @@ function CardImage({ src, name }: any) {
         borderRadius: "8px",
         border: "1px solid #334155",
         background: "#0b1220",
+        overflow: "visible",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
-      onMouseEnter={() => setHover(true)}
+      onMouseEnter={() => {
+        if (src) setHover(true);
+      }}
       onMouseLeave={() => setHover(false)}
     >
-      {src && (
+      {src ? (
         <>
           <img
             src={src}
@@ -65,10 +78,12 @@ function CardImage({ src, name }: any) {
               height: "78px",
               objectFit: "cover",
               borderRadius: "8px",
+              cursor: "pointer",
+              display: "block",
             }}
           />
 
-          {hover && (
+          {hover ? (
             <img
               src={src}
               alt={name}
@@ -81,10 +96,21 @@ function CardImage({ src, name }: any) {
                 border: "1px solid #334155",
                 boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
                 zIndex: 999,
+                background: "#02040a",
               }}
             />
-          )}
+          ) : null}
         </>
+      ) : (
+        <div
+          style={{
+            fontSize: "10px",
+            color: "#475569",
+            userSelect: "none",
+          }}
+        >
+          —
+        </div>
       )}
     </div>
   );
@@ -96,26 +122,57 @@ export default function CollectionClient({ data }: any) {
   const [sortBy, setSortBy] = useState("price_desc");
 
   const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    const tq = textSearch.toLowerCase();
+    const q = search.trim().toLowerCase();
+    const tq = textSearch.trim().toLowerCase();
 
     let rows = (data || []).filter((item: any) => {
-      const card = item.cards?.[0] || item.cards;
+      const card = Array.isArray(item.cards) ? item.cards[0] : item.cards;
 
-      const name = card?.name?.toLowerCase() || "";
-      const text = card?.front_text?.toLowerCase() || "";
+      const name = String(card?.name || "").toLowerCase();
+      const subtitle = String(card?.subtitle || "").toLowerCase();
+      const setCode = String(card?.set_code || "").toLowerCase();
+      const number = String(card?.card_number || "").toLowerCase();
+      const aspect = String(card?.aspect || "").toLowerCase();
+      const traits = String(card?.traits || "").toLowerCase();
 
-      return (!q || name.includes(q)) && (!tq || text.includes(tq));
+      const frontText = String(card?.front_text || "").toLowerCase();
+      const rarity = String(card?.rarity || "").toLowerCase();
+      const artist = String(card?.artist || "").toLowerCase();
+      const cost = String(card?.cost ?? "").toLowerCase();
+      const power = String(card?.power ?? "").toLowerCase();
+      const hp = String(card?.hp ?? "").toLowerCase();
+
+      const mainMatch =
+        !q ||
+        name.includes(q) ||
+        subtitle.includes(q) ||
+        setCode.includes(q) ||
+        number.includes(q) ||
+        aspect.includes(q) ||
+        traits.includes(q);
+
+      const textMatch =
+        !tq ||
+        frontText.includes(tq) ||
+        rarity.includes(tq) ||
+        artist.includes(tq) ||
+        cost.includes(tq) ||
+        power.includes(tq) ||
+        hp.includes(tq);
+
+      return mainMatch && textMatch;
     });
 
     rows.sort((a: any, b: any) => {
-      const ac = a.cards?.[0] || a.cards;
-      const bc = b.cards?.[0] || b.cards;
+      const ac = Array.isArray(a.cards) ? a.cards[0] : a.cards;
+      const bc = Array.isArray(b.cards) ? b.cards[0] : b.cards;
 
-      const ap = (ac?.price || 0) * a.quantity;
-      const bp = (bc?.price || 0) * b.quantity;
+      const ap = Number(ac?.price || 0) * Number(a.quantity || 0);
+      const bp = Number(bc?.price || 0) * Number(b.quantity || 0);
 
       if (sortBy === "price_asc") return ap - bp;
+      if (sortBy === "name_asc") return String(ac?.name || "").localeCompare(String(bc?.name || ""));
+      if (sortBy === "name_desc") return String(bc?.name || "").localeCompare(String(ac?.name || ""));
       return bp - ap;
     });
 
@@ -124,24 +181,55 @@ export default function CollectionClient({ data }: any) {
 
   return (
     <div>
-      {/* SEARCH */}
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
-          placeholder="Search name..."
+          type="text"
+          placeholder="Search name, set, number, aspect, or traits"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: "10px", borderRadius: "10px" }}
+          style={{
+            minWidth: "320px",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            border: "1px solid #334155",
+            background: "#0f172a",
+            color: "#e5edf7",
+          }}
         />
 
         <input
-          placeholder="Search text..."
+          type="text"
+          placeholder="Search text, rarity, artist, cost, power, or hp"
           value={textSearch}
           onChange={(e) => setTextSearch(e.target.value)}
-          style={{ padding: "10px", borderRadius: "10px" }}
+          style={{
+            minWidth: "320px",
+            padding: "10px 12px",
+            borderRadius: "10px",
+            border: "1px solid #334155",
+            background: "#0f172a",
+            color: "#e5edf7",
+          }}
         />
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          style={{
+            padding: "10px 12px",
+            borderRadius: "10px",
+            border: "1px solid #334155",
+            background: "#0f172a",
+            color: "#e5edf7",
+          }}
+        >
+          <option value="price_desc">Price High-Low</option>
+          <option value="price_asc">Price Low-High</option>
+          <option value="name_asc">Name A-Z</option>
+          <option value="name_desc">Name Z-A</option>
+        </select>
       </div>
 
-      {/* GRID */}
       <div
         style={{
           display: "grid",
@@ -150,8 +238,10 @@ export default function CollectionClient({ data }: any) {
         }}
       >
         {filtered.map((item: any) => {
-          const card = item.cards?.[0] || item.cards;
+          const card = Array.isArray(item.cards) ? item.cards[0] : item.cards;
           const aspectPills = getAspectPills(card?.aspect);
+          const unitValue = Number(card?.price || 0);
+          const totalValue = unitValue * Number(item.quantity || 0);
 
           return (
             <div
@@ -164,54 +254,195 @@ export default function CollectionClient({ data }: any) {
                 background: "#0f172a",
                 display: "flex",
                 gap: "10px",
+                overflow: "hidden",
+                boxSizing: "border-box",
                 position: "relative",
               }}
             >
-              <CardImage src={card?.front_art} name={card?.name} />
+              <div style={{ width: "56px", minWidth: "56px" }}>
+                <CardImage src={card?.front_art} name={card?.name || "Card"} />
+              </div>
 
-              <div style={{ flex: 1, paddingBottom: "40px" }}>
-                {/* TOP */}
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div>
-                    <div style={{ fontWeight: 700 }}>{card?.name}</div>
-                    <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-                      {card?.subtitle}
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  paddingBottom: "40px",
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      gap: "8px",
+                    }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontWeight: 700,
+                          fontSize: "14px",
+                          color: "#e5edf7",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {card?.name || "Unknown card"}
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize: "11px",
+                          color: "#94a3b8",
+                          minHeight: "14px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {card?.subtitle || ""}
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                        gap: "4px",
+                        flexShrink: 0,
+                        maxWidth: "120px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "4px",
+                          flexWrap: "wrap",
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        <StatPill label="Cost" value={card?.cost} color="#eab308" />
+                        <StatPill label="Power" value={card?.power} color="#dc2626" />
+                        <StatPill label="HP" value={card?.hp} color="#2563eb" />
+                      </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "4px",
+                          flexWrap: "wrap",
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        {aspectPills.map((pill) => (
+                          <div
+                            key={pill.name}
+                            style={{
+                              fontSize: "9px",
+                              lineHeight: 1,
+                              padding: "3px 5px",
+                              borderRadius: "999px",
+                              background: `${pill.color}22`,
+                              border: `1px solid ${pill.color}`,
+                              color: pill.color,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {pill.name}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
-                    <div style={{ display: "flex", gap: "4px" }}>
-                      <StatPill label="Cost" value={card?.cost} color="#eab308" />
-                      <StatPill label="Power" value={card?.power} color="#dc2626" />
-                      <StatPill label="HP" value={card?.hp} color="#2563eb" />
-                    </div>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      marginTop: "5px",
+                      color: "#cbd5e1",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    Set: {card?.set_code || "-"}
+                  </div>
 
-                    <div style={{ display: "flex", gap: "4px" }}>
-                      {aspectPills.map((pill) => (
-                        <div key={pill.name} style={{ fontSize: "9px" }}>
-                          {pill.name}
-                        </div>
-                      ))}
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      color: "#cbd5e1",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    #{card?.card_number ?? "-"} • {card?.variant || "-"}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      color: "#cbd5e1",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    Traits: {card?.traits || "-"}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: "10px",
+                      lineHeight: 1.25,
+                      color: "#cbd5e1",
+                      marginTop: "5px",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      maxHeight: "26px",
+                    }}
+                  >
+                    {card?.front_text || "-"}
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      flexWrap: "wrap",
+                      marginTop: "5px",
+                      fontSize: "11px",
+                    }}
+                  >
+                    <div style={{ color: "#86efac", fontWeight: 700 }}>
+                      Qty: {item.quantity}
+                    </div>
+                    <div style={{ color: "#cbd5e1" }}>
+                      Unit: ${unitValue.toFixed(2)}
+                    </div>
+                    <div style={{ color: "#e5edf7", fontWeight: 700 }}>
+                      Total: ${totalValue.toFixed(2)}
                     </div>
                   </div>
-                </div>
-
-                {/* MIDDLE */}
-                <div style={{ fontSize: "11px", marginTop: "6px" }}>
-                  #{card?.card_number} • {card?.variant}
-                </div>
-
-                <div style={{ fontSize: "11px" }}>
-                  Qty: {item.quantity}
-                </div>
-
-                <div style={{ fontSize: "11px" }}>
-                  Value: ${(card?.price || 0 * item.quantity).toFixed(2)}
                 </div>
               </div>
 
-              {/* BUTTONS */}
-              <div style={{ position: "absolute", right: "10px", bottom: "8px" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  bottom: "8px",
+                }}
+              >
                 <AddCardButton cardId={item.card_id} />
               </div>
             </div>
