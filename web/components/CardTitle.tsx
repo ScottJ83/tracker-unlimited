@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 type FooterItem = {
   label: string;
   value: string | number;
@@ -73,8 +73,7 @@ function CardImage({
   name: string;
   hidden?: boolean;
 }) {
-  const [hover, setHover] = (require("react") as typeof import("react")).useState(false);
-
+const [hover, setHover] = useState(false);
   return (
     <div
       style={{
