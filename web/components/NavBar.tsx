@@ -39,6 +39,7 @@ export default async function NavBar() {
             <Link href="/sets">Sets</Link>
             <Link href="/collection">Collection</Link>
             <Link href="/cards">Cards</Link>
+            <Link href="/decks">Decks</Link>
           </nav>
 
           <AuthButton email={user?.email ?? null} />
