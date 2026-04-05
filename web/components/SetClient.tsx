@@ -218,7 +218,7 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
                 padding: "12px",
-                minHeight: "190px",
+                minHeight: "160px",
                 background: owned ? "#0f172a" : "#05070d",
                 display: "flex",
                 justifyContent: "space-between",
