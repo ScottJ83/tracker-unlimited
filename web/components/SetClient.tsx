@@ -217,8 +217,8 @@ export default function SetClient({ cards, collection }: any) {
               style={{
                 border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
-                padding: "12px",
-                minHeight: "160px",
+                padding: "10px",
+                minHeight: "150px",
                 background: owned ? "#0f172a" : "#05070d",
                 display: "flex",
                 justifyContent: "space-between",
@@ -297,20 +297,21 @@ export default function SetClient({ cards, collection }: any) {
                       Traits: {card.traits || "-"}
                     </div>
 
-                    <div
-                      style={{
-                        fontSize: "10px",
-                        lineHeight: 1.35,
-                        color: "#cbd5e1",
-                        marginTop: "6px",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {card.front_text || "-"}
-                    </div>
+<div
+  style={{
+    fontSize: "9px",
+    lineHeight: 1.35,
+    color: "#cbd5e1",
+    marginTop: "6px",
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+    maxHeight: "27px",
+  }}
+>
+  {card.front_text || "-"}
+</div>
 
                     <div
                       style={{
