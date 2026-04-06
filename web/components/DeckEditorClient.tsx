@@ -394,7 +394,9 @@ function DeckCardTile({
             <div style={{ color: "#cbd5e1" }}>
               Unit: ${Number(card?.price || 0).toFixed(2)}
             </div>
-          </div>   
+          </div> 
+                  </div>
+      </div>  
       <div
         style={{
           position: "absolute",
