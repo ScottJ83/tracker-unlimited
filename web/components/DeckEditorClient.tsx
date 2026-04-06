@@ -215,7 +215,7 @@ function DeckCardTile({
         border: "1px solid #22c55e",
         borderRadius: "14px",
         padding: "10px",
-        minHeight: "155px",
+        minHeight: "170px",
         background: "#0f172a",
         display: "flex",
         gap: "10px",
@@ -234,7 +234,7 @@ function DeckCardTile({
           minWidth: 0,
           display: "flex",
           flexDirection: "column",
-          paddingBottom: "46px",
+          paddingBottom: "50px",
         }}
       >
         <div style={{ minWidth: 0 }}>
@@ -442,7 +442,7 @@ function CollectionCardTile({
         border: "1px solid #22c55e",
         borderRadius: "14px",
         padding: "10px",
-        minHeight: "188px",
+        minHeight: "202px",
         background: "#0f172a",
         display: "flex",
         gap: "10px",
@@ -461,7 +461,7 @@ function CollectionCardTile({
           minWidth: 0,
           display: "flex",
           flexDirection: "column",
-          paddingBottom: "72px",
+          paddingBottom: "82px",
         }}
       >
         <div style={{ minWidth: 0 }}>

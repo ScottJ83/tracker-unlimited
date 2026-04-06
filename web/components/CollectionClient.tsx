@@ -250,7 +250,7 @@ export default function CollectionClient({ data }: any) {
                 border: "1px solid #22c55e",
                 borderRadius: "14px",
                 padding: "10px",
-                height: "155px",
+                height: "170px",
                 background: "#0f172a",
                 display: "flex",
                 gap: "10px",
@@ -269,7 +269,7 @@ export default function CollectionClient({ data }: any) {
                   minWidth: 0,
                   display: "flex",
                   flexDirection: "column",
-                  paddingBottom: "40px",
+                  paddingBottom: "50px",
                 }}
               >
                 <div style={{ minWidth: 0 }}>

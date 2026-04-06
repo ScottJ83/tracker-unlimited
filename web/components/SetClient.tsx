@@ -230,7 +230,7 @@ export default function SetClient({ cards, collection }: any) {
                 border: owned ? "1px solid #22c55e" : "1px solid #2a3445",
                 borderRadius: "14px",
                 padding: "10px",
-                height: "155px",
+                height: "170px",
                 background: owned ? "#0f172a" : "#05070d",
                 display: "flex",
                 gap: "10px",
@@ -249,7 +249,7 @@ export default function SetClient({ cards, collection }: any) {
                   minWidth: 0,
                   display: "flex",
                   flexDirection: "column",
-                  paddingBottom: "40px",
+                  paddingBottom: "50px",
                 }}
               >
                 {hidden ? (
