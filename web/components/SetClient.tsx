@@ -384,6 +384,19 @@ export default function SetClient({ cards, collection }: any) {
                       }}
                     >
                       Traits: {card.traits || "-"}
+                      <div
+  style={{
+    display: "flex",
+    gap: "10px",
+    flexWrap: "wrap",
+    marginTop: "5px",
+    fontSize: "11px",
+  }}
+>
+  <div style={{ color: "#cbd5e1" }}>
+    Unit: ${Number(card?.price || 0).toFixed(2)}
+  </div>
+</div>
                     </div>
 
                     <div

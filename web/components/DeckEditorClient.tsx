@@ -387,8 +387,14 @@ function DeckCardTile({
               fontWeight: 700,
             }}
           >
-            In Deck: {quantity}
-          </div>
+<div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+  <div style={{ color: "#86efac", fontWeight: 700 }}>
+    In Deck: {quantity}
+  </div>
+  <div style={{ color: "#cbd5e1" }}>
+    Unit: ${Number(card?.price || 0).toFixed(2)}
+  </div>
+</div>          </div>
         </div>
       </div>
 
@@ -601,22 +607,28 @@ function CollectionCardTile({
             {card?.front_text || "-"}
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              flexWrap: "wrap",
-              marginTop: "5px",
-              fontSize: "11px",
-            }}
-          >
-            <div style={{ color: "#86efac", fontWeight: 700 }}>Owned: {ownedQty}</div>
-            <div style={{ color: "#e5edf7", fontWeight: 700 }}>Available: {availableQty}</div>
-            {leaderSelected ? <div style={{ color: "#7dd3fc", fontWeight: 700 }}>Leader</div> : null}
-            {baseSelected ? <div style={{ color: "#fca5a5", fontWeight: 700 }}>Base</div> : null}
-          </div>
-        </div>
-      </div>
+<div
+  style={{
+    display: "flex",
+    gap: "10px",
+    flexWrap: "wrap",
+    marginTop: "5px",
+    fontSize: "11px",
+  }}
+>
+  <div style={{ color: "#86efac", fontWeight: 700 }}>
+    Owned: {ownedQty}
+  </div>
+  <div style={{ color: "#e5edf7", fontWeight: 700 }}>
+    Available: {availableQty}
+  </div>
+  <div style={{ color: "#cbd5e1" }}>
+    Unit: ${Number(card?.price || 0).toFixed(2)}
+  </div>
+
+  {leaderSelected ? <div style={{ color: "#7dd3fc", fontWeight: 700 }}>Leader</div> : null}
+  {baseSelected ? <div style={{ color: "#fca5a5", fontWeight: 700 }}>Base</div> : null}
+</div>
 
       <div
         style={{
