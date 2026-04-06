@@ -395,10 +395,6 @@ function DeckCardTile({
               Unit: ${Number(card?.price || 0).toFixed(2)}
             </div>
           </div>   
-      </div>
-        </div>
-      </div>
-
       <div
         style={{
           position: "absolute",
