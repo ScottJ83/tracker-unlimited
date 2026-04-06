@@ -401,7 +401,6 @@ function DeckCardTile({
 </div>    
       </div>
         </div>
-      </div>
 
       <div
         style={{
