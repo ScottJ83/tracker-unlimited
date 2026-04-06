@@ -379,28 +379,25 @@ function DeckCardTile({
             {card?.front_text || "-"}
           </div>
 
-<div
-  style={{
-    display: "flex",
-    gap: "10px",
-    flexWrap: "wrap",
-    marginTop: "5px",
-    fontSize: "11px",
-  }}
->
-  <div style={{ color: "#86efac", fontWeight: 700 }}>
-    In Deck: {quantity}
-  </div>
-  <div style={{ color: "#cbd5e1" }}>
-    Unit: ${Number(card?.price || 0).toFixed(2)}
-  </div>
-</div>
-  <div style={{ color: "#cbd5e1" }}>
-    Unit: ${Number(card?.price || 0).toFixed(2)}
-  </div>
-</div>    
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+              marginTop: "5px",
+              fontSize: "11px",
+            }}
+          >
+            <div style={{ color: "#86efac", fontWeight: 700 }}>
+              In Deck: {quantity}
+            </div>
+            <div style={{ color: "#cbd5e1" }}>
+              Unit: ${Number(card?.price || 0).toFixed(2)}
+            </div>
+          </div>   
       </div>
         </div>
+      </div>
 
       <div
         style={{
@@ -679,6 +676,8 @@ function CollectionCardTile({
     </div>
   );
 }
+
+export default function DeckEditorClient({
   deck,
   collectionEntries,
   initialDeckCards,
