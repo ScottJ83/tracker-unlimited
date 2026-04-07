@@ -20,14 +20,6 @@ const setOrder = [
   "LOFOP",
   "SHDOP",
   "TWIOP",
-  "LAWPR",
-  "SECPR",
-  "JTLPR",
-  "SORPR",
-  "LOFPR",
-  "SHDPR",
-  "TWIPR",
-  "TS26",
 ];
 
 const setColors: Record<string, string> = {
@@ -45,14 +37,6 @@ const setColors: Record<string, string> = {
   LOFOP: "#275fb8",
   SHDOP: "#2c3b8f",
   TWIOP: "#6f1823",
-  LAWPR: "#c87a2c",
-  SECPR: "#5b3aa6",
-  JTLPR: "#f2c200",
-  SORPR: "#d32f2f",
-  LOFPR: "#2f6fd3",
-  SHDPR: "#3949ab",
-  TWIPR: "#8b1e2d",
-  TS26: "#00bcd4",
 };
 
 async function getAllCards(supabase: any) {
