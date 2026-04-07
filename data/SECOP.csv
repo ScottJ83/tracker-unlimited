@@ -1,0 +1,1210 @@
+{
+  "total_cards": 40,
+  "data": [
+    {
+      "Set": "SECOP",
+      "Number": "04",
+      "Name": "Armor of Fortune",
+      "Type": "Upgrade",
+      "Aspects": [
+        "Vigilance"
+      ],
+      "Traits": [
+        "ITEM",
+        "ARMOR"
+      ],
+      "Cost": "2",
+      "FrontText": "Plot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Keywords": [
+        "Plot"
+      ],
+      "Artist": "Konstantin Porubov",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.12",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/04.png",
+      "LowPrice": "0.04"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "24",
+      "Name": "Armor of Fortune",
+      "Type": "Upgrade",
+      "Aspects": [
+        "Vigilance"
+      ],
+      "Traits": [
+        "ITEM",
+        "ARMOR"
+      ],
+      "Cost": "2",
+      "FrontText": "Plot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Keywords": [
+        "Plot"
+      ],
+      "Artist": "Konstantin Porubov",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.26",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/24.png",
+      "LowPrice": "0.05"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "19",
+      "Name": "B2EM0",
+      "Subtitle": "That's Two Lies",
+      "Type": "Unit",
+      "Aspects": [
+        "Heroism"
+      ],
+      "Traits": [
+        "FRINGE",
+        "DROID"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "1",
+      "Power": "0",
+      "HP": "4",
+      "FrontText": "Restore 1\nOn Attack: You may disclose Heroism Heroism (reveal cards from your hand with these aspect icons among them). If you do, give a unit Sentinel for this phase.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Keywords": [
+        "Restore",
+        "Sentinel"
+      ],
+      "Artist": "Kory Lynn Hubbell",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.22",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/19.png",
+      "LowPrice": "0.10"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "39",
+      "Name": "B2EM0",
+      "Subtitle": "That's Two Lies",
+      "Type": "Unit",
+      "Aspects": [
+        "Heroism"
+      ],
+      "Traits": [
+        "FRINGE",
+        "DROID"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "1",
+      "Power": "0",
+      "HP": "4",
+      "FrontText": "Restore 1\nOn Attack: You may disclose Heroism Heroism (reveal cards from your hand with these aspect icons among them). If you do, give a unit Sentinel for this phase.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Keywords": [
+        "Restore",
+        "Sentinel"
+      ],
+      "Artist": "Kory Lynn Hubbell",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.29",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/39.png",
+      "LowPrice": "0.19"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "17",
+      "Name": "Bail Organa",
+      "Subtitle": "Responding to Catastrophe",
+      "Type": "Unit",
+      "Aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "Traits": [
+        "REPUBLIC",
+        "OFFICIAL"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "2",
+      "Power": "2",
+      "HP": "4",
+      "FrontText": "On Attack: You may discard a card from your hand. If you do, create a Spy token.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Artist": "Kevin Libranda",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.22",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/17.png",
+      "LowPrice": "0.10"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "37",
+      "Name": "Bail Organa",
+      "Subtitle": "Responding to Catastrophe",
+      "Type": "Unit",
+      "Aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "Traits": [
+        "REPUBLIC",
+        "OFFICIAL"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "2",
+      "Power": "2",
+      "HP": "4",
+      "FrontText": "On Attack: You may discard a card from your hand. If you do, create a Spy token.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Artist": "Kevin Libranda",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.36",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/37.png",
+      "LowPrice": "0.19"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "02",
+      "Name": "Bo-Katan Kryze",
+      "Subtitle": "Alone",
+      "Type": "Unit",
+      "Aspects": [
+        "Vigilance",
+        "Heroism"
+      ],
+      "Traits": [
+        "MANDALORIAN"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "9",
+      "Power": "8",
+      "HP": "8",
+      "FrontText": "When Played: Give each enemy unit -3/-3 for this phase.\nWhen an enemy unit is defeated: Give an Experience token to a friendly unit.",
+      "DoubleSided": false,
+      "Rarity": "Rare",
+      "Unique": true,
+      "Artist": "Monika Pałosz",
+      "VariantType": "OP Promo",
+      "MarketPrice": "4.38",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/02.png",
+      "LowPrice": "4.29"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "22",
+      "Name": "Bo-Katan Kryze",
+      "Subtitle": "Alone",
+      "Type": "Unit",
+      "Aspects": [
+        "Vigilance",
+        "Heroism"
+      ],
+      "Traits": [
+        "MANDALORIAN"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "9",
+      "Power": "8",
+      "HP": "8",
+      "FrontText": "When Played: Give each enemy unit -3/-3 for this phase.\nWhen an enemy unit is defeated: Give an Experience token to a friendly unit.",
+      "DoubleSided": false,
+      "Rarity": "Rare",
+      "Unique": true,
+      "Artist": "Monika Pałosz",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "4.51",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/22.png",
+      "LowPrice": "3.69"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "18",
+      "Name": "Bravo Squadron Fighter",
+      "Type": "Unit",
+      "Aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "Traits": [
+        "NABOO",
+        "VEHICLE",
+        "FIGHTER"
+      ],
+      "Arenas": [
+        "Space"
+      ],
+      "Cost": "2",
+      "Power": "2",
+      "HP": "3",
+      "FrontText": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Keywords": [
+        "Saboteur"
+      ],
+      "Artist": "Aaron Dhanda",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.15",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/18.png",
+      "LowPrice": "0.04"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "38",
+      "Name": "Bravo Squadron Fighter",
+      "Type": "Unit",
+      "Aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "Traits": [
+        "NABOO",
+        "VEHICLE",
+        "FIGHTER"
+      ],
+      "Arenas": [
+        "Space"
+      ],
+      "Cost": "2",
+      "Power": "2",
+      "HP": "3",
+      "FrontText": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Keywords": [
+        "Saboteur"
+      ],
+      "Artist": "Aaron Dhanda",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.23",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/38.png",
+      "LowPrice": "0.10"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "07",
+      "Name": "C-3P0",
+      "Subtitle": "Anything I Might Do?",
+      "Type": "Unit",
+      "Aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "Traits": [
+        "REPUBLIC",
+        "DROID"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "1",
+      "Power": "1",
+      "HP": "3",
+      "FrontText": "Action [Exhaust, return this unit to its owner's hand]: Give a unit +2/+2 for this phase.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Artist": "French Carlomago",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.31",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/07.png",
+      "LowPrice": "0.10"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "27",
+      "Name": "C-3P0",
+      "Subtitle": "Anything I Might Do?",
+      "Type": "Unit",
+      "Aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "Traits": [
+        "REPUBLIC",
+        "DROID"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "1",
+      "Power": "1",
+      "HP": "3",
+      "FrontText": "Action [Exhaust, return this unit to its owner's hand]: Give a unit +2/+2 for this phase.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Artist": "French Carlomago",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.38",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/27.png",
+      "LowPrice": "0.10"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "01",
+      "Name": "Cantwell Arrestor Cruiser",
+      "Type": "Unit",
+      "Aspects": [
+        "Vigilance",
+        "Villainy"
+      ],
+      "Traits": [
+        "IMPERIAL",
+        "VEHICLE",
+        "CAPITAL SHIP"
+      ],
+      "Arenas": [
+        "Space"
+      ],
+      "Cost": "7",
+      "Power": "6",
+      "HP": "7",
+      "FrontText": "When Played: You may disclose Vigilance Vigilance Villainy (reveal cards from your hand with these aspect icons among them). If you do, exhaust an enemy unit. That unit can't ready while this unit is in play.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": false,
+      "Artist": "Stephen Zavala\n",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.28",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/01.png",
+      "LowPrice": "0.13"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "21",
+      "Name": "Cantwell Arrestor Cruiser",
+      "Type": "Unit",
+      "Aspects": [
+        "Vigilance",
+        "Villainy"
+      ],
+      "Traits": [
+        "IMPERIAL",
+        "VEHICLE",
+        "CAPITAL SHIP"
+      ],
+      "Arenas": [
+        "Space"
+      ],
+      "Cost": "7",
+      "Power": "6",
+      "HP": "7",
+      "FrontText": "When Played: You may disclose Vigilance Vigilance Villainy (reveal cards from your hand with these aspect icons among them). If you do, exhaust an enemy unit. That unit can't ready while this unit is in play.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": false,
+      "Artist": "Stephen Zavala\n",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.35",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/21.png",
+      "LowPrice": "0.15"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "15",
+      "Name": "Corellian Hounds",
+      "Type": "Unit",
+      "Aspects": [
+        "Aggression"
+      ],
+      "Traits": [
+        "CREATURE"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "5",
+      "Power": "5",
+      "HP": "5",
+      "FrontText": "If an opponent controls no ground units, this unit enters play ready.",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Artist": "Marc Escachx",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.12",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/15.png",
+      "LowPrice": "0.04"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "35",
+      "Name": "Corellian Hounds",
+      "Type": "Unit",
+      "Aspects": [
+        "Aggression"
+      ],
+      "Traits": [
+        "CREATURE"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "5",
+      "Power": "5",
+      "HP": "5",
+      "FrontText": "If an opponent controls no ground units, this unit enters play ready.",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Artist": "Marc Escachx",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.16",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/35.png",
+      "LowPrice": "0.05"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "06",
+      "Name": "Cruel Commandos",
+      "Type": "Unit",
+      "Aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "Traits": [
+        "REPUBLIC",
+        "CLONE",
+        "TROOPER"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "5",
+      "Power": "5",
+      "HP": "5",
+      "FrontText": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Keywords": [
+        "Overwhelm",
+        "Sentinel"
+      ],
+      "Artist": "Kevin Libranda",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.16",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/06.png",
+      "LowPrice": "0.03"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "26",
+      "Name": "Cruel Commandos",
+      "Type": "Unit",
+      "Aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "Traits": [
+        "REPUBLIC",
+        "CLONE",
+        "TROOPER"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "5",
+      "Power": "5",
+      "HP": "5",
+      "FrontText": "Sentinel (Enemy units in this arena must attack a Sentinel when they attack you.)\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Keywords": [
+        "Overwhelm",
+        "Sentinel"
+      ],
+      "Artist": "Kevin Libranda",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.23",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/26.png",
+      "LowPrice": "0.05"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "10",
+      "Name": "Ferrix Uprising",
+      "Type": "Event",
+      "Aspects": [
+        "Command"
+      ],
+      "Traits": [
+        "TACTIC"
+      ],
+      "Cost": "4",
+      "FrontText": "Deal damage to a unit equal to twice the number of units you control in its arena.",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Artist": "Sebastián Guidobono",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.14",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/10.png",
+      "LowPrice": "0.04"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "30",
+      "Name": "Ferrix Uprising",
+      "Type": "Event",
+      "Aspects": [
+        "Command"
+      ],
+      "Traits": [
+        "TACTIC"
+      ],
+      "Cost": "4",
+      "FrontText": "Deal damage to a unit equal to twice the number of units you control in its arena.",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Artist": "Sebastián Guidobono",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.25",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/30.png",
+      "LowPrice": "0.08"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "12",
+      "Name": "Fulminatrix",
+      "Subtitle": "Fleet Killer",
+      "Type": "Unit",
+      "Aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "Traits": [
+        "FIRST ORDER",
+        "VEHICLE",
+        "CAPITAL SHIP"
+      ],
+      "Arenas": [
+        "Space"
+      ],
+      "Cost": "8",
+      "Power": "9",
+      "HP": "7",
+      "FrontText": "When Played/On Attack: You may deal 4 damage to a ground unit.",
+      "DoubleSided": false,
+      "Rarity": "Rare",
+      "Unique": true,
+      "Artist": "Fernando Correa",
+      "VariantType": "OP Promo",
+      "MarketPrice": "1.20",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/12.png",
+      "LowPrice": "0.80"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "32",
+      "Name": "Fulminatrix",
+      "Subtitle": "Fleet Killer",
+      "Type": "Unit",
+      "Aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "Traits": [
+        "FIRST ORDER",
+        "VEHICLE",
+        "CAPITAL SHIP"
+      ],
+      "Arenas": [
+        "Space"
+      ],
+      "Cost": "8",
+      "Power": "9",
+      "HP": "7",
+      "FrontText": "When Played/On Attack: You may deal 4 damage to a ground unit.",
+      "DoubleSided": false,
+      "Rarity": "Rare",
+      "Unique": true,
+      "Artist": "Fernando Correa",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "2.35",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/32.png",
+      "LowPrice": "2.00"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "20",
+      "Name": "Grassroots Resistance",
+      "Type": "Event",
+      "Aspects": [
+        "Heroism"
+      ],
+      "Traits": [
+        "TACTIC"
+      ],
+      "Cost": "4",
+      "FrontText": "Deal 3 damage to a unit.\nHeal 3 damage from your base.",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Artist": "Reno",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.16",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/20.png",
+      "LowPrice": "0.03"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "40",
+      "Name": "Grassroots Resistance",
+      "Type": "Event",
+      "Aspects": [
+        "Heroism"
+      ],
+      "Traits": [
+        "TACTIC"
+      ],
+      "Cost": "4",
+      "FrontText": "Deal 3 damage to a unit.\nHeal 3 damage from your base.",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Artist": "Reno",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.21",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/40.png",
+      "LowPrice": "0.10"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "08",
+      "Name": "Jar Jar Binks",
+      "Subtitle": "Mesa Propose",
+      "Type": "Unit",
+      "Aspects": [
+        "Command"
+      ],
+      "Traits": [
+        "NABOO",
+        "REPUBLIC",
+        "GUNGAN",
+        "OFFICIAL"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "2",
+      "Power": "2",
+      "HP": "1",
+      "FrontText": "When Played: You may give another friendly unit +2/+2 for this phase.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Keywords": [
+        "Plot"
+      ],
+      "Artist": "Setya Wahyuga",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.29",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/08.png",
+      "LowPrice": "0.10"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "28",
+      "Name": "Jar Jar Binks",
+      "Subtitle": "Mesa Propose",
+      "Type": "Unit",
+      "Aspects": [
+        "Command"
+      ],
+      "Traits": [
+        "NABOO",
+        "REPUBLIC",
+        "GUNGAN",
+        "OFFICIAL"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "2",
+      "Power": "2",
+      "HP": "1",
+      "FrontText": "When Played: You may give another friendly unit +2/+2 for this phase.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Keywords": [
+        "Plot"
+      ],
+      "Artist": "Setya Wahyuga",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.69",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/28.png",
+      "LowPrice": "0.49"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "13",
+      "Name": "Kazuda Xiono",
+      "Subtitle": "I'm Not A Spy",
+      "Type": "Unit",
+      "Aspects": [
+        "Aggression",
+        "Heroism"
+      ],
+      "Traits": [
+        "RESISTANCE"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "4",
+      "Power": "2",
+      "HP": "6",
+      "FrontText": "Raid 2 (This unit gets +2/+0 while attacking.)\nWhile you control fewer resources than an opponent, this unit gets +2/+0.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Keywords": [
+        "Raid"
+      ],
+      "Artist": "Milos Slavkovic",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.24",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/13.png",
+      "LowPrice": "0.08"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "33",
+      "Name": "Kazuda Xiono",
+      "Subtitle": "I'm Not A Spy",
+      "Type": "Unit",
+      "Aspects": [
+        "Aggression",
+        "Heroism"
+      ],
+      "Traits": [
+        "RESISTANCE"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "4",
+      "Power": "2",
+      "HP": "6",
+      "FrontText": "Raid 2 (This unit gets +2/+0 while attacking.)\nWhile you control fewer resources than an opponent, this unit gets +2/+0.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Keywords": [
+        "Raid"
+      ],
+      "Artist": "Milos Slavkovic",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.37",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/33.png",
+      "LowPrice": "0.12"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "09",
+      "Name": "Kino Loy",
+      "Subtitle": "You Answer to Me",
+      "Type": "Unit",
+      "Aspects": [
+        "Command"
+      ],
+      "Traits": [
+        "FRINGE"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "3",
+      "Power": "0",
+      "HP": "5",
+      "FrontText": "This unit gets +1/+0 for each other exhausted friendly unit.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Artist": "Reno",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.14",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/09.png",
+      "LowPrice": "0.05"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "29",
+      "Name": "Kino Loy",
+      "Subtitle": "You Answer to Me",
+      "Type": "Unit",
+      "Aspects": [
+        "Command"
+      ],
+      "Traits": [
+        "FRINGE"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "3",
+      "Power": "0",
+      "HP": "5",
+      "FrontText": "This unit gets +1/+0 for each other exhausted friendly unit.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": true,
+      "Artist": "Reno",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.38",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/29.png",
+      "LowPrice": "0.19"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "03",
+      "Name": "Lando Calrissian",
+      "Subtitle": "Trust Me",
+      "Type": "Unit",
+      "Aspects": [
+        "Vigilance"
+      ],
+      "Traits": [
+        "FRINGE",
+        "OFFICIAL"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "7",
+      "Power": "6",
+      "HP": "8",
+      "FrontText": "Grit\nWhen Played: You may choose an enemy unit and another friendly non-leader unit. If you do, heal 6 damage from your base and the enemy unit captures the friendly unit.",
+      "DoubleSided": false,
+      "Rarity": "Legendary",
+      "Unique": true,
+      "Keywords": [
+        "Grit"
+      ],
+      "Artist": "David Buisan",
+      "VariantType": "OP Promo",
+      "MarketPrice": "2.65",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/03.png",
+      "LowPrice": "1.99"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "23",
+      "Name": "Lando Calrissian",
+      "Subtitle": "Trust Me",
+      "Type": "Unit",
+      "Aspects": [
+        "Vigilance"
+      ],
+      "Traits": [
+        "FRINGE",
+        "OFFICIAL"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "7",
+      "Power": "6",
+      "HP": "8",
+      "FrontText": "Grit\nWhen Played: You may choose an enemy unit and another friendly non-leader unit. If you do, heal 6 damage from your base and the enemy unit captures the friendly unit.",
+      "DoubleSided": false,
+      "Rarity": "Legendary",
+      "Unique": true,
+      "Keywords": [
+        "Grit"
+      ],
+      "Artist": "David Buisan",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "3.24",
+      "FoilPrice": "7.43",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/23.png",
+      "LowFoilPrice": "6.72",
+      "LowPrice": "3.20"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "16",
+      "Name": "Lurking Snub Fighter",
+      "Type": "Unit",
+      "Aspects": [
+        "Cunning",
+        "Villainy"
+      ],
+      "Traits": [
+        "UNDERWORLD",
+        "VEHICLE",
+        "FIGHTER"
+      ],
+      "Arenas": [
+        "Space"
+      ],
+      "Cost": "3",
+      "Power": "2",
+      "HP": "3",
+      "FrontText": "When Played: You may exhaust a unit.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Artist": "Ignacio Bazan-Lazcano",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.16",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/16.png",
+      "LowPrice": "0.04"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "36",
+      "Name": "Lurking Snub Fighter",
+      "Type": "Unit",
+      "Aspects": [
+        "Cunning",
+        "Villainy"
+      ],
+      "Traits": [
+        "UNDERWORLD",
+        "VEHICLE",
+        "FIGHTER"
+      ],
+      "Arenas": [
+        "Space"
+      ],
+      "Cost": "3",
+      "Power": "2",
+      "HP": "3",
+      "FrontText": "When Played: You may exhaust a unit.\nPlot (When you deploy a leader, you may play this card from your resources, paying its cost. Replace it with the top card of your deck.)",
+      "DoubleSided": false,
+      "Rarity": "Common",
+      "Unique": false,
+      "Artist": "Ignacio Bazan-Lazcano",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.28",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/36.png",
+      "LowPrice": "0.15"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "14",
+      "Name": "Oppression Breeds Rebellion",
+      "Type": "Event",
+      "Aspects": [
+        "Aggression",
+        "Heroism"
+      ],
+      "Traits": [
+        "PLAN"
+      ],
+      "Cost": "3",
+      "FrontText": "If a friendly unit was defeated while attacking this phase, draw 3 cards.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": false,
+      "Artist": "Reno",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.21",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/14.png",
+      "LowPrice": "0.05"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "34",
+      "Name": "Oppression Breeds Rebellion",
+      "Type": "Event",
+      "Aspects": [
+        "Aggression",
+        "Heroism"
+      ],
+      "Traits": [
+        "PLAN"
+      ],
+      "Cost": "3",
+      "FrontText": "If a friendly unit was defeated while attacking this phase, draw 3 cards.",
+      "DoubleSided": false,
+      "Rarity": "Uncommon",
+      "Unique": false,
+      "Artist": "Reno",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "0.38",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/34.png",
+      "LowPrice": "0.15"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "11",
+      "Name": "The Elite Squad",
+      "Subtitle": "Neutralizing Insurgents",
+      "Type": "Unit",
+      "Aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "Traits": [
+        "IMPERIAL",
+        "TROOPER"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "8",
+      "Power": "6",
+      "HP": "8",
+      "FrontText": "Grit\nWhen Played/When damage is dealt to this unit: You may deal 2 damage to another unique unit.",
+      "DoubleSided": false,
+      "Rarity": "Rare",
+      "Unique": true,
+      "Keywords": [
+        "Grit"
+      ],
+      "Artist": "Amad Mir",
+      "VariantType": "OP Promo",
+      "MarketPrice": "0.49",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/11.png",
+      "LowPrice": "0.20"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "31",
+      "Name": "The Elite Squad",
+      "Subtitle": "Neutralizing Insurgents",
+      "Type": "Unit",
+      "Aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "Traits": [
+        "IMPERIAL",
+        "TROOPER"
+      ],
+      "Arenas": [
+        "Ground"
+      ],
+      "Cost": "8",
+      "Power": "6",
+      "HP": "8",
+      "FrontText": "Grit\nWhen Played/When damage is dealt to this unit: You may deal 2 damage to another unique unit.",
+      "DoubleSided": false,
+      "Rarity": "Rare",
+      "Unique": true,
+      "Keywords": [
+        "Grit"
+      ],
+      "Artist": "Amad Mir",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "1.63",
+      "FoilPrice": "",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/31.png",
+      "LowPrice": "0.49"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "05",
+      "Name": "The Eye of Aldhani",
+      "Type": "Event",
+      "Aspects": [
+        "Vigilance"
+      ],
+      "Traits": [
+        "INNATE",
+        "TRICK"
+      ],
+      "Cost": "1",
+      "FrontText": "At the start of the next action phase, for each enemy unit, its controller must pay 1 or exhaust that unit.",
+      "DoubleSided": false,
+      "Rarity": "Rare",
+      "Unique": false,
+      "Artist": "Natcha Ngamtweerat",
+      "VariantType": "OP Promo",
+      "MarketPrice": "1.07",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/05.png",
+      "LowPrice": "0.75"
+    },
+    {
+      "Set": "SECOP",
+      "Number": "25",
+      "Name": "The Eye of Aldhani",
+      "Type": "Event",
+      "Aspects": [
+        "Vigilance"
+      ],
+      "Traits": [
+        "INNATE",
+        "TRICK"
+      ],
+      "Cost": "1",
+      "FrontText": "At the start of the next action phase, for each enemy unit, its controller must pay 1 or exhaust that unit.",
+      "DoubleSided": false,
+      "Rarity": "Rare",
+      "Unique": false,
+      "Artist": "Natcha Ngamtweerat",
+      "VariantType": "OP Promo Foil",
+      "MarketPrice": "2.15",
+      "FoilPrice": "0.00",
+      "FrontArt": "https://cdn.swu-db.com/images/cards/SECOP/25.png",
+      "LowPrice": "1.50"
+    }
+  ]
+}

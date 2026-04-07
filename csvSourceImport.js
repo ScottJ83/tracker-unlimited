@@ -11,8 +11,22 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-const SETS = ["LAW", "SEC", "JTL", "SOR", "LOF", "SHD", "TWI", "IBH"];
-
+const SETS = [
+  "LAW",
+  "SEC",
+  "SECOP",
+  "JTL",
+  "JTLOP",
+  "SOR",
+  "SOROP",
+  "LOF",
+  "LOFOP",
+  "SHD",
+  "SHDOP",
+  "TWI",
+  "TWIOP",
+  "IBH",
+];
 function clean(v) {
   if (v === null || v === undefined) return null;
   const s = String(v).trim();
@@ -124,8 +138,11 @@ async function run() {
   let allCards = [];
 
   for (const setCode of SETS) {
-    const filePath = path.join("data", `${setCode}.csv`);
-    if (!fs.existsSync(filePath)) continue;
+const filePath = path.join("data", `${setCode}.csv`);
+if (!fs.existsSync(filePath)) {
+  console.log(`Missing file: ${filePath}`);
+  continue;
+}
 
     const rows = loadRows(filePath);
 
