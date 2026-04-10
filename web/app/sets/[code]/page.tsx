@@ -1,12 +1,40 @@
+export const dynamic = "force-dynamic";
+
+import { redirect } from "next/navigation";
 import ProgressBar from "@/components/ProgressBar";
-import { supabase } from "@/lib/supabase";
 import SetClient from "@/components/SetClient";
+import { createClient } from "@/lib/supabase/server";
 
 type Props = {
-  params: { code: string };
+  params: Promise<{ code: string }>;
 };
 
-async function getAllCollection(userId: string) {
+async function getSetCards(supabase: any, code: string) {
+  let allCards: any[] = [];
+  let from = 0;
+  const pageSize = 1000;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("cards")
+      .select("*")
+      .eq("set_code", code)
+      .order("card_number", { ascending: true })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    allCards = [...allCards, ...data];
+
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allCards;
+}
+
+async function getAllCollection(supabase: any, userId: string) {
   let allRows: any[] = [];
   let from = 0;
   const pageSize = 1000;
@@ -21,7 +49,7 @@ async function getAllCollection(userId: string) {
     if (error) throw error;
     if (!data || data.length === 0) break;
 
-    allRows = allRows.concat(data);
+    allRows = [...allRows, ...data];
 
     if (data.length < pageSize) break;
     from += pageSize;
@@ -31,14 +59,18 @@ async function getAllCollection(userId: string) {
 }
 
 export default async function SetDetailPage({ params }: Props) {
-  const code = params.code;
-  const tempUserId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
+  const { code } = await params;
+  const supabase = await createClient();
 
-  const { data: cards, error } = await supabase
-    .from("cards")
-    .select("*")
-    .eq("set_code", code)
-    .order("card_number", { ascending: true });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const cards = await getSetCards(supabase, code);
 
   const { data: setInfo } = await supabase
     .from("sets")
@@ -46,20 +78,13 @@ export default async function SetDetailPage({ params }: Props) {
     .eq("code", code)
     .single();
 
-  const collection = await getAllCollection(tempUserId);
+  const collection = await getAllCollection(supabase, user.id);
 
-  if (error) {
-    return <main style={{ padding: "20px" }}>Error loading cards: {error.message}</main>;
-  }
-
-  const safeCards = cards || [];
-  const safeCollection = collection || [];
-
-  const baseCards = safeCards.filter((card: any) => card.variant === "Standard");
-  const fullCards = safeCards;
+  const baseCards = (cards || []).filter((card: any) => card.variant === "Standard");
+  const fullCards = cards || [];
 
   const ownedCardIds = new Set(
-    safeCollection
+    (collection || [])
       .filter((item: any) => item.quantity > 0)
       .map((item: any) => item.card_id)
   );
@@ -71,6 +96,12 @@ export default async function SetDetailPage({ params }: Props) {
   const fullTotal = fullCards.length;
   const fullOwned = fullCards.filter((card: any) => ownedCardIds.has(card.id)).length;
   const fullPercent = fullTotal === 0 ? 0 : (fullOwned / fullTotal) * 100;
+
+  const setValue = fullCards.reduce((sum: number, card: any) => {
+    const entry = (collection || []).find((item: any) => item.card_id === card.id);
+    const qty = Number(entry?.quantity || 0);
+    return sum + qty * Number(card.price || 0);
+  }, 0);
 
   return (
     <main style={{ padding: "20px" }}>
@@ -90,13 +121,10 @@ export default async function SetDetailPage({ params }: Props) {
         <ProgressBar label="Full Set Completion" value={fullPercent} />
         <div>Base: {baseOwned} / {baseTotal}</div>
         <div>Full: {fullOwned} / {fullTotal}</div>
+        <div>Set Value: ${setValue.toFixed(2)}</div>
       </div>
 
-      <SetClient
-        cards={safeCards}
-        userId={tempUserId}
-        collection={safeCollection}
-      />
+      <SetClient cards={cards} collection={collection} userId={user.id} />
     </main>
   );
 }
