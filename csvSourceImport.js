@@ -13,6 +13,7 @@ const supabase = createClient(
 
 const SETS = [
   "LAW",
+  "LAWOP",
   "SEC",
   "SECOP",
   "JTL",
@@ -27,6 +28,8 @@ const SETS = [
   "TWIOP",
   "IBH",
 ];
+
+const OP_PROMO_SETS = ["LAWOP", "SHDOP", "SOROP", "TWIOP"];
 
 function clean(v) {
   if (v === null || v === undefined) return null;
@@ -45,6 +48,9 @@ function mapVariant(v) {
   if (x === "standard prestige") return "Standard Prestige";
   if (x === "foil prestige") return "Foil Prestige";
   if (x === "serialized prestige") return "Serialized Prestige";
+
+  if (x === "weekly play") return "OP Promo";
+  if (x === "weekly play foil") return "OP Promo Foil";
 
   return String(v || "").trim();
 }
@@ -88,22 +94,45 @@ function loadRows(filePath) {
 function makeCardRow(row, setCode, variantOverride = null, priceOverride = null) {
   const name = clean(row.Name ?? row.name);
   const subtitle = clean(row.Subtitle ?? row.subtitle);
-  const variant =
-    variantOverride ??
-    mapVariant(row.VariantType ?? row.variantType ?? row.Variant ?? row.variant);
-  const card_number = toInt(row.Number ?? row.number);
-  const aspect = normalizeList(row.Aspects ?? row.aspects ?? row.Aspect ?? row.aspect);
-  const traits = normalizeList(row.Traits ?? row.traits ?? row.Trait ?? row.trait);
-  const arena = normalizeList(row.Arenas ?? row.arenas ?? row.Arena ?? row.arena);
+
+  const baseMappedVariant = mapVariant(
+    row.VariantType ??
+      row.variantType ??
+      row.Variant ??
+      row.variant ??
+      row.variant_type
+  );
+
+  const variant = variantOverride ?? baseMappedVariant;
+
+  const card_number = toInt(
+    row.Number ??
+      row.number ??
+      row.card_number ??
+      row.collector_number
+  );
+
+  const aspect = normalizeList(
+    row.Aspects ?? row.aspects ?? row.Aspect ?? row.aspect
+  );
+
+  const traits = normalizeList(
+    row.Traits ?? row.traits ?? row.Trait ?? row.trait
+  );
+
+  const arena = normalizeList(
+    row.Arenas ?? row.arenas ?? row.Arena ?? row.arena
+  );
+
   const card_type = clean(row.Type ?? row.type);
   const rarity = clean(row.Rarity ?? row.rarity);
   const cost = toInt(row.Cost ?? row.cost);
   const power = toInt(row.Power ?? row.power);
   const hp = toInt(row.HP ?? row.hp);
   const price = priceOverride ?? toNum(row.MarketPrice ?? row.marketPrice);
-  const front_text = clean(row.FrontText ?? row.frontText);
+  const front_text = clean(row.FrontText ?? row.frontText ?? row.front_text);
   const artist = clean(row.Artist ?? row.artist);
-  const front_art = clean(row.FrontArt ?? row.frontArt);
+  const front_art = clean(row.FrontArt ?? row.frontArt ?? row.front_image_url);
 
   if (!name || !variant) return null;
 
@@ -146,34 +175,27 @@ async function run() {
 
       allCards.push(baseCard);
 
-      const originalVariant = mapVariant(
-        row.VariantType ?? row.variantType ?? row.Variant ?? row.variant
-      );
       const foilPrice = toNum(row.FoilPrice ?? row.foilPrice);
 
-      if (foilPrice !== null) {
-        // OP promo foil only for these 3 sets
-        if (
-          ["SHDOP", "SOROP", "TWIOP"].includes(setCode) &&
-          originalVariant === "Standard"
-        ) {
-          allCards.push(makeCardRow(row, setCode, "OP Promo Foil", foilPrice));
-        }
+      // LAWOP / SHDOP / SOROP / TWIOP already contain both base + foil rows in file
+      if (OP_PROMO_SETS.includes(setCode)) {
+        continue;
+      }
 
-        // normal foil generation for regular sets
-        if (
-          !["SHDOP", "SOROP", "TWIOP"].includes(setCode) &&
-          setCode !== "IBH" &&
-          originalVariant === "Standard"
-        ) {
+      if (foilPrice !== null && setCode !== "IBH") {
+        const originalVariant = mapVariant(
+          row.VariantType ??
+            row.variantType ??
+            row.Variant ??
+            row.variant ??
+            row.variant_type
+        );
+
+        if (originalVariant === "Standard") {
           allCards.push(makeCardRow(row, setCode, "Standard Foil", foilPrice));
         }
 
-        if (
-          !["SHDOP", "SOROP", "TWIOP"].includes(setCode) &&
-          setCode !== "IBH" &&
-          originalVariant === "Hyperspace"
-        ) {
+        if (originalVariant === "Hyperspace") {
           allCards.push(makeCardRow(row, setCode, "Hyperspace Foil", foilPrice));
         }
       }
