@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 import SetClient from "@/components/SetClient";
 
 type Props = {
-  params: Promise<{ code: string }>;
+  params: { code: string };
 };
 
 async function getAllCollection(userId: string) {
@@ -31,8 +31,7 @@ async function getAllCollection(userId: string) {
 }
 
 export default async function SetDetailPage({ params }: Props) {
-  const { code } = await params;
-
+  const code = params.code;
   const tempUserId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
 
   const { data: cards, error } = await supabase
@@ -50,14 +49,17 @@ export default async function SetDetailPage({ params }: Props) {
   const collection = await getAllCollection(tempUserId);
 
   if (error) {
-    return <main style={{ padding: "20px" }}>Error loading cards.</main>;
+    return <main style={{ padding: "20px" }}>Error loading cards: {error.message}</main>;
   }
 
-  const baseCards = (cards || []).filter((card: any) => card.variant === "Standard");
-  const fullCards = cards || [];
+  const safeCards = cards || [];
+  const safeCollection = collection || [];
+
+  const baseCards = safeCards.filter((card: any) => card.variant === "Standard");
+  const fullCards = safeCards;
 
   const ownedCardIds = new Set(
-    (collection || [])
+    safeCollection
       .filter((item: any) => item.quantity > 0)
       .map((item: any) => item.card_id)
   );
@@ -91,9 +93,9 @@ export default async function SetDetailPage({ params }: Props) {
       </div>
 
       <SetClient
-        cards={cards}
+        cards={safeCards}
         userId={tempUserId}
-        collection={collection}
+        collection={safeCollection}
       />
     </main>
   );
