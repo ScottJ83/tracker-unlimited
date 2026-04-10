@@ -1,52 +1,45 @@
-export const dynamic = "force-dynamic";
-
-import { redirect } from "next/navigation";
 import ProgressBar from "@/components/ProgressBar";
+import { supabase } from "@/lib/supabase";
 import SetClient from "@/components/SetClient";
-import { createClient } from "@/lib/supabase/server";
 
 type Props = {
   params: Promise<{ code: string }>;
 };
 
-async function getSetCards(supabase: any, code: string) {
-  let allCards: any[] = [];
+async function getAllCollection(userId: string) {
+  let allRows: any[] = [];
   let from = 0;
   const pageSize = 1000;
 
   while (true) {
     const { data, error } = await supabase
-      .from("cards")
+      .from("collection_entries")
       .select("*")
-      .eq("set_code", code)
-      .range(from, from + pageSize - 1)
-      .order("card_number", { ascending: true });
+      .eq("user_id", userId)
+      .range(from, from + pageSize - 1);
 
     if (error) throw error;
     if (!data || data.length === 0) break;
 
-    allCards = [...allCards, ...data];
+    allRows = allRows.concat(data);
 
     if (data.length < pageSize) break;
     from += pageSize;
   }
 
-  return allCards;
+  return allRows;
 }
 
 export default async function SetDetailPage({ params }: Props) {
   const { code } = await params;
-  const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const tempUserId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
 
-  if (!user) {
-    redirect("/login");
-  }
-
-  const cards = await getSetCards(supabase, code);
+  const { data: cards, error } = await supabase
+    .from("cards")
+    .select("*")
+    .eq("set_code", code)
+    .order("card_number", { ascending: true });
 
   const { data: setInfo } = await supabase
     .from("sets")
@@ -54,10 +47,11 @@ export default async function SetDetailPage({ params }: Props) {
     .eq("code", code)
     .single();
 
-  const { data: collection } = await supabase
-    .from("collection_entries")
-    .select("*")
-    .eq("user_id", user.id);
+  const collection = await getAllCollection(tempUserId);
+
+  if (error) {
+    return <main style={{ padding: "20px" }}>Error loading cards.</main>;
+  }
 
   const baseCards = (cards || []).filter((card: any) => card.variant === "Standard");
   const fullCards = cards || [];
@@ -75,12 +69,6 @@ export default async function SetDetailPage({ params }: Props) {
   const fullTotal = fullCards.length;
   const fullOwned = fullCards.filter((card: any) => ownedCardIds.has(card.id)).length;
   const fullPercent = fullTotal === 0 ? 0 : (fullOwned / fullTotal) * 100;
-
-  const setValue = fullCards.reduce((sum: number, card: any) => {
-    const entry = (collection || []).find((item: any) => item.card_id === card.id);
-    const qty = Number(entry?.quantity || 0);
-    return sum + qty * Number(card.price || 0);
-  }, 0);
 
   return (
     <main style={{ padding: "20px" }}>
@@ -100,10 +88,13 @@ export default async function SetDetailPage({ params }: Props) {
         <ProgressBar label="Full Set Completion" value={fullPercent} />
         <div>Base: {baseOwned} / {baseTotal}</div>
         <div>Full: {fullOwned} / {fullTotal}</div>
-        <div>Set Value: ${setValue.toFixed(2)}</div>
       </div>
 
-      <SetClient cards={cards} collection={collection} />
+      <SetClient
+        cards={cards}
+        userId={tempUserId}
+        collection={collection}
+      />
     </main>
   );
 }

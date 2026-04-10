@@ -1,46 +1,57 @@
-import { redirect } from "next/navigation";
 import CollectionClient from "@/components/CollectionClient";
-import { createClient } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase";
 
-export default async function CollectionPage() {
-  const supabase = await createClient();
+async function getAllCollectionWithCards(userId: string) {
+  let allRows: any[] = [];
+  let from = 0;
+  const pageSize = 1000;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  while (true) {
+    const { data, error } = await supabase
+      .from("collection_entries")
+      .select(`
+        id,
+        quantity,
+        card_id,
+        cards (
+          name,
+          subtitle,
+          set_code,
+          card_number,
+          variant,
+          aspect,
+          price
+        )
+      `)
+      .eq("user_id", userId)
+      .gt("quantity", 0)
+      .range(from, from + pageSize - 1);
 
-  if (!user) {
-    redirect("/login");
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    allRows = allRows.concat(data);
+
+    if (data.length < pageSize) break;
+    from += pageSize;
   }
 
-  const { data, error } = await supabase
-    .from("collection_entries")
-    .select(`
-      id,
-      quantity,
-      card_id,
-      cards (
-        name,
-        subtitle,
-        set_code,
-        card_number,
-        variant,
-        aspect,
-        traits,
-        rarity,
-        artist,
-        cost,
-        power,
-        hp,
-        front_text,
-        front_art,
-        price
-      )
-    `)
-    .eq("user_id", user.id)
-    .gt("quantity", 0);
+  return allRows;
+}
 
-  if (error) {
+export default async function CollectionPage() {
+  const userId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
+
+  try {
+    const data = await getAllCollectionWithCards(userId);
+
+    return (
+      <main>
+        <h1 style={{ marginBottom: "18px" }}>Collection</h1>
+        <CollectionClient data={data || []} userId={userId} />
+      </main>
+    );
+  } catch (error: any) {
     return (
       <main>
         <h1>Collection</h1>
@@ -48,68 +59,4 @@ export default async function CollectionPage() {
       </main>
     );
   }
-
-  const rows = (data || []).map((item: any) => ({
-    ...item,
-    card: Array.isArray(item.cards) ? item.cards[0] : item.cards,
-  }));
-
-  const totalCardsOwned = rows.reduce(
-    (sum: number, item: any) => sum + Number(item.quantity || 0),
-    0
-  );
-
-  const totalUniqueCards = rows.length;
-
-  const totalValue = rows.reduce(
-    (sum: number, item: any) =>
-      sum + Number(item.quantity || 0) * Number(item.card?.price || 0),
-    0
-  );
-
-  const topCards = [...rows]
-    .sort(
-      (a: any, b: any) =>
-        Number(b.card?.price || 0) * Number(b.quantity || 0) -
-        Number(a.card?.price || 0) * Number(a.quantity || 0)
-    )
-    .slice(0, 5);
-
-  return (
-    <main>
-      <h1 style={{ marginBottom: "18px" }}>Collection</h1>
-
-      <div
-        style={{
-          border: "1px solid #334155",
-          borderRadius: "18px",
-          padding: "18px",
-          background: "linear-gradient(180deg, #172033, #111827)",
-          marginBottom: "18px",
-        }}
-      >
-        <div>Total Cards Owned: {totalCardsOwned}</div>
-        <div>Total Unique Cards Owned: {totalUniqueCards}</div>
-        <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
-
-        {topCards.length > 0 ? (
-          <div style={{ marginTop: "12px" }}>
-            <div style={{ fontWeight: 700, marginBottom: "6px" }}>
-              Highest Value Cards
-            </div>
-            {topCards.map((item: any) => (
-              <div key={item.id} style={{ fontSize: "14px", color: "#cbd5e1" }}>
-                {item.card?.name} ({item.card?.variant}) — $
-                {(
-                  Number(item.card?.price || 0) * Number(item.quantity || 0)
-                ).toFixed(2)}
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </div>
-
-      <CollectionClient data={data || []} />
-    </main>
-  );
 }
