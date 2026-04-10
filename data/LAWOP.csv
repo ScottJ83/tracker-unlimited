@@ -845,7 +845,7 @@
       "cost": 6,
       "power": 6,
       "hp": 5,
-      "front_text": null,
+      "front_text": "On Attack: If this unit is upgraded, exhaust an enemy unit.",
       "back_text": null,
       "double_sided": null,
       "rarity": "Uncommon",
