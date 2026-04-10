@@ -27,6 +27,7 @@ const SETS = [
   "TWIOP",
   "IBH",
 ];
+
 function clean(v) {
   if (v === null || v === undefined) return null;
   const s = String(v).trim();
@@ -87,7 +88,9 @@ function loadRows(filePath) {
 function makeCardRow(row, setCode, variantOverride = null, priceOverride = null) {
   const name = clean(row.Name ?? row.name);
   const subtitle = clean(row.Subtitle ?? row.subtitle);
-  const variant = variantOverride ?? mapVariant(row.VariantType ?? row.variantType ?? row.Variant ?? row.variant);
+  const variant =
+    variantOverride ??
+    mapVariant(row.VariantType ?? row.variantType ?? row.Variant ?? row.variant);
   const card_number = toInt(row.Number ?? row.number);
   const aspect = normalizeList(row.Aspects ?? row.aspects ?? row.Aspect ?? row.aspect);
   const traits = normalizeList(row.Traits ?? row.traits ?? row.Trait ?? row.trait);
@@ -101,15 +104,6 @@ function makeCardRow(row, setCode, variantOverride = null, priceOverride = null)
   const front_text = clean(row.FrontText ?? row.frontText);
   const artist = clean(row.Artist ?? row.artist);
   const front_art = clean(row.FrontArt ?? row.frontArt);
-
-  if (setCode === "SHD" && card_number === 87) {
-    console.log("DEBUG SHD 087 PARSED:", {
-      traits,
-      cost,
-      power,
-      hp,
-    });
-  }
 
   if (!name || !variant) return null;
 
@@ -138,33 +132,50 @@ async function run() {
   let allCards = [];
 
   for (const setCode of SETS) {
-const filePath = path.join("data", `${setCode}.csv`);
-if (!fs.existsSync(filePath)) {
-  console.log(`Missing file: ${filePath}`);
-  continue;
-}
+    const filePath = path.join("data", `${setCode}.csv`);
+    if (!fs.existsSync(filePath)) {
+      console.log(`Missing file: ${filePath}`);
+      continue;
+    }
 
     const rows = loadRows(filePath);
 
     for (const row of rows) {
-      if (setCode === "SHD" && String(row.Number ?? row.number) === "087") {
-        console.log("DEBUG SHD 087 RAW ROW:", row);
-      }
-
       const baseCard = makeCardRow(row, setCode);
       if (!baseCard) continue;
 
       allCards.push(baseCard);
 
-      const originalVariant = mapVariant(row.VariantType ?? row.variantType ?? row.Variant ?? row.variant);
+      const originalVariant = mapVariant(
+        row.VariantType ?? row.variantType ?? row.Variant ?? row.variant
+      );
       const foilPrice = toNum(row.FoilPrice ?? row.foilPrice);
 
-      if (setCode !== "IBH" && originalVariant === "Standard" && foilPrice !== null) {
-        allCards.push(makeCardRow(row, setCode, "Standard Foil", foilPrice));
-      }
+      if (foilPrice !== null) {
+        // OP promo foil only for these 3 sets
+        if (
+          ["SHDOP", "SOROP", "TWIOP"].includes(setCode) &&
+          originalVariant === "Standard"
+        ) {
+          allCards.push(makeCardRow(row, setCode, "OP Promo Foil", foilPrice));
+        }
 
-      if (setCode !== "IBH" && originalVariant === "Hyperspace" && foilPrice !== null) {
-        allCards.push(makeCardRow(row, setCode, "Hyperspace Foil", foilPrice));
+        // normal foil generation for regular sets
+        if (
+          !["SHDOP", "SOROP", "TWIOP"].includes(setCode) &&
+          setCode !== "IBH" &&
+          originalVariant === "Standard"
+        ) {
+          allCards.push(makeCardRow(row, setCode, "Standard Foil", foilPrice));
+        }
+
+        if (
+          !["SHDOP", "SOROP", "TWIOP"].includes(setCode) &&
+          setCode !== "IBH" &&
+          originalVariant === "Hyperspace"
+        ) {
+          allCards.push(makeCardRow(row, setCode, "Hyperspace Foil", foilPrice));
+        }
       }
     }
   }
