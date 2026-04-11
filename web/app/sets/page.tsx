@@ -7,21 +7,20 @@ import ProgressBar from "@/components/ProgressBar";
 
 const setOrder = [
   "LAW",
-  "LAWOP",
   "SEC",
-  "SECOP",
   "JTL",
-  "JTLOP",
   "SOR",
-  "SOROP",
   "LOF",
-  "LOFOP",
   "SHD",
-  "SHDOP",
   "TWI",
-  "TWIOP",
-  "IBH",
-  "TS26",
+   "IBH",
+  "SECOP",
+  "JTLOP",
+  "SOROP",
+  "LOFOP",
+  "SHDOP",
+   "LAWOP",
+"TWIOP",
 ];
 
 const setColors: Record<string, string> = {
@@ -40,7 +39,6 @@ const setColors: Record<string, string> = {
   TWI: "#8b1e2d",
   TWIOP: "#8b1e2d",
   IBH: "#e5e7eb",
-  TS26: "#00bcd4",
 };
 
 function getBaseKey(card: any) {
