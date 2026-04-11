@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
-async function getAllCollectionForHome(userId: string) {
+async function getAllCollectionForHome(supabase: any, userId: string) {
   let allRows: any[] = [];
   let from = 0;
   const pageSize = 1000;
@@ -35,25 +36,40 @@ async function getAllCollectionForHome(userId: string) {
 }
 
 export default async function HomePage() {
-  const userId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
+  const supabase = await createClient();
 
-  const rows = await getAllCollectionForHome(userId);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const totalCollectionValue = rows.reduce(
-    (sum: number, item: any) =>
-      sum + Number(item.quantity || 0) * Number(item.cards?.price || 0),
+  if (!user) {
+    redirect("/login");
+  }
+
+  const collection = await getAllCollectionForHome(supabase, user.id);
+
+  const rows = (collection || []).map((item: any) => ({
+    ...item,
+    card: Array.isArray(item.cards) ? item.cards[0] : item.cards,
+  }));
+
+  const totalCardsOwned = rows.reduce(
+    (sum: number, item: any) => sum + Number(item.quantity || 0),
     0
   );
 
-  const totalCardCount = rows.reduce(
-    (sum: number, item: any) => sum + Number(item.quantity || 0),
+  const totalUniqueCards = rows.length;
+
+  const totalValue = rows.reduce(
+    (sum: number, item: any) =>
+      sum + Number(item.quantity || 0) * Number(item.card?.price || 0),
     0
   );
 
   const highest = [...rows].sort(
     (a: any, b: any) =>
-      Number(b.cards?.price || 0) * Number(b.quantity || 0) -
-      Number(a.cards?.price || 0) * Number(a.quantity || 0)
+      Number(b.card?.price || 0) * Number(b.quantity || 0) -
+      Number(a.card?.price || 0) * Number(a.quantity || 0)
   )[0];
 
   return (
@@ -71,23 +87,19 @@ export default async function HomePage() {
           <div style={{ color: "#7dd3fc", fontWeight: 700, letterSpacing: "0.12em" }}>
             STAR WARS UNLIMITED
           </div>
-
-          <h1 style={{ fontSize: "42px", margin: "12px 0 10px 0" }}>
-            Tracker Unlimited
-          </h1>
-
+          <h1 style={{ fontSize: "42px", margin: "12px 0 10px 0" }}>Tracker Unlimited</h1>
           <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>
             Track your collection, view set progress, and manage every collectible variant.
           </p>
 
-          <div style={{ marginTop: "20px", color: "#e5edf7" }}>
-            <div>Total Cards: {totalCardCount}</div>
-            <div>Total Collection Value: ${totalCollectionValue.toFixed(2)}</div>
-
+          <div style={{ marginTop: "20px", color: "#e5edf7", display: "grid", gap: "8px" }}>
+            <div>Total Cards Owned: {totalCardsOwned}</div>
+            <div>Total Unique Cards Owned: {totalUniqueCards}</div>
+            <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
             {highest ? (
-              <div style={{ marginTop: "8px" }}>
-                Highest Value Card: {highest.cards?.name} ({highest.cards?.variant}) — $
-                {(Number(highest.cards?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}
+              <div>
+                Highest Value Card: {highest.card?.name} ({highest.card?.variant}) — $
+                {(Number(highest.card?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}
               </div>
             ) : null}
           </div>
@@ -104,7 +116,6 @@ export default async function HomePage() {
             >
               Browse Sets
             </Link>
-
             <Link
               href="/collection"
               style={{
