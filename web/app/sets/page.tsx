@@ -2,42 +2,50 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import ProgressBar from "@/components/ProgressBar";
 import { createClient } from "@/lib/supabase/server";
+import ProgressBar from "@/components/ProgressBar";
 
 const setOrder = [
   "LAW",
+  "LAWOP",
   "SEC",
-  "JTL",
-  "SOR",
-  "LOF",
-  "SHD",
-  "TWI",
-  "IBH",
   "SECOP",
+  "JTL",
   "JTLOP",
+  "SOR",
   "SOROP",
+  "LOF",
   "LOFOP",
+  "SHD",
   "SHDOP",
+  "TWI",
   "TWIOP",
+  "IBH",
+  "TS26",
 ];
 
 const setColors: Record<string, string> = {
   LAW: "#c87a2c",
+  LAWOP: "#c87a2c",
   SEC: "#5b3aa6",
+  SECOP: "#5b3aa6",
   JTL: "#f2c200",
+  JTLOP: "#f2c200",
   SOR: "#d32f2f",
+  SOROP: "#d32f2f",
   LOF: "#2f6fd3",
+  LOFOP: "#2f6fd3",
   SHD: "#3949ab",
+  SHDOP: "#3949ab",
   TWI: "#8b1e2d",
+  TWIOP: "#8b1e2d",
   IBH: "#e5e7eb",
-  SECOP: "#4a2f85",
-  JTLOP: "#c9a200",
-  SOROP: "#a52727",
-  LOFOP: "#275fb8",
-  SHDOP: "#2c3b8f",
-  TWIOP: "#6f1823",
+  TS26: "#00bcd4",
 };
+
+function getBaseKey(card: any) {
+  return `${card.name || ""}|${card.subtitle || ""}`;
+}
 
 async function getAllCards(supabase: any) {
   let allCards: any[] = [];
@@ -47,7 +55,7 @@ async function getAllCards(supabase: any) {
   while (true) {
     const { data, error } = await supabase
       .from("cards")
-      .select("id,set_code,variant,price")
+      .select("*")
       .range(from, from + pageSize - 1);
 
     if (error) throw error;
@@ -62,6 +70,30 @@ async function getAllCards(supabase: any) {
   return allCards;
 }
 
+async function getAllCollection(supabase: any, userId: string) {
+  let allRows: any[] = [];
+  let from = 0;
+  const pageSize = 1000;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("collection_entries")
+      .select("*")
+      .eq("user_id", userId)
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    allRows = [...allRows, ...data];
+
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allRows;
+}
+
 export default async function SetsPage() {
   const supabase = await createClient();
 
@@ -74,18 +106,17 @@ export default async function SetsPage() {
   }
 
   const { data: sets, error } = await supabase.from("sets").select("*");
+  if (error) {
+    return <main>Error loading sets.</main>;
+  }
+
   const cards = await getAllCards(supabase);
+  const collection = await getAllCollection(supabase, user.id);
 
-  const { data: collection } = await supabase
-    .from("collection_entries")
-    .select("card_id,quantity")
-    .eq("user_id", user.id)
-    .gt("quantity", 0);
-
-  if (error) return <main>Error loading sets.</main>;
-
-  const collectionMap = new Map(
-    (collection || []).map((item: any) => [item.card_id, Number(item.quantity || 0)])
+  const ownedCardIds = new Set(
+    (collection || [])
+      .filter((item: any) => item.quantity > 0)
+      .map((item: any) => item.card_id)
   );
 
   const sortedSets = [...(sets || [])].sort((a, b) => {
@@ -106,28 +137,34 @@ export default async function SetsPage() {
         }}
       >
         {sortedSets.map((set) => {
-          const setCards = cards.filter(
+          const setCards = (cards || []).filter(
             (card: any) =>
               String(card.set_code).trim().toUpperCase() ===
               String(set.code).trim().toUpperCase()
           );
 
-          const baseCards = setCards.filter(
-            (card: any) => String(card.variant).trim().toLowerCase() === "standard"
+          const allBaseKeys = new Set(
+            setCards.map((card: any) => getBaseKey(card))
           );
 
-          const baseTotal = baseCards.length;
-          const baseOwned = baseCards.filter((card: any) => collectionMap.has(card.id)).length;
+          const cardIdToBaseKey = new Map(
+            setCards.map((card: any) => [card.id, getBaseKey(card)])
+          );
+
+          const ownedBaseKeys = new Set(
+            (collection || [])
+              .filter((item: any) => item.quantity > 0)
+              .map((item: any) => cardIdToBaseKey.get(item.card_id))
+              .filter(Boolean)
+          );
+
+          const baseTotal = allBaseKeys.size;
+          const baseOwned = ownedBaseKeys.size;
           const basePercent = baseTotal > 0 ? (baseOwned / baseTotal) * 100 : 0;
 
           const fullTotal = setCards.length;
-          const fullOwned = setCards.filter((card: any) => collectionMap.has(card.id)).length;
+          const fullOwned = setCards.filter((card: any) => ownedCardIds.has(card.id)).length;
           const fullPercent = fullTotal > 0 ? (fullOwned / fullTotal) * 100 : 0;
-
-          const setValue = setCards.reduce((sum: number, card: any) => {
-            const qty = collectionMap.get(card.id) || 0;
-            return sum + qty * Number(card.price || 0);
-          }, 0);
 
           return (
             <Link

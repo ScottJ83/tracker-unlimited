@@ -9,6 +9,10 @@ type Props = {
   params: Promise<{ code: string }>;
 };
 
+function getBaseKey(card: any) {
+  return `${card.name || ""}|${card.subtitle || ""}`;
+}
+
 async function getSetCards(supabase: any, code: string) {
   let allCards: any[] = [];
   let from = 0;
@@ -80,25 +84,40 @@ export default async function SetDetailPage({ params }: Props) {
 
   const collection = await getAllCollection(supabase, user.id);
 
-  const baseCards = (cards || []).filter((card: any) => card.variant === "Standard");
-  const fullCards = cards || [];
+  const safeCards = cards || [];
+  const safeCollection = collection || [];
+
+  const cardIdToBaseKey = new Map(
+    safeCards.map((card: any) => [card.id, getBaseKey(card)])
+  );
+
+  const allBaseKeys = new Set(
+    safeCards.map((card: any) => getBaseKey(card))
+  );
 
   const ownedCardIds = new Set(
-    (collection || [])
+    safeCollection
       .filter((item: any) => item.quantity > 0)
       .map((item: any) => item.card_id)
   );
 
-  const baseTotal = baseCards.length;
-  const baseOwned = baseCards.filter((card: any) => ownedCardIds.has(card.id)).length;
+  const ownedBaseKeys = new Set(
+    safeCollection
+      .filter((item: any) => item.quantity > 0)
+      .map((item: any) => cardIdToBaseKey.get(item.card_id))
+      .filter(Boolean)
+  );
+
+  const baseTotal = allBaseKeys.size;
+  const baseOwned = ownedBaseKeys.size;
   const basePercent = baseTotal === 0 ? 0 : (baseOwned / baseTotal) * 100;
 
-  const fullTotal = fullCards.length;
-  const fullOwned = fullCards.filter((card: any) => ownedCardIds.has(card.id)).length;
+  const fullTotal = safeCards.length;
+  const fullOwned = safeCards.filter((card: any) => ownedCardIds.has(card.id)).length;
   const fullPercent = fullTotal === 0 ? 0 : (fullOwned / fullTotal) * 100;
 
-  const setValue = fullCards.reduce((sum: number, card: any) => {
-    const entry = (collection || []).find((item: any) => item.card_id === card.id);
+  const setValue = safeCards.reduce((sum: number, card: any) => {
+    const entry = safeCollection.find((item: any) => item.card_id === card.id);
     const qty = Number(entry?.quantity || 0);
     return sum + qty * Number(card.price || 0);
   }, 0);
@@ -124,7 +143,7 @@ export default async function SetDetailPage({ params }: Props) {
         <div>Set Value: ${setValue.toFixed(2)}</div>
       </div>
 
-      <SetClient cards={cards} collection={collection} userId={user.id} />
+      <SetClient cards={safeCards} collection={safeCollection} userId={user.id} />
     </main>
   );
 }
