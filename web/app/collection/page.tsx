@@ -15,13 +15,24 @@ async function getAllCollectionWithCards(supabase: any, userId: string) {
         quantity,
         card_id,
         cards (
+          id,
           name,
           subtitle,
           set_code,
           card_number,
           variant,
           aspect,
-          price
+          traits,
+          rarity,
+          artist,
+          cost,
+          power,
+          hp,
+          front_text,
+          front_art,
+          price,
+          card_type,
+          arena
         )
       `)
       .eq("user_id", userId)
@@ -47,25 +58,14 @@ export default async function CollectionPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
-  try {
-    const data = await getAllCollectionWithCards(supabase, user.id);
+  const data = await getAllCollectionWithCards(supabase, user.id);
 
-    return (
-      <main>
-        <h1 style={{ marginBottom: "18px" }}>Collection</h1>
-        <CollectionClient data={data || []} userId={user.id} />
-      </main>
-    );
-  } catch (error: any) {
-    return (
-      <main>
-        <h1>Collection</h1>
-        <div>{error.message}</div>
-      </main>
-    );
-  }
+  return (
+    <main>
+      <h1 style={{ marginBottom: "18px" }}>Collection</h1>
+      <CollectionClient data={data || []} userId={user.id} />
+    </main>
+  );
 }
