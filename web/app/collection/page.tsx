@@ -1,7 +1,8 @@
+import { redirect } from "next/navigation";
 import CollectionClient from "@/components/CollectionClient";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
-async function getAllCollectionWithCards(userId: string) {
+async function getAllCollectionWithCards(supabase: any, userId: string) {
   let allRows: any[] = [];
   let from = 0;
   const pageSize = 1000;
@@ -40,15 +41,23 @@ async function getAllCollectionWithCards(userId: string) {
 }
 
 export default async function CollectionPage() {
-  const userId = "81758ed6-6848-446a-9b57-f61e36fea5c9";
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
 
   try {
-    const data = await getAllCollectionWithCards(userId);
+    const data = await getAllCollectionWithCards(supabase, user.id);
 
     return (
       <main>
         <h1 style={{ marginBottom: "18px" }}>Collection</h1>
-        <CollectionClient data={data || []} userId={userId} />
+        <CollectionClient data={data || []} userId={user.id} />
       </main>
     );
   } catch (error: any) {
