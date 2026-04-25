@@ -694,6 +694,7 @@ export default function DeckEditorClient({
   const [textSearch, setTextSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [arenaFilter, setArenaFilter] = useState("all");
+  const [aspectFilter, setAspectFilter] = useState("all");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -860,9 +861,13 @@ export default function DeckEditorClient({
         (arenaFilter === "space" && isSpaceUnit(card)) ||
         (arenaFilter === "ground" && isGroundUnit(card));
 
-      return mainMatch && textMatch && typeMatches && arenaMatches;
+      const aspectMatches =
+        aspectFilter === "all" ||
+        aspect.includes(aspectFilter);
+
+      return mainMatch && textMatch && typeMatches && arenaMatches && aspectMatches;
     });
-  }, [collectionRows, search, textSearch, typeFilter, arenaFilter]);
+  }, [collectionRows, search, textSearch, typeFilter, arenaFilter, aspectFilter]);
 
   const mainDeckDetailed = useMemo(() => {
     return deckCards
@@ -1075,6 +1080,26 @@ export default function DeckEditorClient({
             <option value="all">All Arenas</option>
             <option value="ground">Ground</option>
             <option value="space">Space</option>
+          </select>
+
+          <select
+            value={aspectFilter}
+            onChange={(e) => setAspectFilter(e.target.value)}
+            style={{
+              padding: "10px 12px",
+              borderRadius: "10px",
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#e5edf7",
+            }}
+          >
+            <option value="all">All Aspects</option>
+            <option value="vigilance">Vigilance</option>
+            <option value="command">Command</option>
+            <option value="aggression">Aggression</option>
+            <option value="cunning">Cunning</option>
+            <option value="heroism">Heroism</option>
+            <option value="villainy">Villainy</option>
           </select>
         </div>
 
