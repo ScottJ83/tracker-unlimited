@@ -4,6 +4,42 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+function DeckCardImage({ src, label }: { src?: string | null; label: string }) {
+  return (
+    <div style={{ display: "grid", gap: "6px" }}>
+      <div style={{ fontSize: "11px", color: "#94a3b8" }}>{label}</div>
+      <div
+        style={{
+          width: "64px",
+          height: "90px",
+          borderRadius: "10px",
+          border: "1px solid #334155",
+          background: "#0b1220",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {src ? (
+          <img
+            src={src}
+            alt={label}
+            style={{
+              width: "64px",
+              height: "90px",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+        ) : (
+          <div style={{ color: "#475569", fontSize: "11px" }}>—</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default async function DecksPage() {
   const supabase = await createClient();
 
@@ -128,7 +164,7 @@ export default async function DecksPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
             gap: "16px",
           }}
         >
@@ -168,18 +204,31 @@ export default async function DecksPage() {
                   {deck.name}
                 </div>
 
-                <div style={{ display: "grid", gap: "8px", color: "#cbd5e1", fontSize: "14px" }}>
-                  <div>
-                    <span style={{ color: "#94a3b8" }}>Leader:</span>{" "}
-                    {leader?.name || "None selected"}
-                  </div>
-                  <div>
-                    <span style={{ color: "#94a3b8" }}>Base:</span>{" "}
-                    {base?.name || "None selected"}
-                  </div>
-                  <div>
-                    <span style={{ color: "#94a3b8" }}>Main Deck Cards:</span>{" "}
-                    {mainDeckCount} / 50
+                <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                  <DeckCardImage src={leader?.front_art} label="Leader" />
+                  <DeckCardImage src={base?.front_art} label="Base" />
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gap: "8px",
+                      color: "#cbd5e1",
+                      fontSize: "14px",
+                      minWidth: 0,
+                    }}
+                  >
+                    <div>
+                      <span style={{ color: "#94a3b8" }}>Leader:</span>{" "}
+                      {leader?.name || "None selected"}
+                    </div>
+                    <div>
+                      <span style={{ color: "#94a3b8" }}>Base:</span>{" "}
+                      {base?.name || "None selected"}
+                    </div>
+                    <div>
+                      <span style={{ color: "#94a3b8" }}>Main Deck Cards:</span>{" "}
+                      {mainDeckCount} / 50
+                    </div>
                   </div>
                 </div>
 

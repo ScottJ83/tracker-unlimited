@@ -179,8 +179,92 @@ export default function CollectionClient({ data }: any) {
     return rows;
   }, [data, search, textSearch, sortBy]);
 
+  const totalCardsOwned = filtered.reduce(
+    (sum: number, item: any) => sum + Number(item.quantity || 0),
+    0
+  );
+
+  const totalUniqueCards = filtered.length;
+
+  const totalCollectionValue = filtered.reduce((sum: number, item: any) => {
+    const card = Array.isArray(item.cards) ? item.cards[0] : item.cards;
+    return sum + Number(card?.price || 0) * Number(item.quantity || 0);
+  }, 0);
+
+  const averageUniqueCardValue =
+    totalUniqueCards > 0 ? totalCollectionValue / totalUniqueCards : 0;
+
+  const highestValueItem = [...filtered].sort((a: any, b: any) => {
+    const ac = Array.isArray(a.cards) ? a.cards[0] : a.cards;
+    const bc = Array.isArray(b.cards) ? b.cards[0] : b.cards;
+
+    const av = Number(ac?.price || 0) * Number(a.quantity || 0);
+    const bv = Number(bc?.price || 0) * Number(b.quantity || 0);
+
+    return bv - av;
+  })[0];
+
+  const highestValueCard = highestValueItem
+    ? Array.isArray(highestValueItem.cards)
+      ? highestValueItem.cards[0]
+      : highestValueItem.cards
+    : null;
+
   return (
     <div>
+      <div
+        style={{
+          marginBottom: "18px",
+          padding: "18px",
+          border: "1px solid #334155",
+          borderRadius: "16px",
+          background: "linear-gradient(180deg, #172033, #111827)",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          gap: "12px",
+          color: "#e5edf7",
+        }}
+      >
+        <div>
+          <div style={{ color: "#94a3b8", fontSize: "12px" }}>Total Value</div>
+          <div style={{ fontWeight: 800, fontSize: "20px" }}>
+            ${totalCollectionValue.toFixed(2)}
+          </div>
+        </div>
+
+        <div>
+          <div style={{ color: "#94a3b8", fontSize: "12px" }}>Cards Owned</div>
+          <div style={{ fontWeight: 800, fontSize: "20px" }}>{totalCardsOwned}</div>
+        </div>
+
+        <div>
+          <div style={{ color: "#94a3b8", fontSize: "12px" }}>Unique Cards</div>
+          <div style={{ fontWeight: 800, fontSize: "20px" }}>{totalUniqueCards}</div>
+        </div>
+
+        <div>
+          <div style={{ color: "#94a3b8", fontSize: "12px" }}>Avg Unique Value</div>
+          <div style={{ fontWeight: 800, fontSize: "20px" }}>
+            ${averageUniqueCardValue.toFixed(2)}
+          </div>
+        </div>
+
+        <div style={{ gridColumn: "1 / -1", color: "#cbd5e1" }}>
+          <span style={{ color: "#94a3b8" }}>Highest Value:</span>{" "}
+          {highestValueCard ? (
+            <>
+              {highestValueCard.name} ({highestValueCard.variant}) — $
+              {(
+                Number(highestValueCard.price || 0) *
+                Number(highestValueItem?.quantity || 0)
+              ).toFixed(2)}
+            </>
+          ) : (
+            "None"
+          )}
+        </div>
+      </div>
+
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
           type="text"
