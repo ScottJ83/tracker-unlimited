@@ -196,6 +196,20 @@ function normalizeJoinedCard(item: any) {
   return Array.isArray(item?.cards) ? item.cards[0] : item?.cards;
 }
 
+function getCardAspectNames(aspect: string | null | undefined) {
+  const text = String(aspect || "").toLowerCase();
+  const aspects: string[] = [];
+
+  if (text.includes("vigilance")) aspects.push("vigilance");
+  if (text.includes("command")) aspects.push("command");
+  if (text.includes("aggression")) aspects.push("aggression");
+  if (text.includes("cunning")) aspects.push("cunning");
+  if (text.includes("heroism")) aspects.push("heroism");
+  if (text.includes("villainy")) aspects.push("villainy");
+
+  return aspects;
+}
+
 function DeckCardTile({
   card,
   quantity,
@@ -695,7 +709,7 @@ export default function DeckEditorClient({
   const [typeFilter, setTypeFilter] = useState("all");
   const [arenaFilter, setArenaFilter] = useState("all");
   const [selectedAspects, setSelectedAspects] = useState<string[]>([]);
-  const [aspectFilterMode, setAspectFilterMode] = useState<"include" | "exclude">("include");
+  const [aspectFilterMode, setAspectFilterMode] = useState<"any" | "only" | "exclude">("any");
 
   const aspectOptions = [
     { value: "vigilance", label: "Vigilance" },
@@ -879,15 +893,21 @@ export default function DeckEditorClient({
         (arenaFilter === "space" && isSpaceUnit(card)) ||
         (arenaFilter === "ground" && isGroundUnit(card));
 
+      const cardAspectNames = getCardAspectNames(card?.aspect);
       const selectedAspectMatches = selectedAspects.some((selectedAspect) =>
-        aspect.includes(selectedAspect)
+        cardAspectNames.includes(selectedAspect)
       );
+      const cardUsesOnlySelectedAspects =
+        cardAspectNames.length > 0 &&
+        cardAspectNames.every((cardAspect) => selectedAspects.includes(cardAspect));
 
       const aspectMatches =
         selectedAspects.length === 0 ||
-        (aspectFilterMode === "include"
+        (aspectFilterMode === "any"
           ? selectedAspectMatches
-          : !selectedAspectMatches);
+          : aspectFilterMode === "only"
+            ? cardUsesOnlySelectedAspects
+            : !selectedAspectMatches);
 
       return mainMatch && textMatch && typeMatches && arenaMatches && aspectMatches;
     });
@@ -1139,7 +1159,7 @@ export default function DeckEditorClient({
             <select
               value={aspectFilterMode}
               onChange={(e) =>
-                setAspectFilterMode(e.target.value as "include" | "exclude")
+                setAspectFilterMode(e.target.value as "any" | "only" | "exclude")
               }
               style={{
                 padding: "6px 8px",
@@ -1150,8 +1170,9 @@ export default function DeckEditorClient({
                 fontSize: "12px",
               }}
             >
-              <option value="include">Include selected</option>
-              <option value="exclude">Exclude selected</option>
+              <option value="any">Any selected aspect</option>
+              <option value="only">Only selected aspects</option>
+              <option value="exclude">Exclude selected aspects</option>
             </select>
 
             {aspectOptions.map((option) => {
@@ -1207,9 +1228,11 @@ export default function DeckEditorClient({
                   width: "100%",
                 }}
               >
-                {aspectFilterMode === "include"
+                {aspectFilterMode === "any"
                   ? "Showing cards that have any selected aspect."
-                  : "Hiding cards that have any selected aspect."}
+                  : aspectFilterMode === "only"
+                    ? "Showing cards only if every aspect on the card is selected."
+                    : "Hiding cards that have any selected aspect."}
               </div>
             ) : null}
           </div>
