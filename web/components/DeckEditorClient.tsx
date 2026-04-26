@@ -694,7 +694,24 @@ export default function DeckEditorClient({
   const [textSearch, setTextSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [arenaFilter, setArenaFilter] = useState("all");
-  const [aspectFilter, setAspectFilter] = useState("all");
+  const [selectedAspects, setSelectedAspects] = useState<string[]>([]);
+
+  const aspectOptions = [
+    { value: "vigilance", label: "Vigilance" },
+    { value: "command", label: "Command" },
+    { value: "aggression", label: "Aggression" },
+    { value: "cunning", label: "Cunning" },
+    { value: "heroism", label: "Heroism" },
+    { value: "villainy", label: "Villainy" },
+  ];
+
+  function toggleAspectFilter(value: string) {
+    setSelectedAspects((prev) =>
+      prev.includes(value)
+        ? prev.filter((item) => item !== value)
+        : [...prev, value]
+    );
+  }
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -862,12 +879,12 @@ export default function DeckEditorClient({
         (arenaFilter === "ground" && isGroundUnit(card));
 
       const aspectMatches =
-        aspectFilter === "all" ||
-        aspect.includes(aspectFilter);
+        selectedAspects.length === 0 ||
+        selectedAspects.some((selectedAspect) => aspect.includes(selectedAspect));
 
       return mainMatch && textMatch && typeMatches && arenaMatches && aspectMatches;
     });
-  }, [collectionRows, search, textSearch, typeFilter, arenaFilter, aspectFilter]);
+  }, [collectionRows, search, textSearch, typeFilter, arenaFilter, selectedAspects]);
 
   const mainDeckDetailed = useMemo(() => {
     return deckCards
@@ -1081,26 +1098,74 @@ export default function DeckEditorClient({
             <option value="ground">Ground</option>
             <option value="space">Space</option>
           </select>
-
-          <select
-            value={aspectFilter}
-            onChange={(e) => setAspectFilter(e.target.value)}
+          <div
             style={{
-              padding: "10px 12px",
+              display: "flex",
+              gap: "8px",
+              flexWrap: "wrap",
+              alignItems: "center",
+              padding: "8px 10px",
               borderRadius: "10px",
               border: "1px solid #334155",
               background: "#0f172a",
-              color: "#e5edf7",
             }}
           >
-            <option value="all">All Aspects</option>
-            <option value="vigilance">Vigilance</option>
-            <option value="command">Command</option>
-            <option value="aggression">Aggression</option>
-            <option value="cunning">Cunning</option>
-            <option value="heroism">Heroism</option>
-            <option value="villainy">Villainy</option>
-          </select>
+            <div
+              style={{
+                color: "#94a3b8",
+                fontSize: "12px",
+                fontWeight: 700,
+                marginRight: "2px",
+              }}
+            >
+              Aspects:
+            </div>
+
+            {aspectOptions.map((option) => {
+              const checked = selectedAspects.includes(option.value);
+
+              return (
+                <label
+                  key={option.value}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    color: checked ? "#e5edf7" : "#94a3b8",
+                    fontSize: "12px",
+                    cursor: "pointer",
+                    userSelect: "none",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleAspectFilter(option.value)}
+                  />
+                  {option.label}
+                </label>
+              );
+            })}
+
+            {selectedAspects.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setSelectedAspects([])}
+                style={{
+                  padding: "5px 8px",
+                  borderRadius: "8px",
+                  border: "1px solid #475569",
+                  background: "#1e293b",
+                  color: "#e5edf7",
+                  cursor: "pointer",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                }}
+              >
+                Clear
+              </button>
+            ) : null}
+          </div>
         </div>
 
         <div
