@@ -695,6 +695,7 @@ export default function DeckEditorClient({
   const [typeFilter, setTypeFilter] = useState("all");
   const [arenaFilter, setArenaFilter] = useState("all");
   const [selectedAspects, setSelectedAspects] = useState<string[]>([]);
+  const [aspectFilterMode, setAspectFilterMode] = useState<"include" | "exclude">("include");
 
   const aspectOptions = [
     { value: "vigilance", label: "Vigilance" },
@@ -878,13 +879,27 @@ export default function DeckEditorClient({
         (arenaFilter === "space" && isSpaceUnit(card)) ||
         (arenaFilter === "ground" && isGroundUnit(card));
 
+      const selectedAspectMatches = selectedAspects.some((selectedAspect) =>
+        aspect.includes(selectedAspect)
+      );
+
       const aspectMatches =
         selectedAspects.length === 0 ||
-        selectedAspects.some((selectedAspect) => aspect.includes(selectedAspect));
+        (aspectFilterMode === "include"
+          ? selectedAspectMatches
+          : !selectedAspectMatches);
 
       return mainMatch && textMatch && typeMatches && arenaMatches && aspectMatches;
     });
-  }, [collectionRows, search, textSearch, typeFilter, arenaFilter, selectedAspects]);
+  }, [
+    collectionRows,
+    search,
+    textSearch,
+    typeFilter,
+    arenaFilter,
+    selectedAspects,
+    aspectFilterMode,
+  ]);
 
   const mainDeckDetailed = useMemo(() => {
     return deckCards
@@ -1121,6 +1136,24 @@ export default function DeckEditorClient({
               Aspects:
             </div>
 
+            <select
+              value={aspectFilterMode}
+              onChange={(e) =>
+                setAspectFilterMode(e.target.value as "include" | "exclude")
+              }
+              style={{
+                padding: "6px 8px",
+                borderRadius: "8px",
+                border: "1px solid #334155",
+                background: "#111827",
+                color: "#e5edf7",
+                fontSize: "12px",
+              }}
+            >
+              <option value="include">Include selected</option>
+              <option value="exclude">Exclude selected</option>
+            </select>
+
             {aspectOptions.map((option) => {
               const checked = selectedAspects.includes(option.value);
 
@@ -1164,6 +1197,20 @@ export default function DeckEditorClient({
               >
                 Clear
               </button>
+            ) : null}
+
+            {selectedAspects.length > 0 ? (
+              <div
+                style={{
+                  color: "#94a3b8",
+                  fontSize: "11px",
+                  width: "100%",
+                }}
+              >
+                {aspectFilterMode === "include"
+                  ? "Showing cards that have any selected aspect."
+                  : "Hiding cards that have any selected aspect."}
+              </div>
             ) : null}
           </div>
         </div>
