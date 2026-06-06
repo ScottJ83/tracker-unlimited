@@ -8,6 +8,18 @@ export default async function NavBar() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  let displayName = user?.email ?? null;
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    displayName = profile?.username || user.email || "Account";
+  }
+
   return (
     <header
       style={{
@@ -27,22 +39,26 @@ export default async function NavBar() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: "18px",
+          flexWrap: "wrap",
         }}
       >
         <Link href="/" style={{ fontWeight: 700, letterSpacing: "0.08em" }}>
           TRACKER UNLIMITED
         </Link>
 
-        <div style={{ display: "flex", gap: "18px", alignItems: "center" }}>
-          <nav style={{ display: "flex", gap: "18px", color: "#cbd5e1" }}>
+        <div style={{ display: "flex", gap: "18px", alignItems: "center", flexWrap: "wrap" }}>
+          <nav style={{ display: "flex", gap: "18px", color: "#cbd5e1", flexWrap: "wrap" }}>
             <Link href="/">Home</Link>
             <Link href="/sets">Sets</Link>
             <Link href="/collection">Collection</Link>
             <Link href="/cards">Cards</Link>
             <Link href="/decks">Decks</Link>
+            <Link href="/missing">Missing</Link>
+            <Link href="/wishlist">Wishlist</Link>
           </nav>
 
-          <AuthButton email={user?.email ?? null} />
+          <AuthButton email={displayName} />
         </div>
       </div>
     </header>

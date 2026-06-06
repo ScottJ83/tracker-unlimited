@@ -1,5 +1,6 @@
 import "./globals.css";
 import NavBar from "@/components/NavBar";
+import ClientUsernameGate from "@/components/ClientUsernameGate";
 
 export const metadata = {
   title: "Tracker Unlimited",
@@ -14,8 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <NavBar />
-        {children}
+        <ClientUsernameGate>
+          <NavBar />
+          {children}
+        </ClientUsernameGate>
       </body>
     </html>
   );
