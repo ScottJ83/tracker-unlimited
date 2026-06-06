@@ -34,9 +34,9 @@ export default async function NavBar() {
   return (
     <header
       style={{
-        borderBottom: "1px solid rgba(255,255,255,0.14)",
-        background: "rgba(0, 0, 0, 0.86)",
-        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(255,255,255,0.12)",
+        background: "rgba(0, 0, 0, 0.9)",
+        backdropFilter: "blur(10px)",
         position: "sticky",
         top: 0,
         zIndex: 20,
@@ -46,7 +46,7 @@ export default async function NavBar() {
         style={{
           maxWidth: "1320px",
           margin: "0 auto",
-          padding: "12px 24px 8px",
+          padding: "16px 24px 10px",
           display: "grid",
           gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
@@ -70,15 +70,15 @@ export default async function NavBar() {
         style={{
           maxWidth: "1320px",
           margin: "0 auto",
-          padding: "10px 24px 11px",
+          padding: "10px 24px 12px",
           display: "flex",
           justifyContent: "center",
           gap: "24px",
-          color: "#cfcfcf",
+          color: "#d9d9d9",
           flexWrap: "wrap",
           fontSize: "12px",
           fontWeight: 900,
-          letterSpacing: "0.13em",
+          letterSpacing: "0.14em",
           textTransform: "uppercase",
         }}
       >
