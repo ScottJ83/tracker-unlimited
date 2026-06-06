@@ -1,48 +1,49 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-type Props = {
-  email?: string | null;
-};
-
-export default function AuthButton({ email }: Props) {
+export default function AuthButton({
+  email,
+  avatarUrl,
+}: {
+  email: string | null;
+  avatarUrl?: string | null;
+}) {
   const router = useRouter();
+  const supabase = createClient();
 
   async function handleLogout() {
-    const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
     router.refresh();
   }
 
-  if (email) {
+  if (!email) {
     return (
-      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-        <span style={{ color: "#94a3b8", fontSize: "12px" }}>{email}</span>
-        <button
-          type="button"
-          onClick={handleLogout}
-          style={{
-            padding: "8px 12px",
-            borderRadius: "10px",
-            border: "1px solid #475569",
-            background: "#1e293b",
-            color: "#e5edf7",
-            cursor: "pointer",
-          }}
-        >
-          Log Out
-        </button>
-      </div>
+      <Link href="/login" className="sw-button">
+        Log In
+      </Link>
     );
   }
 
+  const initial = String(email || "?").trim().charAt(0).toUpperCase() || "?";
+
   return (
-    <div style={{ display: "flex", gap: "12px" }}>
-      <a href="/login">Log In</a>
-      <a href="/signup">Sign Up</a>
+    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <Link href="/profile" className="tu-profile-link" title="Edit profile">
+        {avatarUrl ? (
+          <img src={avatarUrl} alt="Profile" className="tu-avatar" />
+        ) : (
+          <span className="tu-avatar-placeholder">{initial}</span>
+        )}
+        <span>{email}</span>
+      </Link>
+
+      <button type="button" onClick={handleLogout} className="sw-button">
+        Log Out
+      </button>
     </div>
   );
 }

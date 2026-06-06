@@ -9,15 +9,17 @@ export default async function NavBar() {
   } = await supabase.auth.getUser();
 
   let displayName = user?.email ?? null;
+  let avatarUrl: string | null = null;
 
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("username")
+      .select("username, avatar_url")
       .eq("user_id", user.id)
       .maybeSingle();
 
     displayName = profile?.username || user.email || "Account";
+    avatarUrl = profile?.avatar_url || null;
   }
 
   const navLinks = [
@@ -73,7 +75,7 @@ export default async function NavBar() {
             minWidth: 0,
           }}
         >
-          <AuthButton email={displayName} />
+          <AuthButton email={displayName} avatarUrl={avatarUrl} />
         </div>
       </div>
 
