@@ -66,6 +66,32 @@ function topEntries(map: Map<string, number>, limit = 8) {
     .slice(0, limit);
 }
 
+function MetricCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div className="sw-panel" style={{ padding: "18px", minHeight: "118px" }}>
+      <div style={{ color: "#9b9b9b", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.14em" }}>{label}</div>
+      <div style={{ color: "#fff", fontWeight: 900, fontSize: "24px", marginTop: "8px" }}>{value}</div>
+      {sub ? <div style={{ color: "#cfcfcf", fontSize: "13px", marginTop: "7px", lineHeight: 1.4 }}>{sub}</div> : null}
+    </div>
+  );
+}
+
+function ListBox({ title, rows, prefix = "", suffix = "" }: { title: string; rows: { label: string; value: number }[]; prefix?: string; suffix?: string }) {
+  return (
+    <div className="sw-panel" style={{ padding: "18px" }}>
+      <div style={{ color: "#fff", fontWeight: 900, marginBottom: "14px", textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</div>
+      <div style={{ display: "grid", gap: "10px" }}>
+        {rows.map((row) => (
+          <div key={row.label} style={{ display: "flex", justifyContent: "space-between", gap: "14px", color: "#cfcfcf", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "8px" }}>
+            <span>{row.label}</span>
+            <span style={{ color: prefix ? "var(--accent)" : "#fff", fontWeight: 800 }}>{prefix}{row.value.toFixed(prefix ? 2 : 0)}{suffix}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default async function AnalyticsPage() {
   const supabase = await createClient();
 
@@ -159,61 +185,27 @@ export default async function AnalyticsPage() {
   const mostComplete = [...setCompletion].filter((s) => s.baseTotal > 0).sort((a, b) => b.basePercent - a.basePercent)[0];
   const leastComplete = [...setCompletion].filter((s) => s.baseTotal > 0).sort((a, b) => a.basePercent - b.basePercent)[0];
 
-  const cardBox = (label: string, value: string, sub?: string) => (
-    <div
-      style={{
-        border: "1px solid #334155",
-        borderRadius: "18px",
-        padding: "18px",
-        background: "linear-gradient(180deg, #172033, #111827)",
-      }}
-    >
-      <div style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "8px" }}>{label}</div>
-      <div style={{ color: "#e5edf7", fontWeight: 800, fontSize: "22px" }}>{value}</div>
-      {sub ? <div style={{ color: "#cbd5e1", fontSize: "13px", marginTop: "6px" }}>{sub}</div> : null}
-    </div>
-  );
-
-  const listBox = (title: string, rows: { label: string; value: number }[], prefix = "", suffix = "") => (
-    <div
-      style={{
-        border: "1px solid #334155",
-        borderRadius: "18px",
-        padding: "18px",
-        background: "linear-gradient(180deg, #172033, #111827)",
-      }}
-    >
-      <div style={{ color: "#e5edf7", fontWeight: 800, marginBottom: "12px" }}>{title}</div>
-      <div style={{ display: "grid", gap: "8px" }}>
-        {rows.map((row) => (
-          <div key={row.label} style={{ display: "flex", justifyContent: "space-between", gap: "12px", color: "#cbd5e1" }}>
-            <span>{row.label}</span>
-            <span>{prefix}{row.value.toFixed(prefix ? 2 : 0)}{suffix}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
   return (
     <main>
-      <h1 style={{ marginBottom: "18px" }}>Analytics</h1>
+      <div className="sw-kicker">Collection Databank</div>
+      <h1 style={{ marginTop: "10px", marginBottom: "18px", fontSize: "42px" }}>Analytics</h1>
+      <div className="sw-divider" style={{ marginBottom: "20px" }} />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "16px", marginBottom: "18px" }}>
-        {cardBox("Total Collection Value", `$${totalCollectionValue.toFixed(2)}`)}
-        {cardBox("Total Cards Owned", String(totalCardsOwned))}
-        {cardBox("Unique Cards Owned", String(totalUniqueOwned))}
-        {cardBox("Most Valuable Card", highestOwned?.card?.name || "-", highestOwned ? `${highestOwned.card?.set_code} #${highestOwned.card?.card_number} • $${Number(highestOwned.card?.price || 0).toFixed(2)}` : undefined)}
-        {cardBox("Most Complete Set", mostComplete?.setCode || "-", mostComplete ? `${mostComplete.baseOwned}/${mostComplete.baseTotal} base (${mostComplete.basePercent.toFixed(1)}%)` : undefined)}
-        {cardBox("Least Complete Set", leastComplete?.setCode || "-", leastComplete ? `${leastComplete.baseOwned}/${leastComplete.baseTotal} base (${leastComplete.basePercent.toFixed(1)}%)` : undefined)}
+        <MetricCard label="Total Collection Value" value={`$${totalCollectionValue.toFixed(2)}`} />
+        <MetricCard label="Total Cards Owned" value={String(totalCardsOwned)} />
+        <MetricCard label="Unique Cards Owned" value={String(totalUniqueOwned)} />
+        <MetricCard label="Most Valuable Card" value={highestOwned?.card?.name || "-"} sub={highestOwned ? `${highestOwned.card?.set_code} #${highestOwned.card?.card_number} • $${Number(highestOwned.card?.price || 0).toFixed(2)}` : undefined} />
+        <MetricCard label="Most Complete Set" value={mostComplete?.setCode || "-"} sub={mostComplete ? `${mostComplete.baseOwned}/${mostComplete.baseTotal} base (${mostComplete.basePercent.toFixed(1)}%)` : undefined} />
+        <MetricCard label="Least Complete Set" value={leastComplete?.setCode || "-"} sub={leastComplete ? `${leastComplete.baseOwned}/${leastComplete.baseTotal} base (${leastComplete.basePercent.toFixed(1)}%)` : undefined} />
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "16px" }}>
-        {listBox("Most Valuable Sets", topEntries(valueBySet), "$")}
-        {listBox("Most Owned Sets", topEntries(countBySet))}
-        {listBox("Most Owned Aspects", topEntries(countByAspect))}
-        {listBox("Most Valuable Aspects", topEntries(valueByAspect), "$")}
-        {listBox("Most Owned Rarities", topEntries(countByRarity))}
+        <ListBox title="Most Valuable Sets" rows={topEntries(valueBySet)} prefix="$" />
+        <ListBox title="Most Owned Sets" rows={topEntries(countBySet)} />
+        <ListBox title="Most Owned Aspects" rows={topEntries(countByAspect)} />
+        <ListBox title="Most Valuable Aspects" rows={topEntries(valueByAspect)} prefix="$" />
+        <ListBox title="Most Owned Rarities" rows={topEntries(countByRarity)} />
       </div>
     </main>
   );

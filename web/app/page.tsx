@@ -46,6 +46,25 @@ async function getLastPriceRefresh(supabase: any) {
   return data || null;
 }
 
+function StatBox({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div
+      style={{
+        border: "1px solid rgba(255,255,255,0.14)",
+        background: "rgba(8,8,8,0.72)",
+        padding: "16px",
+        minHeight: "108px",
+      }}
+    >
+      <div style={{ color: "#9a9a9a", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+        {label}
+      </div>
+      <div style={{ color: "#fff", fontWeight: 900, fontSize: "26px", marginTop: "8px" }}>{value}</div>
+      {sub ? <div style={{ color: "#bfbfbf", fontSize: "13px", marginTop: "6px" }}>{sub}</div> : null}
+    </div>
+  );
+}
+
 export default async function HomePage() {
   const supabase = await createClient();
 
@@ -86,84 +105,82 @@ export default async function HomePage() {
       Number(a.card?.price || 0) * Number(a.quantity || 0)
   )[0];
 
-const lastRefreshLabel = lastPriceRefresh?.refreshed_at
-  ? new Date(lastPriceRefresh.refreshed_at).toLocaleDateString()
-  : "Not recorded yet";
+  const lastRefreshLabel = lastPriceRefresh?.refreshed_at
+    ? new Date(lastPriceRefresh.refreshed_at).toLocaleDateString()
+    : "Not recorded yet";
 
   return (
     <main>
       <section
         style={{
-          border: "1px solid #334155",
-          borderRadius: "24px",
-          padding: "32px",
+          minHeight: "calc(100vh - 190px)",
+          border: "1px solid rgba(255,255,255,0.16)",
           background:
-            "linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9))",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
+            "linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.76) 46%, rgba(0,0,0,0.38) 100%), radial-gradient(circle at 76% 42%, rgba(245,197,66,0.16), transparent 25%), linear-gradient(180deg, rgba(30,30,30,0.72), rgba(0,0,0,0.96))",
+          boxShadow: "0 24px 90px rgba(0,0,0,0.62)",
+          padding: "54px 44px",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div style={{ maxWidth: "760px" }}>
-          <div
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(circle at 78% 46%, rgba(255,255,255,0.14), transparent 1px), radial-gradient(circle at 62% 18%, rgba(255,255,255,0.10), transparent 1px), radial-gradient(circle at 89% 73%, rgba(255,255,255,0.10), transparent 1px)",
+            opacity: 0.8,
+          }}
+        />
+
+        <div style={{ position: "relative", maxWidth: "920px" }}>
+          <div className="sw-kicker">Star Wars Unlimited</div>
+          <h1
             style={{
-              color: "#7dd3fc",
-              fontWeight: 700,
-              letterSpacing: "0.12em",
+              fontSize: "clamp(44px, 7vw, 92px)",
+              lineHeight: 0.92,
+              margin: "16px 0 18px",
+              maxWidth: "850px",
+              color: "#fff",
+              textShadow: "0 0 24px rgba(255,255,255,0.18)",
             }}
           >
-            STAR WARS UNLIMITED
-          </div>
-          <h1 style={{ fontSize: "42px", margin: "12px 0 10px 0" }}>
-            Tracker Unlimited
+            Tracker<br />Unlimited
           </h1>
-          <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>
-            Track your collection, view set progress, and manage every collectible
-            variant.
+          <div style={{ width: "92px", height: "6px", background: "var(--accent)", marginBottom: "28px" }} />
+          <p style={{ color: "#d5d5d5", lineHeight: 1.75, fontSize: "18px", maxWidth: "680px" }}>
+            Track your collection, monitor set completion, manage wishlists, and build decks with a cinematic databank-style interface.
           </p>
 
           <div
             style={{
-              marginTop: "20px",
-              color: "#e5edf7",
               display: "grid",
-              gap: "8px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+              gap: "14px",
+              marginTop: "34px",
+              maxWidth: "920px",
             }}
           >
-            <div>Total Cards Owned: {totalCardsOwned}</div>
-            <div>Total Unique Cards Owned: {totalUniqueCards}</div>
-            <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
-            <div>Last Price Refresh: {lastRefreshLabel}</div>
-            {highest ? (
-              <div>
-                Highest Value Card: {highest.card?.name} ({highest.card?.variant}) — $
-                {(
-                  Number(highest.card?.price || 0) * Number(highest.quantity || 0)
-                ).toFixed(2)}
-              </div>
-            ) : null}
+            <StatBox label="Cards Owned" value={String(totalCardsOwned)} />
+            <StatBox label="Unique Owned" value={String(totalUniqueCards)} />
+            <StatBox label="Collection Value" value={`$${totalValue.toFixed(2)}`} />
+            <StatBox label="Price Refresh" value={lastRefreshLabel} />
+            <StatBox
+              label="Highest Value"
+              value={highest ? `$${(Number(highest.card?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}` : "-"}
+              sub={highest ? `${highest.card?.name} (${highest.card?.variant})` : undefined}
+            />
           </div>
 
-          <div style={{ display: "flex", gap: "12px", marginTop: "22px", flexWrap: "wrap" }}>
-            <Link
-              href="/sets"
-              style={{
-                padding: "12px 16px",
-                borderRadius: "12px",
-                background: "#1e293b",
-                border: "1px solid #475569",
-              }}
-            >
+          <div style={{ display: "flex", gap: "12px", marginTop: "30px", flexWrap: "wrap" }}>
+            <Link href="/sets" className="sw-button sw-button-primary">
               Browse Sets
             </Link>
-            <Link
-              href="/collection"
-              style={{
-                padding: "12px 16px",
-                borderRadius: "12px",
-                background: "#0f172a",
-                border: "1px solid #334155",
-              }}
-            >
+            <Link href="/collection" className="sw-button">
               View Collection
+            </Link>
+            <Link href="/analytics" className="sw-button">
+              Analytics
             </Link>
           </div>
         </div>
