@@ -53,10 +53,9 @@ async function getAllCollectionWithCards(supabase: any, userId: string) {
 
 async function getLastPriceRefresh(supabase: any) {
   const { data } = await supabase
-    .from("app_events")
-    .select("created_at, details")
-    .eq("event_type", "price_refresh")
-    .order("created_at", { ascending: false })
+    .from("price_refresh_log")
+    .select("*")
+    .order("refreshed_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 

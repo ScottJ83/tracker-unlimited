@@ -37,10 +37,9 @@ async function getAllCollectionForHome(supabase: any, userId: string) {
 
 async function getLastPriceRefresh(supabase: any) {
   const { data } = await supabase
-    .from("app_events")
-    .select("created_at, details")
-    .eq("event_type", "price_refresh")
-    .order("created_at", { ascending: false })
+    .from("price_refresh_log")
+    .select("*")
+    .order("refreshed_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -87,9 +86,9 @@ export default async function HomePage() {
       Number(a.card?.price || 0) * Number(a.quantity || 0)
   )[0];
 
-  const lastRefreshLabel = lastPriceRefresh?.created_at
-    ? new Date(lastPriceRefresh.created_at).toLocaleString()
-    : "Not recorded yet";
+const lastRefreshLabel = lastPriceRefresh?.refreshed_at
+  ? new Date(lastPriceRefresh.refreshed_at).toLocaleString()
+  : "Not recorded yet";
 
   return (
     <main>
