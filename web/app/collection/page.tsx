@@ -51,6 +51,18 @@ async function getAllCollectionWithCards(supabase: any, userId: string) {
   return allRows;
 }
 
+async function getLastPriceRefresh(supabase: any) {
+  const { data } = await supabase
+    .from("app_events")
+    .select("created_at, details")
+    .eq("event_type", "price_refresh")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return data || null;
+}
+
 export default async function CollectionPage() {
   const supabase = await createClient();
 
@@ -58,14 +70,32 @@ export default async function CollectionPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+  if (!user) {
+    redirect("/login");
+  }
 
-  const data = await getAllCollectionWithCards(supabase, user.id);
+  try {
+    const [data, lastPriceRefresh] = await Promise.all([
+      getAllCollectionWithCards(supabase, user.id),
+      getLastPriceRefresh(supabase),
+    ]);
 
-  return (
-    <main>
-      <h1 style={{ marginBottom: "18px" }}>Collection</h1>
-      <CollectionClient data={data || []} userId={user.id} />
-    </main>
-  );
+    return (
+      <main>
+        <h1 style={{ marginBottom: "18px" }}>Collection</h1>
+        <CollectionClient
+          data={data || []}
+          userId={user.id}
+          lastPriceRefresh={lastPriceRefresh}
+        />
+      </main>
+    );
+  } catch (error: any) {
+    return (
+      <main>
+        <h1>Collection</h1>
+        <div>{error.message}</div>
+      </main>
+    );
+  }
 }

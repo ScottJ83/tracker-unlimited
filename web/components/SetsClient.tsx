@@ -80,24 +80,15 @@ function getBaseKey(card: any) {
   return `${String(card?.name || "").trim()}|${String(card?.subtitle || "").trim()}`;
 }
 
+const mainSetCodes = new Set(["LAW", "SEC", "JTL", "SOR", "LOF", "SHD", "TWI", "IBH", "ASH"]);
+
 function getSetType(code: string) {
   const normalized = String(code || "").toUpperCase();
 
+  if (mainSetCodes.has(normalized)) return "main";
   if (normalized.endsWith("OP")) return "op";
 
-  if (
-    normalized.startsWith("P") ||
-    normalized.startsWith("J") ||
-    normalized.startsWith("C") ||
-    normalized.startsWith("G") ||
-    normalized.startsWith("SS") ||
-    normalized.startsWith("T") ||
-    normalized.startsWith("E")
-  ) {
-    return "special";
-  }
-
-  return "main";
+  return "special";
 }
 
 function getSetTypeLabel(code: string) {

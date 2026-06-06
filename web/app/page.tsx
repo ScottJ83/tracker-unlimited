@@ -35,6 +35,18 @@ async function getAllCollectionForHome(supabase: any, userId: string) {
   return allRows;
 }
 
+async function getLastPriceRefresh(supabase: any) {
+  const { data } = await supabase
+    .from("app_events")
+    .select("created_at, details")
+    .eq("event_type", "price_refresh")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return data || null;
+}
+
 export default async function HomePage() {
   const supabase = await createClient();
 
@@ -46,7 +58,10 @@ export default async function HomePage() {
     redirect("/login");
   }
 
-  const collection = await getAllCollectionForHome(supabase, user.id);
+  const [collection, lastPriceRefresh] = await Promise.all([
+    getAllCollectionForHome(supabase, user.id),
+    getLastPriceRefresh(supabase),
+  ]);
 
   const rows = (collection || []).map((item: any) => ({
     ...item,
@@ -72,6 +87,10 @@ export default async function HomePage() {
       Number(a.card?.price || 0) * Number(a.quantity || 0)
   )[0];
 
+  const lastRefreshLabel = lastPriceRefresh?.created_at
+    ? new Date(lastPriceRefresh.created_at).toLocaleString()
+    : "Not recorded yet";
+
   return (
     <main>
       <section
@@ -79,32 +98,52 @@ export default async function HomePage() {
           border: "1px solid #334155",
           borderRadius: "24px",
           padding: "32px",
-          background: "linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9))",
+          background:
+            "linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9))",
           boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
         }}
       >
         <div style={{ maxWidth: "760px" }}>
-          <div style={{ color: "#7dd3fc", fontWeight: 700, letterSpacing: "0.12em" }}>
+          <div
+            style={{
+              color: "#7dd3fc",
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+            }}
+          >
             STAR WARS UNLIMITED
           </div>
-          <h1 style={{ fontSize: "42px", margin: "12px 0 10px 0" }}>Tracker Unlimited</h1>
+          <h1 style={{ fontSize: "42px", margin: "12px 0 10px 0" }}>
+            Tracker Unlimited
+          </h1>
           <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>
-            Track your collection, view set progress, and manage every collectible variant.
+            Track your collection, view set progress, and manage every collectible
+            variant.
           </p>
 
-          <div style={{ marginTop: "20px", color: "#e5edf7", display: "grid", gap: "8px" }}>
+          <div
+            style={{
+              marginTop: "20px",
+              color: "#e5edf7",
+              display: "grid",
+              gap: "8px",
+            }}
+          >
             <div>Total Cards Owned: {totalCardsOwned}</div>
             <div>Total Unique Cards Owned: {totalUniqueCards}</div>
             <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
+            <div>Last Price Refresh: {lastRefreshLabel}</div>
             {highest ? (
               <div>
                 Highest Value Card: {highest.card?.name} ({highest.card?.variant}) — $
-                {(Number(highest.card?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}
+                {(
+                  Number(highest.card?.price || 0) * Number(highest.quantity || 0)
+                ).toFixed(2)}
               </div>
             ) : null}
           </div>
 
-          <div style={{ display: "flex", gap: "12px", marginTop: "22px" }}>
+          <div style={{ display: "flex", gap: "12px", marginTop: "22px", flexWrap: "wrap" }}>
             <Link
               href="/sets"
               style={{
@@ -126,6 +165,17 @@ export default async function HomePage() {
               }}
             >
               View Collection
+            </Link>
+            <Link
+              href="/missing"
+              style={{
+                padding: "12px 16px",
+                borderRadius: "12px",
+                background: "#0f172a",
+                border: "1px solid #334155",
+              }}
+            >
+              Missing Cards
             </Link>
           </div>
         </div>

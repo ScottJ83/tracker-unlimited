@@ -8,12 +8,18 @@ function getAspectPills(aspect: string | null | undefined) {
   const text = String(aspect || "").toLowerCase();
   const pills: { name: string; color: string }[] = [];
 
-  if (text.includes("vigilance")) pills.push({ name: "Vigilance", color: "#3b82f6" });
-  if (text.includes("command")) pills.push({ name: "Command", color: "#16a34a" });
-  if (text.includes("aggression")) pills.push({ name: "Aggression", color: "#dc2626" });
-  if (text.includes("cunning")) pills.push({ name: "Cunning", color: "#d97706" });
-  if (text.includes("heroism")) pills.push({ name: "Heroism", color: "#d4d4aa" });
-  if (text.includes("villainy")) pills.push({ name: "Villainy", color: "#4c1d95" });
+  if (text.includes("vigilance"))
+    pills.push({ name: "Vigilance", color: "#3b82f6" });
+  if (text.includes("command"))
+    pills.push({ name: "Command", color: "#16a34a" });
+  if (text.includes("aggression"))
+    pills.push({ name: "Aggression", color: "#dc2626" });
+  if (text.includes("cunning"))
+    pills.push({ name: "Cunning", color: "#d97706" });
+  if (text.includes("heroism"))
+    pills.push({ name: "Heroism", color: "#d4d4aa" });
+  if (text.includes("villainy"))
+    pills.push({ name: "Villainy", color: "#4c1d95" });
 
   return pills;
 }
@@ -48,13 +54,7 @@ function StatPill({
   );
 }
 
-function CardImage({
-  src,
-  name,
-}: {
-  src?: string | null;
-  name: string;
-}) {
+function CardImage({ src, name }: { src?: string | null; name: string }) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -362,7 +362,8 @@ function DeckCardTile({
               textOverflow: "ellipsis",
             }}
           >
-            Type: {getCardTypeLabel(card) || "-"}{getArenaLabel(card) ? ` • ${getArenaLabel(card)}` : ""}
+            Type: {getCardTypeLabel(card) || "-"}
+            {getArenaLabel(card) ? ` • ${getArenaLabel(card)}` : ""}
           </div>
 
           <div
@@ -408,9 +409,9 @@ function DeckCardTile({
             <div style={{ color: "#cbd5e1" }}>
               Unit: ${Number(card?.price || 0).toFixed(2)}
             </div>
-          </div> 
-                  </div>
-      </div>  
+          </div>
+        </div>
+      </div>
       <div
         style={{
           position: "absolute",
@@ -702,14 +703,20 @@ export default function DeckEditorClient({
   const supabase = createClient();
 
   const [deckName, setDeckName] = useState(String(deck?.name || "New Deck"));
-  const [leaderCardId, setLeaderCardId] = useState<string | null>(deck?.leader_card_id || null);
-  const [baseCardId, setBaseCardId] = useState<string | null>(deck?.base_card_id || null);
+  const [leaderCardId, setLeaderCardId] = useState<string | null>(
+    deck?.leader_card_id || null,
+  );
+  const [baseCardId, setBaseCardId] = useState<string | null>(
+    deck?.base_card_id || null,
+  );
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [arenaFilter, setArenaFilter] = useState("all");
   const [selectedAspects, setSelectedAspects] = useState<string[]>([]);
-  const [aspectFilterMode, setAspectFilterMode] = useState<"any" | "only" | "exclude">("any");
+  const [aspectFilterMode, setAspectFilterMode] = useState<
+    "any" | "only" | "exclude"
+  >("any");
 
   const aspectOptions = [
     { value: "vigilance", label: "Vigilance" },
@@ -724,17 +731,19 @@ export default function DeckEditorClient({
     setSelectedAspects((prev) =>
       prev.includes(value)
         ? prev.filter((item) => item !== value)
-        : [...prev, value]
+        : [...prev, value],
     );
   }
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
-  const [deckCards, setDeckCards] = useState<{ card_id: string; quantity: number }[]>(
+  const [deckCards, setDeckCards] = useState<
+    { card_id: string; quantity: number }[]
+  >(
     (initialDeckCards || []).map((item: any) => ({
       card_id: item.card_id,
       quantity: Number(item.quantity || 0),
-    }))
+    })),
   );
 
   const collectionRows = useMemo(() => {
@@ -792,7 +801,7 @@ export default function DeckEditorClient({
         return prev.map((item) =>
           item.card_id === cardId
             ? { ...item, quantity: item.quantity + 1 }
-            : item
+            : item,
         );
       }
 
@@ -812,7 +821,7 @@ export default function DeckEditorClient({
       return prev.map((item) =>
         item.card_id === cardId
           ? { ...item, quantity: item.quantity - 1 }
-          : item
+          : item,
       );
     });
   }
@@ -895,11 +904,13 @@ export default function DeckEditorClient({
 
       const cardAspectNames = getCardAspectNames(card?.aspect);
       const selectedAspectMatches = selectedAspects.some((selectedAspect) =>
-        cardAspectNames.includes(selectedAspect)
+        cardAspectNames.includes(selectedAspect),
       );
       const cardUsesOnlySelectedAspects =
         cardAspectNames.length > 0 &&
-        cardAspectNames.every((cardAspect) => selectedAspects.includes(cardAspect));
+        cardAspectNames.every((cardAspect) =>
+          selectedAspects.includes(cardAspect),
+        );
 
       const aspectMatches =
         selectedAspects.length === 0 ||
@@ -909,7 +920,9 @@ export default function DeckEditorClient({
             ? cardUsesOnlySelectedAspects
             : !selectedAspectMatches);
 
-      return mainMatch && textMatch && typeMatches && arenaMatches && aspectMatches;
+      return (
+        mainMatch && textMatch && typeMatches && arenaMatches && aspectMatches
+      );
     });
   }, [
     collectionRows,
@@ -936,12 +949,14 @@ export default function DeckEditorClient({
       .filter(Boolean) as any[];
   }, [deckCards, collectionMap]);
 
-  const leaderCard = leaderCardId ? collectionMap.get(leaderCardId)?.card : null;
+  const leaderCard = leaderCardId
+    ? collectionMap.get(leaderCardId)?.card
+    : null;
   const baseCard = baseCardId ? collectionMap.get(baseCardId)?.card : null;
 
   const mainDeckCount = mainDeckDetailed.reduce(
     (sum, item) => sum + Number(item.quantity || 0),
-    0
+    0,
   );
 
   const summary = useMemo(() => {
@@ -949,6 +964,16 @@ export default function DeckEditorClient({
     let groundUnits = 0;
     let events = 0;
     let upgrades = 0;
+    let totalCost = 0;
+    let costedCards = 0;
+    const aspectCounts: Record<string, number> = {
+      Vigilance: 0,
+      Command: 0,
+      Aggression: 0,
+      Cunning: 0,
+      Heroism: 0,
+      Villainy: 0,
+    };
 
     for (const item of mainDeckDetailed) {
       const qty = Number(item.quantity || 0);
@@ -958,6 +983,18 @@ export default function DeckEditorClient({
       if (isGroundUnit(card)) groundUnits += qty;
       if (isEvent(card)) events += qty;
       if (isUpgrade(card)) upgrades += qty;
+
+      const cost = Number(card?.cost);
+      if (!Number.isNaN(cost)) {
+        totalCost += cost * qty;
+        costedCards += qty;
+      }
+
+      for (const aspect of getCardAspectNames(card?.aspect)) {
+        if (aspect in aspectCounts) {
+          aspectCounts[aspect] += qty;
+        }
+      }
     }
 
     return {
@@ -965,8 +1002,25 @@ export default function DeckEditorClient({
       groundUnits,
       events,
       upgrades,
+      averageCost: costedCards > 0 ? totalCost / costedCards : 0,
+      aspectCounts,
     };
   }, [mainDeckDetailed]);
+
+  const hasLeader = Boolean(leaderCardId);
+  const hasBase = Boolean(baseCardId);
+  const deckIsExactly50 = mainDeckCount === 50;
+  const deckIsOver50 = mainDeckCount > 50;
+  const deckCardsNeeded = Math.max(0, 50 - mainDeckCount);
+  const deckValidationMessages = [
+    !hasLeader ? "Leader required" : null,
+    !hasBase ? "Base required" : null,
+    deckIsOver50
+      ? `Main deck is ${mainDeckCount - 50} card${mainDeckCount - 50 === 1 ? "" : "s"} over 50`
+      : !deckIsExactly50
+        ? `${deckCardsNeeded} card${deckCardsNeeded === 1 ? "" : "s"} needed for 50`
+        : null,
+  ].filter(Boolean);
 
   async function saveDeck() {
     setSaving(true);
@@ -1021,7 +1075,11 @@ export default function DeckEditorClient({
     }
 
     setSaving(false);
-    setMessage("Deck saved.");
+    setMessage(
+      deckValidationMessages.length > 0
+        ? `Deck saved with warnings: ${deckValidationMessages.join(", ")}.`
+        : "Deck saved.",
+    );
     router.refresh();
   }
 
@@ -1029,10 +1087,7 @@ export default function DeckEditorClient({
     const confirmed = window.confirm("Delete this deck?");
     if (!confirmed) return;
 
-    const { error } = await supabase
-      .from("decks")
-      .delete()
-      .eq("id", deck.id);
+    const { error } = await supabase.from("decks").delete().eq("id", deck.id);
 
     if (error) {
       setMessage(error.message);
@@ -1068,7 +1123,14 @@ export default function DeckEditorClient({
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            marginBottom: "18px",
+            flexWrap: "wrap",
+          }}
+        >
           <input
             type="text"
             placeholder="Search name, set, number, aspect, traits, type, or arena"
@@ -1159,7 +1221,9 @@ export default function DeckEditorClient({
             <select
               value={aspectFilterMode}
               onChange={(e) =>
-                setAspectFilterMode(e.target.value as "any" | "only" | "exclude")
+                setAspectFilterMode(
+                  e.target.value as "any" | "only" | "exclude",
+                )
               }
               style={{
                 padding: "6px 8px",
@@ -1371,11 +1435,25 @@ export default function DeckEditorClient({
               background: "#0f172a",
             }}
           >
-            <div style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "8px" }}>Leader</div>
+            <div
+              style={{
+                color: "#94a3b8",
+                fontSize: "12px",
+                marginBottom: "8px",
+              }}
+            >
+              Leader
+            </div>
             {leaderCard ? (
               <>
                 <div style={{ fontWeight: 700 }}>{leaderCard.name}</div>
-                <div style={{ color: "#cbd5e1", fontSize: "13px", marginTop: "4px" }}>
+                <div
+                  style={{
+                    color: "#cbd5e1",
+                    fontSize: "13px",
+                    marginTop: "4px",
+                  }}
+                >
                   {leaderCard.subtitle || ""}
                 </div>
                 <button
@@ -1397,7 +1475,9 @@ export default function DeckEditorClient({
                 </button>
               </>
             ) : (
-              <div style={{ color: "#64748b", fontSize: "14px" }}>No leader selected</div>
+              <div style={{ color: "#64748b", fontSize: "14px" }}>
+                No leader selected
+              </div>
             )}
           </div>
 
@@ -1409,11 +1489,25 @@ export default function DeckEditorClient({
               background: "#0f172a",
             }}
           >
-            <div style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "8px" }}>Base</div>
+            <div
+              style={{
+                color: "#94a3b8",
+                fontSize: "12px",
+                marginBottom: "8px",
+              }}
+            >
+              Base
+            </div>
             {baseCard ? (
               <>
                 <div style={{ fontWeight: 700 }}>{baseCard.name}</div>
-                <div style={{ color: "#cbd5e1", fontSize: "13px", marginTop: "4px" }}>
+                <div
+                  style={{
+                    color: "#cbd5e1",
+                    fontSize: "13px",
+                    marginTop: "4px",
+                  }}
+                >
                   {baseCard.subtitle || ""}
                 </div>
                 <button
@@ -1435,7 +1529,9 @@ export default function DeckEditorClient({
                 </button>
               </>
             ) : (
-              <div style={{ color: "#64748b", fontSize: "14px" }}>No base selected</div>
+              <div style={{ color: "#64748b", fontSize: "14px" }}>
+                No base selected
+              </div>
             )}
           </div>
         </div>
@@ -1448,7 +1544,9 @@ export default function DeckEditorClient({
             background: "#0f172a",
           }}
         >
-          <div style={{ fontWeight: 700, marginBottom: "10px" }}>Deck Summary</div>
+          <div style={{ fontWeight: 700, marginBottom: "10px" }}>
+            Deck Summary
+          </div>
 
           <div
             style={{
@@ -1460,11 +1558,73 @@ export default function DeckEditorClient({
             }}
           >
             <div>Main Deck: {mainDeckCount} / 50</div>
+            <div>Average Cost: {summary.averageCost.toFixed(2)}</div>
             <div>Space Units: {summary.spaceUnits}</div>
             <div>Ground Units: {summary.groundUnits}</div>
             <div>Events: {summary.events}</div>
             <div>Upgrades: {summary.upgrades}</div>
+            <div>Leader: {hasLeader ? "Selected" : "Missing"}</div>
+            <div>Base: {hasBase ? "Selected" : "Missing"}</div>
           </div>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              flexWrap: "wrap",
+              marginTop: "12px",
+            }}
+          >
+            {Object.entries(summary.aspectCounts).map(([aspect, count]) =>
+              count > 0 ? (
+                <div
+                  key={aspect}
+                  style={{
+                    fontSize: "11px",
+                    padding: "4px 7px",
+                    borderRadius: "999px",
+                    border: "1px solid #334155",
+                    color: "#cbd5e1",
+                    background: "#111827",
+                  }}
+                >
+                  {aspect}: {count}
+                </div>
+              ) : null,
+            )}
+          </div>
+
+          {deckValidationMessages.length > 0 ? (
+            <div
+              style={{
+                marginTop: "12px",
+                border: "1px solid #92400e",
+                background: "#2a1a0f",
+                color: "#fed7aa",
+                borderRadius: "12px",
+                padding: "10px",
+                fontSize: "13px",
+              }}
+            >
+              {deckValidationMessages.map((warning) => (
+                <div key={String(warning)}>⚠ {warning}</div>
+              ))}
+            </div>
+          ) : (
+            <div
+              style={{
+                marginTop: "12px",
+                border: "1px solid #166534",
+                background: "#102116",
+                color: "#86efac",
+                borderRadius: "12px",
+                padding: "10px",
+                fontSize: "13px",
+              }}
+            >
+              Deck has a leader, a base, and exactly 50 main-deck cards.
+            </div>
+          )}
         </div>
 
         <div
@@ -1526,7 +1686,9 @@ export default function DeckEditorClient({
               {mainDeckDetailed
                 .slice()
                 .sort((a: any, b: any) =>
-                  String(a.card?.name || "").localeCompare(String(b.card?.name || ""))
+                  String(a.card?.name || "").localeCompare(
+                    String(b.card?.name || ""),
+                  ),
                 )
                 .map((item: any) => (
                   <DeckCardTile
