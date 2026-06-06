@@ -34,9 +34,9 @@ export default async function NavBar() {
   return (
     <header
       style={{
-        borderBottom: "1px solid rgba(255,255,255,0.16)",
-        background: "rgba(0, 0, 0, 0.88)",
-        backdropFilter: "blur(10px)",
+        borderBottom: "1px solid rgba(255,255,255,0.14)",
+        background: "rgba(0, 0, 0, 0.86)",
+        backdropFilter: "blur(12px)",
         position: "sticky",
         top: 0,
         zIndex: 20,
@@ -46,32 +46,16 @@ export default async function NavBar() {
         style={{
           maxWidth: "1320px",
           margin: "0 auto",
-          padding: "12px 24px 10px",
+          padding: "12px 24px 8px",
           display: "grid",
           gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
           gap: "18px",
         }}
       >
-        <Link
-          href="/"
-          style={{
-            color: "#f5f5f5",
-            fontWeight: 900,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            fontSize: "14px",
-            whiteSpace: "nowrap",
-          }}
-        >
-          Tracker Unlimited
-        </Link>
+        <div />
 
-        <Link
-          href="/"
-          aria-label="Tracker Unlimited Home"
-          className="sw-logo-wordmark"
-        >
+        <Link href="/" aria-label="Tracker Unlimited Home" className="sw-logo-wordmark">
           TRACKER<br />UNLIMITED
         </Link>
 
@@ -86,15 +70,15 @@ export default async function NavBar() {
         style={{
           maxWidth: "1320px",
           margin: "0 auto",
-          padding: "10px 24px",
+          padding: "10px 24px 11px",
           display: "flex",
           justifyContent: "center",
           gap: "24px",
           color: "#cfcfcf",
           flexWrap: "wrap",
           fontSize: "12px",
-          fontWeight: 800,
-          letterSpacing: "0.12em",
+          fontWeight: 900,
+          letterSpacing: "0.13em",
           textTransform: "uppercase",
         }}
       >

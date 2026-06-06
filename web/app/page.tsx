@@ -46,25 +46,6 @@ async function getLastPriceRefresh(supabase: any) {
   return data || null;
 }
 
-function StatBox({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div
-      style={{
-        border: "1px solid rgba(255,255,255,0.14)",
-        background: "rgba(8,8,8,0.72)",
-        padding: "16px",
-        minHeight: "108px",
-      }}
-    >
-      <div style={{ color: "#9a9a9a", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.12em" }}>
-        {label}
-      </div>
-      <div style={{ color: "#fff", fontWeight: 900, fontSize: "26px", marginTop: "8px" }}>{value}</div>
-      {sub ? <div style={{ color: "#bfbfbf", fontSize: "13px", marginTop: "6px" }}>{sub}</div> : null}
-    </div>
-  );
-}
-
 export default async function HomePage() {
   const supabase = await createClient();
 
@@ -112,15 +93,14 @@ export default async function HomePage() {
   return (
     <main>
       <section
+        className="tu-panel"
         style={{
-          minHeight: "calc(100vh - 190px)",
-          border: "1px solid rgba(255,255,255,0.16)",
-          background:
-            "linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,6,18,0.80) 46%, rgba(0,0,0,0.38) 100%), radial-gradient(circle at 18% 82%, rgba(12,54,105,0.32), transparent 30%), radial-gradient(circle at 76% 42%, rgba(245,197,66,0.13), transparent 25%), linear-gradient(180deg, rgba(15,29,52,0.54), rgba(0,0,0,0.96))",
-          boxShadow: "0 24px 90px rgba(0,0,0,0.62)",
-          padding: "54px 44px",
           position: "relative",
           overflow: "hidden",
+          padding: "42px",
+          minHeight: "430px",
+          display: "grid",
+          alignItems: "center",
         }}
       >
         <div
@@ -128,60 +108,56 @@ export default async function HomePage() {
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(circle at 78% 46%, rgba(255,255,255,0.14), transparent 1px), radial-gradient(circle at 62% 18%, rgba(255,255,255,0.10), transparent 1px), radial-gradient(circle at 89% 73%, rgba(255,255,255,0.10), transparent 1px)",
-            opacity: 0.8,
+              "radial-gradient(circle at 72% 42%, rgba(21,61,115,0.38), transparent 36%), radial-gradient(circle at 32% 68%, rgba(245,197,66,0.08), transparent 22%)",
+            pointerEvents: "none",
           }}
         />
 
-        <div style={{ position: "relative", maxWidth: "920px" }}>
-          <div className="sw-kicker">Star Wars Unlimited</div>
-          <h1
-            style={{
-              fontSize: "clamp(44px, 7vw, 92px)",
-              lineHeight: 0.92,
-              margin: "16px 0 18px",
-              maxWidth: "850px",
-              color: "#fff",
-              textShadow: "0 0 24px rgba(255,255,255,0.18)",
-            }}
-          >
-            Tracker<br />Unlimited
-          </h1>
-          <div style={{ width: "92px", height: "6px", background: "var(--accent)", marginBottom: "28px" }} />
-          <p style={{ color: "#d5d5d5", lineHeight: 1.75, fontSize: "18px", maxWidth: "680px" }}>
-            Track your collection, monitor set completion, manage wishlists, and build decks for Star Wars Unlimited
+        <div style={{ maxWidth: "820px", position: "relative", zIndex: 1 }}>
+          <div className="tu-page-kicker">Collection Databank</div>
+          <h1>Tracker Unlimited</h1>
+          <p className="tu-page-subtitle">
+            Track your collection, monitor set completion, manage wishlists, and build decks for Star Wars Unlimited.
           </p>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-              gap: "14px",
-              marginTop: "34px",
-              maxWidth: "920px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+              gap: "12px",
+              marginTop: "26px",
             }}
           >
-            <StatBox label="Cards Owned" value={String(totalCardsOwned)} />
-            <StatBox label="Unique Owned" value={String(totalUniqueCards)} />
-            <StatBox label="Collection Value" value={`$${totalValue.toFixed(2)}`} />
-            <StatBox label="Price Refresh" value={lastRefreshLabel} />
-            <StatBox
-              label="Highest Value"
-              value={highest ? `$${(Number(highest.card?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}` : "-"}
-              sub={highest ? `${highest.card?.name} (${highest.card?.variant})` : undefined}
-            />
+            <div className="tu-stat">
+              <div className="tu-stat-label">Cards Owned</div>
+              <div className="tu-stat-value">{totalCardsOwned}</div>
+            </div>
+            <div className="tu-stat">
+              <div className="tu-stat-label">Unique Owned</div>
+              <div className="tu-stat-value">{totalUniqueCards}</div>
+            </div>
+            <div className="tu-stat">
+              <div className="tu-stat-label">Collection Value</div>
+              <div className="tu-stat-value">${totalValue.toFixed(2)}</div>
+            </div>
+            <div className="tu-stat">
+              <div className="tu-stat-label">Price Refresh</div>
+              <div className="tu-stat-value" style={{ fontSize: "19px" }}>{lastRefreshLabel}</div>
+            </div>
           </div>
 
-          <div style={{ display: "flex", gap: "12px", marginTop: "30px", flexWrap: "wrap" }}>
-            <Link href="/sets" className="sw-button sw-button-primary">
-              Browse Sets
-            </Link>
-            <Link href="/collection" className="sw-button">
-              View Collection
-            </Link>
-            <Link href="/analytics" className="sw-button">
-              Analytics
-            </Link>
+          {highest ? (
+            <div style={{ color: "var(--muted)", marginTop: "18px" }}>
+              Highest Value Card: <strong style={{ color: "var(--text)" }}>{highest.card?.name}</strong> ({highest.card?.variant}) — ${(
+                Number(highest.card?.price || 0) * Number(highest.quantity || 0)
+              ).toFixed(2)}
+            </div>
+          ) : null}
+
+          <div style={{ display: "flex", gap: "12px", marginTop: "24px", flexWrap: "wrap" }}>
+            <Link href="/sets" className="tu-link-button">Browse Sets</Link>
+            <Link href="/collection" className="tu-link-button secondary">View Collection</Link>
+            <Link href="/analytics" className="tu-link-button secondary">Analytics</Link>
           </div>
         </div>
       </section>

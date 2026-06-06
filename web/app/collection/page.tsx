@@ -81,7 +81,9 @@ export default async function CollectionPage() {
 
     return (
       <main>
-        <h1 style={{ marginBottom: "18px" }}>Collection</h1>
+        <div className="tu-page-kicker">Personal Archive</div>
+        <h1>Collection</h1>
+        <p className="tu-page-subtitle">Review every owned card, track value, and manage your full Star Wars Unlimited collection.</p>
         <CollectionClient
           data={data || []}
           userId={user.id}
@@ -93,7 +95,7 @@ export default async function CollectionPage() {
     return (
       <main>
         <h1>Collection</h1>
-        <div>{error.message}</div>
+        <div className="tu-panel">{error.message}</div>
       </main>
     );
   }

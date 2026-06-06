@@ -29,6 +29,30 @@ async function getAllCards(supabase: any) {
   return allCards;
 }
 
+async function getAllCollection(supabase: any, userId: string) {
+  let allRows: any[] = [];
+  let from = 0;
+  const pageSize = 1000;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("collection_entries")
+      .select("*")
+      .eq("user_id", userId)
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    allRows = [...allRows, ...data];
+
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allRows;
+}
+
 export default async function CardsPage() {
   const supabase = await createClient();
 
@@ -40,17 +64,17 @@ export default async function CardsPage() {
     redirect("/login");
   }
 
-  const cards = await getAllCards(supabase);
-
-  const { data: collection } = await supabase
-    .from("collection_entries")
-    .select("*")
-    .eq("user_id", user.id);
+  const [cards, collection] = await Promise.all([
+    getAllCards(supabase),
+    getAllCollection(supabase, user.id),
+  ]);
 
   return (
-    <main style={{ padding: "20px" }}>
-      <h1 style={{ marginBottom: "18px" }}>All Cards</h1>
-      <SetClient cards={cards} collection={collection} />
+    <main>
+      <div className="tu-page-kicker">Card Database</div>
+      <h1>All Cards</h1>
+      <p className="tu-page-subtitle">Browse the full card archive, search text, and add cards to your collection.</p>
+      <SetClient cards={cards} collection={collection} userId={user.id} />
     </main>
   );
 }
