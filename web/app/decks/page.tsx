@@ -7,14 +7,14 @@ import { createClient } from "@/lib/supabase/server";
 function DeckCardImage({ src, label }: { src?: string | null; label: string }) {
   return (
     <div style={{ display: "grid", gap: "6px" }}>
-      <div style={{ fontSize: "11px", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>{label}</div>
+      <div style={{ fontSize: "11px", color: "var(--sw-muted)", letterSpacing: "0.12em", textTransform: "uppercase" }}>{label}</div>
       <div
         style={{
           width: "64px",
           height: "90px",
-          borderRadius: "6px",
-          border: "1px solid var(--border)",
-          background: "#05070d",
+          borderRadius: "8px",
+          border: "1px solid var(--sw-border)",
+          background: "rgba(0,0,0,0.46)",
           overflow: "hidden",
           display: "flex",
           alignItems: "center",
@@ -22,9 +22,18 @@ function DeckCardImage({ src, label }: { src?: string | null; label: string }) {
         }}
       >
         {src ? (
-          <img src={src} alt={label} style={{ width: "64px", height: "90px", objectFit: "cover", display: "block" }} />
+          <img
+            src={src}
+            alt={label}
+            style={{
+              width: "64px",
+              height: "90px",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
         ) : (
-          <div style={{ color: "var(--muted-2)", fontSize: "11px" }}>—</div>
+          <div style={{ color: "var(--sw-dim)", fontSize: "11px" }}>—</div>
         )}
       </div>
     </div>
@@ -71,50 +80,62 @@ export default async function DecksPage() {
   if (error) {
     return (
       <main>
-        <h1>Decks</h1>
-        <div className="tu-panel" style={{ color: "var(--danger)" }}>{error.message}</div>
+        <h1 className="sw-page-title">Decks</h1>
+        <div className="sw-panel" style={{ padding: "18px", marginTop: "18px", color: "#fecaca" }}>
+          {error.message}
+        </div>
       </main>
     );
   }
 
   return (
     <main>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", marginBottom: "22px", flexWrap: "wrap" }}>
+      <div className="sw-page-header" style={{ display: "flex", justifyContent: "space-between", gap: "18px", alignItems: "end", flexWrap: "wrap" }}>
         <div>
-          <div className="tu-page-kicker">Command Center</div>
-          <h1>Decks</h1>
-          <p className="tu-page-subtitle">Build and manage decks from cards in your collection.</p>
+          <div className="sw-kicker">Deck Database</div>
+          <h1 className="sw-page-title">Decks</h1>
+          <div className="sw-page-subtitle">Build and manage decks from cards in your collection.</div>
         </div>
-        <Link href="/decks/new" className="tu-link-button">Create New Deck</Link>
+
+        <Link href="/decks/new" className="sw-button">Create New Deck</Link>
       </div>
 
       {!decks || decks.length === 0 ? (
-        <div className="tu-panel">
-          <div style={{ fontSize: "20px", fontWeight: 900, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.1em" }}>No decks yet</div>
-          <div style={{ color: "var(--muted)", marginBottom: "16px" }}>Create your first deck to start building from your collection.</div>
-          <Link href="/decks/new" className="tu-link-button">Create New Deck</Link>
+        <div className="sw-shell">
+          <div className="sw-section-title" style={{ fontSize: "22px", marginBottom: "8px" }}>No decks yet</div>
+          <div className="sw-muted" style={{ marginBottom: "16px" }}>
+            Create your first deck to start building from your collection.
+          </div>
+          <Link href="/decks/new" className="sw-button">Create New Deck</Link>
         </div>
       ) : (
-        <div className="tu-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))" }}>
+        <div className="sw-grid">
           {decks.map((deck: any) => {
             const leader = Array.isArray(deck.leader_card) ? deck.leader_card[0] : deck.leader_card;
             const base = Array.isArray(deck.base_card) ? deck.base_card[0] : deck.base_card;
-            const mainDeckCount = (deck.deck_cards || []).reduce((sum: number, item: any) => sum + Number(item.quantity || 0), 0);
+
+            const mainDeckCount = (deck.deck_cards || []).reduce(
+              (sum: number, item: any) => sum + Number(item.quantity || 0),
+              0
+            );
 
             return (
-              <div key={deck.id} className="tu-card">
-                <div style={{ fontSize: "20px", fontWeight: 900, marginBottom: "14px", textTransform: "uppercase", letterSpacing: "0.08em" }}>{deck.name}</div>
+              <div key={deck.id} className="sw-card" style={{ padding: "18px" }}>
+                <div className="sw-section-title" style={{ fontSize: "20px", marginBottom: "14px" }}>{deck.name}</div>
+
                 <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
                   <DeckCardImage src={leader?.front_art} label="Leader" />
                   <DeckCardImage src={base?.front_art} label="Base" />
-                  <div style={{ display: "grid", gap: "8px", color: "var(--muted)", fontSize: "14px", minWidth: 0 }}>
-                    <div><span style={{ color: "var(--text)", fontWeight: 900 }}>Leader:</span> {leader?.name || "None selected"}</div>
-                    <div><span style={{ color: "var(--text)", fontWeight: 900 }}>Base:</span> {base?.name || "None selected"}</div>
-                    <div><span style={{ color: "var(--text)", fontWeight: 900 }}>Main Deck:</span> {mainDeckCount} / 50</div>
+
+                  <div className="sw-data-row" style={{ display: "grid", gap: "8px", minWidth: 0 }}>
+                    <div><span className="sw-muted">Leader:</span> {leader?.name || "None selected"}</div>
+                    <div><span className="sw-muted">Base:</span> {base?.name || "None selected"}</div>
+                    <div><span className="sw-muted">Main Deck:</span> {mainDeckCount} / 50</div>
                   </div>
                 </div>
+
                 <div style={{ display: "flex", gap: "10px", marginTop: "18px", flexWrap: "wrap" }}>
-                  <Link href={`/decks/${deck.id}`} className="tu-link-button secondary">Edit Deck</Link>
+                  <Link href={`/decks/${deck.id}`} className="sw-button secondary">Edit Deck</Link>
                 </div>
               </div>
             );

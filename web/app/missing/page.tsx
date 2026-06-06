@@ -99,9 +99,13 @@ export default async function MissingCardsPage() {
 
   return (
     <main>
-      <div className="tu-page-kicker">Hidden Archive</div>
-      <h1>Missing Cards</h1>
-      <p className="tu-page-subtitle">Missing card details are hidden by default to avoid spoilers. Reveal the archive when you're ready.</p>
+      <div className="sw-page-header">
+        <div className="sw-kicker">Hidden Databank</div>
+        <h1 className="sw-page-title">Missing Cards</h1>
+        <div className="sw-page-subtitle">
+          Missing cards are hidden by default to avoid spoilers. Reveal them only when you want to browse.
+        </div>
+      </div>
       <MissingCardsClient cards={missingCards} wantedIds={Array.from(wantedIds)} />
     </main>
   );

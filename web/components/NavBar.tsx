@@ -34,8 +34,9 @@ export default async function NavBar() {
   return (
     <header
       style={{
-        borderBottom: "1px solid rgba(255,255,255,0.12)",
-        background: "rgba(0, 0, 0, 0.9)",
+        borderBottom: "1px solid rgba(255,255,255,0.14)",
+        background:
+          "linear-gradient(180deg, rgba(0,0,0,0.94), rgba(0,0,0,0.86))",
         backdropFilter: "blur(10px)",
         position: "sticky",
         top: 0,
@@ -46,7 +47,7 @@ export default async function NavBar() {
         style={{
           maxWidth: "1320px",
           margin: "0 auto",
-          padding: "16px 24px 10px",
+          padding: "14px 24px 8px",
           display: "grid",
           gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
@@ -55,11 +56,23 @@ export default async function NavBar() {
       >
         <div />
 
-        <Link href="/" aria-label="Tracker Unlimited Home" className="sw-logo-wordmark">
+        <Link
+          href="/"
+          aria-label="Tracker Unlimited Home"
+          className="sw-logo-wordmark"
+        >
           TRACKER<br />UNLIMITED
         </Link>
 
-        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "14px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: "14px",
+            minWidth: 0,
+          }}
+        >
           <AuthButton email={displayName} />
         </div>
       </div>
@@ -70,11 +83,11 @@ export default async function NavBar() {
         style={{
           maxWidth: "1320px",
           margin: "0 auto",
-          padding: "10px 24px 12px",
+          padding: "10px 24px 11px",
           display: "flex",
           justifyContent: "center",
           gap: "24px",
-          color: "#d9d9d9",
+          color: "#cfcfcf",
           flexWrap: "wrap",
           fontSize: "12px",
           fontWeight: 900,

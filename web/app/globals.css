@@ -1,33 +1,37 @@
 :root {
-  --bg: #000000;
-  --bg-soft: #05070d;
-  --panel: rgba(10, 16, 29, 0.82);
-  --panel-2: rgba(4, 7, 13, 0.92);
-  --border: rgba(255, 255, 255, 0.16);
-  --border-soft: rgba(255, 255, 255, 0.09);
-  --text: #f5f5f5;
-  --muted: #aeb8c7;
-  --accent: #f5c542;
-  --accent-2: #ffd95e;
-  --blue-fade: rgba(31, 80, 140, 0.22);
-  --success: #86efac;
-  --danger: #fca5a5;
+  --sw-black: #000000;
+  --sw-deep: #03070d;
+  --sw-blue: #071322;
+  --sw-blue-2: #0c1a2c;
+  --sw-panel: rgba(8, 13, 22, 0.84);
+  --sw-panel-2: rgba(13, 22, 38, 0.78);
+  --sw-border: rgba(255, 255, 255, 0.18);
+  --sw-border-soft: rgba(255, 255, 255, 0.1);
+  --sw-text: #f4f7fb;
+  --sw-muted: #aeb8c7;
+  --sw-dim: #687386;
+  --sw-gold: #f5c542;
+  --sw-gold-2: #ffe173;
+  --sw-red: #e5484d;
+  --sw-green: #72d391;
+  --sw-blue-accent: #55b7ff;
+  --sw-purple: #b48cff;
 }
 
 * { box-sizing: border-box; }
 
-html, body { margin: 0; padding: 0; min-height: 100%; }
-
+html,
 body {
-  color: var(--text);
-  font-family: "Roboto Condensed", "Arial Narrow", Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  color: var(--sw-text);
   background:
-    radial-gradient(circle at 16% 20%, rgba(34, 91, 156, 0.23), transparent 26%),
-    radial-gradient(circle at 80% 10%, rgba(18, 52, 96, 0.18), transparent 28%),
-    radial-gradient(circle at 50% 110%, rgba(13, 39, 82, 0.28), transparent 36%),
-    linear-gradient(180deg, #000 0%, #02050b 42%, #050914 100%);
-  background-attachment: fixed;
-  letter-spacing: 0.01em;
+    radial-gradient(circle at 12% 22%, rgba(14, 57, 108, 0.55), transparent 23%),
+    radial-gradient(circle at 75% 18%, rgba(8, 31, 66, 0.55), transparent 24%),
+    radial-gradient(circle at 50% 115%, rgba(22, 52, 97, 0.38), transparent 35%),
+    linear-gradient(180deg, #000000 0%, #02040a 44%, #07101c 100%);
+  font-family: "Roboto Condensed", "Arial Narrow", Arial, Helvetica, sans-serif;
 }
 
 body::before {
@@ -35,12 +39,23 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.22;
+  opacity: 0.28;
   background-image:
-    radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1.5px),
-    radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1.5px);
-  background-size: 160px 160px, 260px 260px;
-  background-position: 0 0, 80px 120px;
+    radial-gradient(circle, rgba(255,255,255,0.72) 0 1px, transparent 1px),
+    radial-gradient(circle, rgba(130,170,215,0.35) 0 1px, transparent 1px);
+  background-size: 115px 115px, 185px 185px;
+  background-position: 0 0, 42px 72px;
+  z-index: -1;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.82), transparent 18%, transparent 82%, rgba(0,0,0,0.82)),
+    linear-gradient(180deg, rgba(0,0,0,0.55), transparent 42%, rgba(0,0,0,0.74));
   z-index: -1;
 }
 
@@ -49,54 +64,109 @@ a { color: inherit; text-decoration: none; }
 main {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 42px 24px 80px;
+  padding: 34px 24px 56px;
 }
 
-button, select, input { font: inherit; }
-button { color: var(--text); }
-
-h1, h2, h3 {
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  text-shadow: 0 0 18px rgba(255,255,255,0.18);
+button,
+select,
+input {
+  font: inherit;
 }
 
-h1 { font-size: clamp(34px, 5vw, 62px); margin: 0 0 10px; }
-
-input, select, textarea {
-  background: rgba(0,0,0,0.72) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text) !important;
+input,
+select,
+textarea {
+  background: rgba(0, 0, 0, 0.62) !important;
+  border: 1px solid var(--sw-border) !important;
+  color: var(--sw-text) !important;
   border-radius: 8px !important;
   outline: none;
 }
 
-input:focus, select:focus, textarea:focus {
-  border-color: rgba(245,197,66,0.78) !important;
-  box-shadow: 0 0 0 2px rgba(245,197,66,0.12);
+input::placeholder { color: rgba(244,247,251,0.45); }
+
+button {
+  color: var(--sw-text);
 }
 
-/* Global cinematic panel style used to pull older inline cards toward the home page look. */
-section,
-.sw-panel,
-.sw-card,
-.sw-stat-card {
-  border: 1px solid var(--border);
-  background:
-    linear-gradient(135deg, rgba(16, 27, 48, 0.82), rgba(4, 7, 13, 0.94));
-  box-shadow: 0 24px 80px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.04);
+h1,
+.sw-page-title {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(36px, 5.2vw, 64px);
+  line-height: 0.92;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 900;
+  text-shadow: 0 0 18px rgba(255,255,255,0.22);
 }
 
-.sw-panel { border-radius: 14px; padding: 32px; }
-.sw-card { border-radius: 10px; padding: 16px; }
-.sw-stat-card { border-radius: 10px; padding: 16px; }
+h2,
+.sw-section-title {
+  color: #fff;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 900;
+}
 
 .sw-kicker {
-  color: var(--accent);
-  font-weight: 900;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
+  color: var(--sw-gold);
   font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.sw-muted { color: var(--sw-muted); }
+
+.sw-shell {
+  border: 1px solid var(--sw-border);
+  border-radius: 12px;
+  padding: clamp(22px, 3vw, 42px);
+  background:
+    radial-gradient(circle at 25% 40%, rgba(23, 55, 95, 0.42), transparent 36%),
+    linear-gradient(180deg, rgba(12, 21, 36, 0.78), rgba(4, 6, 11, 0.92));
+  box-shadow: 0 28px 90px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.sw-panel {
+  border: 1px solid var(--sw-border);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(18, 48, 88, 0.34), transparent 34%),
+    linear-gradient(180deg, rgba(11, 18, 31, 0.84), rgba(3, 5, 9, 0.92));
+  box-shadow: 0 18px 60px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.sw-card {
+  border: 1px solid var(--sw-border);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(13, 22, 38, 0.8), rgba(4, 6, 12, 0.96));
+  box-shadow: 0 18px 50px rgba(0,0,0,0.32);
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.sw-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245,197,66,0.65);
+  box-shadow: 0 22px 62px rgba(0,0,0,0.46), 0 0 18px rgba(245,197,66,0.08);
+}
+
+.sw-stat-card {
+  border: 1px solid var(--sw-border);
+  border-radius: 9px;
+  padding: 14px 16px;
+  background: rgba(0, 0, 0, 0.46);
+  min-height: 76px;
+}
+
+.sw-stat-card strong {
+  color: #fff;
+  display: block;
+  font-size: 22px;
+  margin-top: 6px;
+  letter-spacing: 0.04em;
 }
 
 .sw-button,
@@ -105,77 +175,84 @@ button.sw-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 16px;
-  border: 1px solid rgba(245,197,66,0.55);
+  gap: 8px;
+  padding: 11px 16px;
   border-radius: 999px;
+  border: 1px solid rgba(245,197,66,0.72);
   background: rgba(0,0,0,0.42);
   color: #fff;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-size: 12px;
-  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
-.sw-button:hover,
-a.sw-button:hover,
-button.sw-button:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 18px rgba(245,197,66,0.18);
+.sw-button.secondary,
+a.sw-button.secondary {
+  border-color: var(--sw-border);
+  color: #f4f7fb;
 }
 
 .sw-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
 }
 
 .sw-logo-wordmark {
-  color: #fff;
   display: inline-block;
+  color: #fff;
   text-align: center;
   font-weight: 1000;
-  letter-spacing: -0.045em;
-  line-height: 0.78;
-  font-size: 34px;
+  line-height: 0.74;
+  letter-spacing: -0.055em;
   text-transform: uppercase;
-  text-shadow: 0 0 9px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.24);
+  font-size: 34px;
+  text-shadow: 0 0 12px rgba(255,255,255,0.34);
 }
 
-/* Normalize older inline page cards without needing to touch every component immediately. */
-main > div[style*="linear-gradient"],
-main > section[style*="linear-gradient"],
-main div[style*="#172033"],
-main div[style*="#111827"],
-main div[style*="#0f172a"],
-main div[style*="#1e293b"] {
-  background: linear-gradient(135deg, rgba(15, 25, 44, 0.86), rgba(3, 6, 12, 0.94)) !important;
-  border-color: var(--border) !important;
+.sw-page-header {
+  margin-bottom: 24px;
 }
 
-/* Tone down bright blue statistic pills/boxes and push them toward the home-page panel style. */
-main div[style*="#172033"][style*="border"],
-main div[style*="#0f172a"][style*="border"],
-main div[style*="#1e293b"][style*="border"] {
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 14px 40px rgba(0,0,0,0.25) !important;
+.sw-page-subtitle {
+  color: var(--sw-muted);
+  margin-top: 10px;
+  line-height: 1.55;
+  max-width: 760px;
 }
 
-/* Buttons/links with old slate backgrounds become dark/gold buttons. */
-main a[style*="#1e293b"],
-main button[style*="#1e293b"],
-main a[style*="#0f172a"],
-main button[style*="#0f172a"] {
-  background: rgba(0,0,0,0.52) !important;
-  border-color: rgba(245,197,66,0.48) !important;
-  border-radius: 999px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.08em !important;
-  text-transform: uppercase !important;
+.sw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
 }
 
-/* Progress bars keep the blue/purple fills if the component owns them, but the tracks are darker. */
-progress, meter { accent-color: var(--accent); }
+.sw-data-row {
+  color: var(--sw-text);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.045em;
+  line-height: 1.35;
+}
 
-@media (max-width: 760px) {
-  main { padding: 28px 16px 64px; }
-  .sw-logo-wordmark { font-size: 27px; }
+.sw-badge {
+  border: 1px solid var(--sw-gold);
+  color: var(--sw-gold);
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 900;
+}
+
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: #05070d; }
+::-webkit-scrollbar-thumb { background: #40434a; border-radius: 999px; border: 3px solid #05070d; }
+::-webkit-scrollbar-thumb:hover { background: #5a5f6a; }
+
+@media (max-width: 720px) {
+  main { padding: 24px 16px 44px; }
+  .sw-logo-wordmark { font-size: 28px; }
 }

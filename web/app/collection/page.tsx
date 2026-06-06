@@ -81,9 +81,13 @@ export default async function CollectionPage() {
 
     return (
       <main>
-        <div className="tu-page-kicker">Personal Archive</div>
-        <h1>Collection</h1>
-        <p className="tu-page-subtitle">Review every owned card, track value, and manage your full Star Wars Unlimited collection.</p>
+        <div className="sw-page-header">
+          <div className="sw-kicker">Collection Database</div>
+          <h1 className="sw-page-title">Collection</h1>
+          <div className="sw-page-subtitle">
+            Review owned cards, quantities, variants, prices, and collection value.
+          </div>
+        </div>
         <CollectionClient
           data={data || []}
           userId={user.id}
@@ -94,8 +98,8 @@ export default async function CollectionPage() {
   } catch (error: any) {
     return (
       <main>
-        <h1>Collection</h1>
-        <div className="tu-panel">{error.message}</div>
+        <h1 className="sw-page-title">Collection</h1>
+        <div className="sw-panel" style={{ padding: "18px", marginTop: "18px" }}>{error.message}</div>
       </main>
     );
   }

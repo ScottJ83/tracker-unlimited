@@ -91,9 +91,7 @@ export default async function SetDetailPage({ params }: Props) {
     safeCards.map((card: any) => [card.id, getBaseKey(card)])
   );
 
-  const allBaseKeys = new Set(
-    safeCards.map((card: any) => getBaseKey(card))
-  );
+  const allBaseKeys = new Set(safeCards.map((card: any) => getBaseKey(card)));
 
   const ownedCardIds = new Set(
     safeCollection
@@ -122,61 +120,48 @@ export default async function SetDetailPage({ params }: Props) {
     return sum + qty * Number(card.price || 0);
   }, 0);
 
-  const baseRepresentativeByKey = new Map<string, any>();
-  for (const card of safeCards) {
-    const key = getBaseKey(card);
-    const existing = baseRepresentativeByKey.get(key);
-    if (!existing) {
-      baseRepresentativeByKey.set(key, card);
-      continue;
-    }
+  const missingBaseCost = Array.from(allBaseKeys).reduce((sum: number, key: any) => {
+    if (ownedBaseKeys.has(key)) return sum;
+    const options = safeCards.filter((card: any) => getBaseKey(card) === key);
+    const cheapest = options.reduce((best: number | null, card: any) => {
+      const price = Number(card.price || 0);
+      if (price <= 0) return best;
+      if (best === null || price < best) return price;
+      return best;
+    }, null);
+    return sum + Number(cheapest || 0);
+  }, 0);
 
-    const existingRank = existing.variant === "Standard" || existing.variant === "OP Promo" ? 0 : 1;
-    const cardRank = card.variant === "Standard" || card.variant === "OP Promo" ? 0 : 1;
-    if (cardRank < existingRank) baseRepresentativeByKey.set(key, card);
-  }
-
-  const missingBaseCards = Array.from(baseRepresentativeByKey.values()).filter(
-    (card: any) => !ownedBaseKeys.has(getBaseKey(card))
-  );
-
-  const baseCostToComplete = missingBaseCards.reduce(
-    (sum: number, card: any) => sum + Number(card.price || 0),
-    0
-  );
-
-  const missingFullCards = safeCards.filter((card: any) => !ownedCardIds.has(card.id));
-  const fullCostToComplete = missingFullCards.reduce(
-    (sum: number, card: any) => sum + Number(card.price || 0),
-    0
-  );
+  const missingFullCost = safeCards.reduce((sum: number, card: any) => {
+    if (ownedCardIds.has(card.id)) return sum;
+    return sum + Number(card.price || 0);
+  }, 0);
 
   return (
-    <main style={{ padding: "20px" }}>
-      <h1>{setInfo?.name || code}</h1>
+    <main>
+      <div className="sw-page-header">
+        <div className="sw-kicker">Set Databank</div>
+        <h1 className="sw-page-title">{setInfo?.name || code}</h1>
+        <div className="sw-page-subtitle">
+          Track owned variants, hidden missing cards, set value, and completion cost.
+        </div>
+      </div>
 
-      <div
-        style={{
-          marginTop: "20px",
-          marginBottom: "20px",
-          border: "1px solid #334155",
-          borderRadius: "18px",
-          padding: "18px",
-          background: "linear-gradient(180deg, #172033, #111827)",
-          display: "grid",
-          gap: "8px",
-        }}
-      >
+      <section className="sw-shell" style={{ marginBottom: "24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "12px", marginBottom: "16px" }}>
+          <div className="sw-stat-card"><div className="sw-muted" style={{ fontSize: 12 }}>Base</div><strong>{baseOwned} / {baseTotal}</strong></div>
+          <div className="sw-stat-card"><div className="sw-muted" style={{ fontSize: 12 }}>Full</div><strong>{fullOwned} / {fullTotal}</strong></div>
+          <div className="sw-stat-card"><div className="sw-muted" style={{ fontSize: 12 }}>Owned Value</div><strong>${setValue.toFixed(2)}</strong></div>
+          <div className="sw-stat-card"><div className="sw-muted" style={{ fontSize: 12 }}>Cost To Complete</div><strong>${missingFullCost.toFixed(2)}</strong></div>
+        </div>
+
         <ProgressBar label="Base Set Completion" value={basePercent} />
         <ProgressBar label="Full Set Completion" value={fullPercent} />
-        <div>Base: {baseOwned} / {baseTotal}</div>
-        <div>Full: {fullOwned} / {fullTotal}</div>
-        <div>Set Value: ${setValue.toFixed(2)}</div>
-        <div>Base Missing: {missingBaseCards.length}</div>
-        <div>Cost To Complete Base: ${baseCostToComplete.toFixed(2)}</div>
-        <div>Full Missing: {missingFullCards.length}</div>
-        <div>Cost To Complete Full: ${fullCostToComplete.toFixed(2)}</div>
-      </div>
+        <div className="sw-data-row" style={{ marginTop: "12px" }}>
+          <div>Base Missing Cost: ${missingBaseCost.toFixed(2)}</div>
+          <div>Full Missing Cost: ${missingFullCost.toFixed(2)}</div>
+        </div>
+      </section>
 
       <SetClient cards={safeCards} collection={safeCollection} userId={user.id} />
     </main>

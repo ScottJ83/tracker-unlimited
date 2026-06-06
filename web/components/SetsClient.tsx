@@ -53,13 +53,21 @@ export default function SetsClient({ sets = [] }: { sets: any[] }) {
     return [...sets]
       .filter((set: any) => {
         const type = getSetType(set.code);
-        const searchMatch = !q || String(set.code || "").toLowerCase().includes(q) || String(set.name || "").toLowerCase().includes(q);
+        const searchMatch =
+          !q ||
+          String(set.code || "").toLowerCase().includes(q) ||
+          String(set.name || "").toLowerCase().includes(q);
         const filterMatch = filter === "all" || type === filter;
         return searchMatch && filterMatch;
       })
       .sort((a: any, b: any) => {
         if (sort === "base_asc") return Number(a.baseTotal || 0) - Number(b.baseTotal || 0);
-        if (sort === "progress_desc") return percent(Number(b.baseOwned || 0), Number(b.baseTotal || 0)) - percent(Number(a.baseOwned || 0), Number(a.baseTotal || 0));
+        if (sort === "progress_desc") {
+          return (
+            percent(Number(b.baseOwned || 0), Number(b.baseTotal || 0)) -
+            percent(Number(a.baseOwned || 0), Number(a.baseTotal || 0))
+          );
+        }
         if (sort === "value_desc") return Number(b.ownedValue || 0) - Number(a.ownedValue || 0);
         if (sort === "name_asc") return String(a.name || "").localeCompare(String(b.name || ""));
         return Number(b.baseTotal || 0) - Number(a.baseTotal || 0);
@@ -79,17 +87,25 @@ export default function SetsClient({ sets = [] }: { sets: any[] }) {
   );
 
   return (
-    <div>
-      <div className="sw-panel" style={{ marginBottom: "20px", padding: "18px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "12px" }}>
-          <div className="sw-stat-card"><div style={{ color: "#aeb8c7", fontSize: 12 }}>Shown Sets</div><strong>{visibleSets.length}</strong></div>
-          <div className="sw-stat-card"><div style={{ color: "#aeb8c7", fontSize: 12 }}>Base Progress</div><strong>{totals.baseOwned} / {totals.baseTotal}</strong></div>
-          <div className="sw-stat-card"><div style={{ color: "#aeb8c7", fontSize: 12 }}>Full Progress</div><strong>{totals.fullOwned} / {totals.fullTotal}</strong></div>
-          <div className="sw-stat-card"><div style={{ color: "#aeb8c7", fontSize: 12 }}>Shown Value</div><strong>${totals.value.toFixed(2)}</strong></div>
+    <main>
+      <div className="sw-page-header">
+        <div className="sw-kicker">Collection Database</div>
+        <h1 className="sw-page-title">Sets</h1>
+        <div className="sw-page-subtitle">
+          Sort sets by size, progress, value, or category.
         </div>
       </div>
 
-      <div className="sw-panel" style={{ marginBottom: "24px", padding: "14px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
+      <section className="sw-shell" style={{ marginBottom: "24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "12px" }}>
+          <div className="sw-stat-card"><div className="sw-muted" style={{ fontSize: 12 }}>Shown Sets</div><strong>{visibleSets.length}</strong></div>
+          <div className="sw-stat-card"><div className="sw-muted" style={{ fontSize: 12 }}>Base Progress</div><strong>{totals.baseOwned} / {totals.baseTotal}</strong></div>
+          <div className="sw-stat-card"><div className="sw-muted" style={{ fontSize: 12 }}>Full Progress</div><strong>{totals.fullOwned} / {totals.fullTotal}</strong></div>
+          <div className="sw-stat-card"><div className="sw-muted" style={{ fontSize: 12 }}>Shown Value</div><strong>${totals.value.toFixed(2)}</strong></div>
+        </div>
+      </section>
+
+      <section className="sw-panel" style={{ marginBottom: "24px", padding: "14px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search sets" style={{ minWidth: 220, padding: "10px 12px" }} />
         <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ padding: "10px 12px" }}>
           <option value="all">All Sets</option>
@@ -104,9 +120,9 @@ export default function SetsClient({ sets = [] }: { sets: any[] }) {
           <option value="value_desc">Owned Value High-Low</option>
           <option value="name_asc">Name A-Z</option>
         </select>
-      </div>
+      </section>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(285px, 1fr))", gap: "18px" }}>
+      <div className="sw-grid">
         {visibleSets.map((set: any) => {
           const type = getSetType(set.code);
           const color = setColors[String(set.code).toUpperCase()] || "#f5c542";
@@ -120,6 +136,7 @@ export default function SetsClient({ sets = [] }: { sets: any[] }) {
               className="sw-card"
               style={{
                 minHeight: 260,
+                padding: "18px",
                 borderTop: `3px solid ${color}`,
                 display: "grid",
                 alignContent: "start",
@@ -127,8 +144,8 @@ export default function SetsClient({ sets = [] }: { sets: any[] }) {
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "center" }}>
-                <div style={{ color: color, fontWeight: 900, fontSize: 12, letterSpacing: "0.12em" }}>{set.code}</div>
-                <div style={{ color, border: `1px solid ${color}`, borderRadius: 999, padding: "2px 7px", fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                <div style={{ color, fontWeight: 900, fontSize: 12, letterSpacing: "0.12em" }}>{set.code}</div>
+                <div className="sw-badge" style={{ color, borderColor: color }}>
                   {labelForType(type)}
                 </div>
               </div>
@@ -138,7 +155,7 @@ export default function SetsClient({ sets = [] }: { sets: any[] }) {
               <ProgressBar label="Base" value={basePercent} />
               <ProgressBar label="Full" value={fullPercent} />
 
-              <div style={{ color: "#e5edf7", fontWeight: 800, fontSize: 13, lineHeight: 1.35, letterSpacing: "0.06em" }}>
+              <div className="sw-data-row">
                 <div>Base: {set.baseOwned || 0} / {set.baseTotal || 0}</div>
                 <div>Full: {set.fullOwned || 0} / {set.fullTotal || 0}</div>
                 <div>Missing Base: {Math.max(0, Number(set.baseTotal || 0) - Number(set.baseOwned || 0))}</div>
@@ -148,6 +165,6 @@ export default function SetsClient({ sets = [] }: { sets: any[] }) {
           );
         })}
       </div>
-    </div>
+    </main>
   );
 }

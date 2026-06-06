@@ -86,78 +86,85 @@ export default async function HomePage() {
       Number(a.card?.price || 0) * Number(a.quantity || 0)
   )[0];
 
-  const lastRefreshLabel = lastPriceRefresh?.refreshed_at
-    ? new Date(lastPriceRefresh.refreshed_at).toLocaleDateString()
-    : "Not recorded yet";
+const lastRefreshLabel = lastPriceRefresh?.refreshed_at
+  ? new Date(lastPriceRefresh.refreshed_at).toLocaleDateString()
+  : "Not recorded yet";
 
   return (
     <main>
       <section
-        className="tu-panel"
         style={{
-          position: "relative",
-          overflow: "hidden",
-          padding: "42px",
-          minHeight: "430px",
-          display: "grid",
-          alignItems: "center",
+          border: "1px solid #334155",
+          borderRadius: "24px",
+          padding: "32px",
+          background:
+            "linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9))",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(circle at 72% 42%, rgba(21,61,115,0.38), transparent 36%), radial-gradient(circle at 32% 68%, rgba(245,197,66,0.08), transparent 22%)",
-            pointerEvents: "none",
-          }}
-        />
-
-        <div style={{ maxWidth: "820px", position: "relative", zIndex: 1 }}>
-          <div className="tu-page-kicker">Collection Databank</div>
-          <h1>Tracker Unlimited</h1>
-          <p className="tu-page-subtitle">
-            Track your collection, monitor set completion, manage wishlists, and build decks for Star Wars Unlimited.
+        <div style={{ maxWidth: "760px" }}>
+          <div
+            style={{
+              color: "#7dd3fc",
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+            }}
+          >
+            STAR WARS UNLIMITED
+          </div>
+          <h1 style={{ fontSize: "42px", margin: "12px 0 10px 0" }}>
+            Tracker Unlimited
+          </h1>
+          <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>
+            Track your collection, view set progress, and manage every collectible
+            variant.
           </p>
 
           <div
             style={{
+              marginTop: "20px",
+              color: "#e5edf7",
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
-              gap: "12px",
-              marginTop: "26px",
+              gap: "8px",
             }}
           >
-            <div className="tu-stat">
-              <div className="tu-stat-label">Cards Owned</div>
-              <div className="tu-stat-value">{totalCardsOwned}</div>
-            </div>
-            <div className="tu-stat">
-              <div className="tu-stat-label">Unique Owned</div>
-              <div className="tu-stat-value">{totalUniqueCards}</div>
-            </div>
-            <div className="tu-stat">
-              <div className="tu-stat-label">Collection Value</div>
-              <div className="tu-stat-value">${totalValue.toFixed(2)}</div>
-            </div>
-            <div className="tu-stat">
-              <div className="tu-stat-label">Price Refresh</div>
-              <div className="tu-stat-value" style={{ fontSize: "19px" }}>{lastRefreshLabel}</div>
-            </div>
+            <div>Total Cards Owned: {totalCardsOwned}</div>
+            <div>Total Unique Cards Owned: {totalUniqueCards}</div>
+            <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
+            <div>Last Price Refresh: {lastRefreshLabel}</div>
+            {highest ? (
+              <div>
+                Highest Value Card: {highest.card?.name} ({highest.card?.variant}) — $
+                {(
+                  Number(highest.card?.price || 0) * Number(highest.quantity || 0)
+                ).toFixed(2)}
+              </div>
+            ) : null}
           </div>
 
-          {highest ? (
-            <div style={{ color: "var(--muted)", marginTop: "18px" }}>
-              Highest Value Card: <strong style={{ color: "var(--text)" }}>{highest.card?.name}</strong> ({highest.card?.variant}) — ${(
-                Number(highest.card?.price || 0) * Number(highest.quantity || 0)
-              ).toFixed(2)}
-            </div>
-          ) : null}
-
-          <div style={{ display: "flex", gap: "12px", marginTop: "24px", flexWrap: "wrap" }}>
-            <Link href="/sets" className="tu-link-button">Browse Sets</Link>
-            <Link href="/collection" className="tu-link-button secondary">View Collection</Link>
-            <Link href="/analytics" className="tu-link-button secondary">Analytics</Link>
+          <div style={{ display: "flex", gap: "12px", marginTop: "22px", flexWrap: "wrap" }}>
+            <Link
+              href="/sets"
+              style={{
+                padding: "12px 16px",
+                borderRadius: "12px",
+                background: "#1e293b",
+                border: "1px solid #475569",
+              }}
+            >
+              Browse Sets
+            </Link>
+            <Link
+              href="/collection"
+              style={{
+                padding: "12px 16px",
+                borderRadius: "12px",
+                background: "#0f172a",
+                border: "1px solid #334155",
+              }}
+            >
+              View Collection
+            </Link>
           </div>
         </div>
       </section>

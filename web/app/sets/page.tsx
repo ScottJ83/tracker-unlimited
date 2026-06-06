@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SetsClient from "@/components/SetsClient";
 
+function getBaseKey(card: any) {
+  return `${card.name || ""}|${card.subtitle || ""}`;
+}
+
 async function getAllCards(supabase: any) {
   let allCards: any[] = [];
   let from = 0;
@@ -68,14 +72,51 @@ export default async function SetsPage() {
     return <main>Error loading sets: {error.message}</main>;
   }
 
-  const cards = await getAllCards(supabase);
-  const collection = await getAllCollection(supabase, user.id);
+  const [cards, collection] = await Promise.all([
+    getAllCards(supabase),
+    getAllCollection(supabase, user.id),
+  ]);
 
-  return (
-    <SetsClient
-      sets={sets || []}
-      cards={cards || []}
-      collection={collection || []}
-    />
+  const ownedCardIds = new Set(
+    (collection || [])
+      .filter((item: any) => Number(item.quantity || 0) > 0)
+      .map((item: any) => item.card_id)
   );
+
+  const enrichedSets = (sets || []).map((set: any) => {
+    const code = String(set.code || "").trim().toUpperCase();
+    const setCards = (cards || []).filter(
+      (card: any) => String(card.set_code || "").trim().toUpperCase() === code
+    );
+
+    const baseKeys = new Set(setCards.map((card: any) => getBaseKey(card)));
+    const cardIdToBaseKey = new Map(
+      setCards.map((card: any) => [card.id, getBaseKey(card)])
+    );
+
+    const ownedBaseKeys = new Set(
+      (collection || [])
+        .filter((item: any) => Number(item.quantity || 0) > 0)
+        .map((item: any) => cardIdToBaseKey.get(item.card_id))
+        .filter(Boolean)
+    );
+
+    const ownedValue = setCards.reduce((sum: number, card: any) => {
+      const entry = (collection || []).find((item: any) => item.card_id === card.id);
+      const qty = Number(entry?.quantity || 0);
+      return sum + qty * Number(card.price || 0);
+    }, 0);
+
+    return {
+      ...set,
+      code,
+      baseOwned: ownedBaseKeys.size,
+      baseTotal: baseKeys.size,
+      fullOwned: setCards.filter((card: any) => ownedCardIds.has(card.id)).length,
+      fullTotal: setCards.length,
+      ownedValue,
+    };
+  });
+
+  return <SetsClient sets={enrichedSets} />;
 }

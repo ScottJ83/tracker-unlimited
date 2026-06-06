@@ -71,9 +71,13 @@ export default async function CardsPage() {
 
   return (
     <main>
-      <div className="tu-page-kicker">Card Database</div>
-      <h1>All Cards</h1>
-      <p className="tu-page-subtitle">Browse the full card archive, search text, and add cards to your collection.</p>
+      <div className="sw-page-header">
+        <div className="sw-kicker">Card Databank</div>
+        <h1 className="sw-page-title">All Cards</h1>
+        <div className="sw-page-subtitle">
+          Search every imported card and variant across your Tracker Unlimited database.
+        </div>
+      </div>
       <SetClient cards={cards} collection={collection} userId={user.id} />
     </main>
   );

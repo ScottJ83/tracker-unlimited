@@ -67,9 +67,13 @@ export default async function WishlistPage() {
 
   return (
     <main>
-      <div className="tu-page-kicker">Wanted Cards</div>
-      <h1>Wishlist</h1>
-      <p className="tu-page-subtitle">Track chase cards, total wanted value, and the cards you still want to add to your collection.</p>
+      <div className="sw-page-header">
+        <div className="sw-kicker">Wanted Cards</div>
+        <h1 className="sw-page-title">Wishlist</h1>
+        <div className="sw-page-subtitle">
+          Track wanted cards, total wishlist value, and remove cards when they join your collection.
+        </div>
+      </div>
       <WishlistClient data={wishlist || []} userId={user.id} />
     </main>
   );

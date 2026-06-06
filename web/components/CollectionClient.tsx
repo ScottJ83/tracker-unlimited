@@ -7,31 +7,17 @@ function getAspectPills(aspect: string | null | undefined) {
   const text = String(aspect || "").toLowerCase();
   const pills: { name: string; color: string }[] = [];
 
-  if (text.includes("vigilance"))
-    pills.push({ name: "Vigilance", color: "#3b82f6" });
-  if (text.includes("command"))
-    pills.push({ name: "Command", color: "#16a34a" });
-  if (text.includes("aggression"))
-    pills.push({ name: "Aggression", color: "#dc2626" });
-  if (text.includes("cunning"))
-    pills.push({ name: "Cunning", color: "#d97706" });
-  if (text.includes("heroism"))
-    pills.push({ name: "Heroism", color: "#d4d4aa" });
-  if (text.includes("villainy"))
-    pills.push({ name: "Villainy", color: "#4c1d95" });
+  if (text.includes("vigilance")) pills.push({ name: "Vigilance", color: "#3b82f6" });
+  if (text.includes("command")) pills.push({ name: "Command", color: "#16a34a" });
+  if (text.includes("aggression")) pills.push({ name: "Aggression", color: "#dc2626" });
+  if (text.includes("cunning")) pills.push({ name: "Cunning", color: "#d97706" });
+  if (text.includes("heroism")) pills.push({ name: "Heroism", color: "#d4d4aa" });
+  if (text.includes("villainy")) pills.push({ name: "Villainy", color: "#4c1d95" });
 
   return pills;
 }
 
-function StatPill({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: any;
-  color: string;
-}) {
+function StatPill({ label, value, color }: { label: string; value: any; color: string }) {
   if (value === null || value === undefined || value === "") return null;
 
   return (
@@ -53,7 +39,13 @@ function StatPill({
   );
 }
 
-function CardImage({ src, name }: { src?: string | null; name: string }) {
+function CardImage({
+  src,
+  name,
+}: {
+  src?: string | null;
+  name: string;
+}) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -124,7 +116,7 @@ function CardImage({ src, name }: { src?: string | null; name: string }) {
   );
 }
 
-export default function CollectionClient({ data, lastPriceRefresh }: any) {
+export default function CollectionClient({ data }: any) {
   const [search, setSearch] = useState("");
   const [textSearch, setTextSearch] = useState("");
   const [sortBy, setSortBy] = useState("price_desc");
@@ -179,91 +171,17 @@ export default function CollectionClient({ data, lastPriceRefresh }: any) {
       const bp = Number(bc?.price || 0) * Number(b.quantity || 0);
 
       if (sortBy === "price_asc") return ap - bp;
-      if (sortBy === "name_asc")
-        return String(ac?.name || "").localeCompare(String(bc?.name || ""));
-      if (sortBy === "name_desc")
-        return String(bc?.name || "").localeCompare(String(ac?.name || ""));
+      if (sortBy === "name_asc") return String(ac?.name || "").localeCompare(String(bc?.name || ""));
+      if (sortBy === "name_desc") return String(bc?.name || "").localeCompare(String(ac?.name || ""));
       return bp - ap;
     });
 
     return rows;
   }, [data, search, textSearch, sortBy]);
 
-  const totalCardsOwned = filtered.reduce(
-    (sum: number, item: any) => sum + Number(item.quantity || 0),
-    0,
-  );
-
-  const totalUniqueCards = filtered.length;
-
-  const totalValue = filtered.reduce((sum: number, item: any) => {
-    const card = Array.isArray(item.cards) ? item.cards[0] : item.cards;
-    return sum + Number(card?.price || 0) * Number(item.quantity || 0);
-  }, 0);
-
-  const highest = [...filtered].sort((a: any, b: any) => {
-    const ac = Array.isArray(a.cards) ? a.cards[0] : a.cards;
-    const bc = Array.isArray(b.cards) ? b.cards[0] : b.cards;
-
-    return (
-      Number(bc?.price || 0) * Number(b.quantity || 0) -
-      Number(ac?.price || 0) * Number(a.quantity || 0)
-    );
-  })[0];
-
-  const highestCard = highest
-    ? Array.isArray(highest.cards)
-      ? highest.cards[0]
-      : highest.cards
-    : null;
-
-  const lastRefreshLabel = lastPriceRefresh?.created_at
-    ? new Date(lastPriceRefresh.created_at).toLocaleString()
-    : "Not recorded yet";
-
   return (
     <div>
-      <div
-        style={{
-          marginBottom: "18px",
-          padding: "18px",
-          border: "1px solid #334155",
-          borderRadius: "16px",
-          background: "linear-gradient(180deg, #172033, #111827)",
-          display: "grid",
-          gap: "8px",
-          color: "#e5edf7",
-        }}
-      >
-        <div style={{ fontWeight: 800, fontSize: "16px" }}>Price Summary</div>
-        <div>Total Cards Owned: {totalCardsOwned}</div>
-        <div>Unique Cards Owned: {totalUniqueCards}</div>
-        <div>Total Collection Value: ${totalValue.toFixed(2)}</div>
-        <div>
-          Average Unique Card Value: $
-          {(totalUniqueCards > 0 ? totalValue / totalUniqueCards : 0).toFixed(
-            2,
-          )}
-        </div>
-        <div>Last Price Refresh: {lastRefreshLabel}</div>
-        {highestCard ? (
-          <div>
-            Highest Value Card: {highestCard.name} ({highestCard.variant}) — $
-            {(
-              Number(highestCard.price || 0) * Number(highest.quantity || 0)
-            ).toFixed(2)}
-          </div>
-        ) : null}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-          marginBottom: "18px",
-          flexWrap: "wrap",
-        }}
-      >
+      <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
         <input
           type="text"
           placeholder="Search name, set, number, aspect, or traits"
@@ -409,16 +327,8 @@ export default function CollectionClient({ data, lastPriceRefresh }: any) {
                           justifyContent: "flex-end",
                         }}
                       >
-                        <StatPill
-                          label="Cost"
-                          value={card?.cost}
-                          color="#eab308"
-                        />
-                        <StatPill
-                          label="Power"
-                          value={card?.power}
-                          color="#dc2626"
-                        />
+                        <StatPill label="Cost" value={card?.cost} color="#eab308" />
+                        <StatPill label="Power" value={card?.power} color="#dc2626" />
                         <StatPill label="HP" value={card?.hp} color="#2563eb" />
                       </div>
 

@@ -66,7 +66,6 @@ export default function MissingCardsClient({
   const [search, setSearch] = useState("");
   const [setFilter, setSetFilter] = useState("all");
   const [sortBy, setSortBy] = useState("value_desc");
-  const [showCards, setShowCards] = useState(false);
 
   const wantedSet = useMemo(() => new Set(wantedIds || []), [wantedIds]);
 
@@ -120,12 +119,6 @@ export default function MissingCardsClient({
     0
   );
 
-  const wantedVisibleCount = filtered.filter((card) => wantedSet.has(card.id)).length;
-  const wantedVisibleValue = filtered.reduce(
-    (sum, card) => sum + (wantedSet.has(card.id) ? Number(card?.price || 0) : 0),
-    0
-  );
-
   return (
     <div>
       <div
@@ -143,11 +136,6 @@ export default function MissingCardsClient({
         <div style={{ fontWeight: 800, fontSize: "16px" }}>Missing Summary</div>
         <div>Visible Missing Cards: {filtered.length}</div>
         <div>Visible Missing Value: ${totalMissingValue.toFixed(2)}</div>
-        <div>Wanted From Visible Missing: {wantedVisibleCount}</div>
-        <div>Wanted Visible Value: ${wantedVisibleValue.toFixed(2)}</div>
-        <div style={{ color: "#94a3b8", fontSize: "13px" }}>
-          Cards are hidden by default to avoid spoilers. Use the reveal button when you are ready.
-        </div>
       </div>
 
       <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
@@ -201,120 +189,90 @@ export default function MissingCardsClient({
           <option value="name_asc">Name A-Z</option>
           <option value="set_number">Set / Number</option>
         </select>
-
-        <button
-          type="button"
-          onClick={() => setShowCards((value) => !value)}
-          style={{
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #475569",
-            background: showCards ? "#2a0f14" : "#1e293b",
-            color: showCards ? "#fecaca" : "#e5edf7",
-            cursor: "pointer",
-            fontWeight: 700,
-          }}
-        >
-          {showCards ? "Hide Cards" : "Reveal Missing Cards"}
-        </button>
       </div>
 
-      {!showCards ? (
-        <div
-          style={{
-            border: "1px dashed #334155",
-            borderRadius: "18px",
-            padding: "24px",
-            background: "linear-gradient(180deg, #172033, #111827)",
-            color: "#cbd5e1",
-          }}
-        >
-          Missing cards are currently hidden. Your filters and summary still work without revealing card names or images.
-        </div>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "14px",
-          }}
-        >
-          {filtered.map((card) => {
-            const aspectPills = getAspectPills(card?.aspect);
-            const displayName = getCardDisplayName(card);
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+          gap: "14px",
+        }}
+      >
+        {filtered.map((card) => {
+          const aspectPills = getAspectPills(card?.aspect);
+          const displayName = getCardDisplayName(card);
 
-            return (
-              <div
-                key={card.id}
-                style={{
-                  border: wantedSet.has(card.id) ? "1px solid #facc15" : "1px solid #334155",
-                  borderRadius: "14px",
-                  padding: "10px",
-                  minHeight: "170px",
-                  background: "#0f172a",
-                  display: "flex",
-                  gap: "10px",
-                  boxSizing: "border-box",
-                  position: "relative",
-                }}
-              >
-                <CardImage src={card?.front_art} name={displayName} />
+          return (
+            <div
+              key={card.id}
+              style={{
+                border: "1px solid #334155",
+                borderRadius: "14px",
+                padding: "10px",
+                minHeight: "170px",
+                background: "#0f172a",
+                display: "flex",
+                gap: "10px",
+                boxSizing: "border-box",
+                position: "relative",
+              }}
+            >
+              <CardImage src={card?.front_art} name={displayName} />
 
-                <div style={{ flex: 1, minWidth: 0, paddingBottom: "42px" }}>
-                  <div
-                    style={{
-                      fontWeight: 700,
-                      fontSize: "14px",
-                      color: "#e5edf7",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {displayName}
-                  </div>
-
-                  <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "5px" }}>
-                    {card?.set_code || "-"} #{card?.card_number ?? "-"} • {card?.variant || "-"}
-                  </div>
-
-                  <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "6px" }}>
-                    {aspectPills.map((pill) => (
-                      <div
-                        key={pill.name}
-                        style={{
-                          fontSize: "9px",
-                          lineHeight: 1,
-                          padding: "3px 5px",
-                          borderRadius: "999px",
-                          background: `${pill.color}22`,
-                          border: `1px solid ${pill.color}`,
-                          color: pill.color,
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {pill.name}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "6px" }}>
-                    Type: {card?.card_type || "-"}{card?.arena ? ` • ${card.arena}` : ""}
-                  </div>
-
-                  <div style={{ fontSize: "11px", color: "#86efac", fontWeight: 700, marginTop: "6px" }}>
-                    ${Number(card?.price || 0).toFixed(2)}
-                  </div>
+              <div style={{ flex: 1, minWidth: 0, paddingBottom: "42px" }}>
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: "14px",
+                    color: "#e5edf7",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {displayName}
                 </div>
 
-                <div style={{ position: "absolute", right: "10px", bottom: "8px" }}>
-                  <WishlistButton cardId={card.id} initialWanted={wantedSet.has(card.id)} />
+                <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "5px" }}>
+                  {card?.set_code || "-"} #{card?.card_number ?? "-"} • {card?.variant || "-"}
+                </div>
+
+                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "6px" }}>
+                  {aspectPills.map((pill) => (
+                    <div
+                      key={pill.name}
+                      style={{
+                        fontSize: "9px",
+                        lineHeight: 1,
+                        padding: "3px 5px",
+                        borderRadius: "999px",
+                        background: `${pill.color}22`,
+                        border: `1px solid ${pill.color}`,
+                        color: pill.color,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {pill.name}
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "6px" }}>
+                  Type: {card?.card_type || "-"}{card?.arena ? ` • ${card.arena}` : ""}
+                </div>
+
+                <div style={{ fontSize: "11px", color: "#86efac", fontWeight: 700, marginTop: "6px" }}>
+                  ${Number(card?.price || 0).toFixed(2)}
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+
+              <div style={{ position: "absolute", right: "10px", bottom: "8px" }}>
+                <WishlistButton cardId={card.id} initialWanted={wantedSet.has(card.id)} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
