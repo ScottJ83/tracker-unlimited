@@ -122,6 +122,35 @@ export default async function SetDetailPage({ params }: Props) {
     return sum + qty * Number(card.price || 0);
   }, 0);
 
+  const baseRepresentativeByKey = new Map<string, any>();
+  for (const card of safeCards) {
+    const key = getBaseKey(card);
+    const existing = baseRepresentativeByKey.get(key);
+    if (!existing) {
+      baseRepresentativeByKey.set(key, card);
+      continue;
+    }
+
+    const existingRank = existing.variant === "Standard" || existing.variant === "OP Promo" ? 0 : 1;
+    const cardRank = card.variant === "Standard" || card.variant === "OP Promo" ? 0 : 1;
+    if (cardRank < existingRank) baseRepresentativeByKey.set(key, card);
+  }
+
+  const missingBaseCards = Array.from(baseRepresentativeByKey.values()).filter(
+    (card: any) => !ownedBaseKeys.has(getBaseKey(card))
+  );
+
+  const baseCostToComplete = missingBaseCards.reduce(
+    (sum: number, card: any) => sum + Number(card.price || 0),
+    0
+  );
+
+  const missingFullCards = safeCards.filter((card: any) => !ownedCardIds.has(card.id));
+  const fullCostToComplete = missingFullCards.reduce(
+    (sum: number, card: any) => sum + Number(card.price || 0),
+    0
+  );
+
   return (
     <main style={{ padding: "20px" }}>
       <h1>{setInfo?.name || code}</h1>
@@ -134,6 +163,8 @@ export default async function SetDetailPage({ params }: Props) {
           borderRadius: "18px",
           padding: "18px",
           background: "linear-gradient(180deg, #172033, #111827)",
+          display: "grid",
+          gap: "8px",
         }}
       >
         <ProgressBar label="Base Set Completion" value={basePercent} />
@@ -141,6 +172,10 @@ export default async function SetDetailPage({ params }: Props) {
         <div>Base: {baseOwned} / {baseTotal}</div>
         <div>Full: {fullOwned} / {fullTotal}</div>
         <div>Set Value: ${setValue.toFixed(2)}</div>
+        <div>Base Missing: {missingBaseCards.length}</div>
+        <div>Cost To Complete Base: ${baseCostToComplete.toFixed(2)}</div>
+        <div>Full Missing: {missingFullCards.length}</div>
+        <div>Cost To Complete Full: ${fullCostToComplete.toFixed(2)}</div>
       </div>
 
       <SetClient cards={safeCards} collection={safeCollection} userId={user.id} />

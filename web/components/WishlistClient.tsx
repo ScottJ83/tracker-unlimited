@@ -89,37 +89,50 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
 
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("price_desc");
+  const [setFilter, setSetFilter] = useState("all");
   const [removingId, setRemovingId] = useState<string | null>(null);
 
-  const rows = useMemo(() => {
-    const q = search.trim().toLowerCase();
-
-    let result = (data || [])
+  const normalized = useMemo(() => {
+    return (data || [])
       .map((item: any) => ({
         ...item,
         card: normalizeJoinedCard(item),
       }))
-      .filter((item: any) => {
-        const card = item.card;
-        if (!card) return false;
+      .filter((item: any) => item.card);
+  }, [data]);
 
-        const haystack = [
-          card.name,
-          card.subtitle,
-          card.set_code,
-          card.card_number,
-          card.variant,
-          card.aspect,
-          card.traits,
-          card.rarity,
-          card.card_type,
-          card.arena,
-        ]
-          .map((value) => String(value || "").toLowerCase())
-          .join(" ");
+  const setOptions = useMemo(() => {
+    return Array.from(new Set(normalized.map((item: any) => item.card?.set_code)))
+      .filter(Boolean)
+      .sort();
+  }, [normalized]);
 
-        return !q || haystack.includes(q);
-      });
+  const rows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+
+    let result = normalized.filter((item: any) => {
+      const card = item.card;
+
+      const haystack = [
+        card.name,
+        card.subtitle,
+        card.set_code,
+        card.card_number,
+        card.variant,
+        card.aspect,
+        card.traits,
+        card.rarity,
+        card.card_type,
+        card.arena,
+      ]
+        .map((value) => String(value || "").toLowerCase())
+        .join(" ");
+
+      const searchMatches = !q || haystack.includes(q);
+      const setMatches = setFilter === "all" || card?.set_code === setFilter;
+
+      return searchMatches && setMatches;
+    });
 
     result.sort((a: any, b: any) => {
       const ap = Number(a.card?.price || 0);
@@ -128,15 +141,37 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
       if (sortBy === "price_asc") return ap - bp;
       if (sortBy === "name_asc") return String(a.card?.name || "").localeCompare(String(b.card?.name || ""));
       if (sortBy === "name_desc") return String(b.card?.name || "").localeCompare(String(a.card?.name || ""));
-      if (sortBy === "set_asc") return String(a.card?.set_code || "").localeCompare(String(b.card?.set_code || ""));
+      if (sortBy === "set_asc") {
+        const setCompare = String(a.card?.set_code || "").localeCompare(String(b.card?.set_code || ""));
+        if (setCompare !== 0) return setCompare;
+        return Number(a.card?.card_number || 0) - Number(b.card?.card_number || 0);
+      }
       return bp - ap;
     });
 
     return result;
-  }, [data, search, sortBy]);
+  }, [normalized, search, sortBy, setFilter]);
 
   const totalWantedValue = rows.reduce((sum: number, item: any) => sum + Number(item.card?.price || 0), 0);
+  const totalWishlistValue = normalized.reduce((sum: number, item: any) => sum + Number(item.card?.price || 0), 0);
   const highest = [...rows].sort((a: any, b: any) => Number(b.card?.price || 0) - Number(a.card?.price || 0))[0];
+  const averageVisibleValue = rows.length ? totalWantedValue / rows.length : 0;
+
+  const setSummary = useMemo(() => {
+    const map = new Map<string, { count: number; value: number }>();
+    for (const item of rows) {
+      const setCode = item.card?.set_code || "Unknown";
+      const existing = map.get(setCode) || { count: 0, value: 0 };
+      existing.count += 1;
+      existing.value += Number(item.card?.price || 0);
+      map.set(setCode, existing);
+    }
+
+    return Array.from(map.entries())
+      .map(([setCode, stats]) => ({ setCode, ...stats }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8);
+  }, [rows]);
 
   async function removeFromWishlist(wishlistId: string) {
     setRemovingId(wishlistId);
@@ -167,15 +202,40 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
           background: "linear-gradient(180deg, #172033, #111827)",
           marginBottom: "18px",
           display: "grid",
-          gap: "6px",
+          gap: "8px",
         }}
       >
         <div style={{ fontWeight: 700, fontSize: "18px" }}>Wishlist Summary</div>
-        <div style={{ color: "#cbd5e1" }}>Wanted Cards: {rows.length}</div>
-        <div style={{ color: "#cbd5e1" }}>Wanted Value: ${totalWantedValue.toFixed(2)}</div>
+        <div style={{ color: "#cbd5e1" }}>Visible Wanted Cards: {rows.length}</div>
+        <div style={{ color: "#cbd5e1" }}>Visible Wanted Value: ${totalWantedValue.toFixed(2)}</div>
+        <div style={{ color: "#cbd5e1" }}>Total Wishlist Value: ${totalWishlistValue.toFixed(2)}</div>
+        <div style={{ color: "#cbd5e1" }}>Average Visible Wanted Value: ${averageVisibleValue.toFixed(2)}</div>
         {highest ? (
           <div style={{ color: "#cbd5e1" }}>
-            Highest Wanted: {highest.card?.name} ({highest.card?.variant}) — ${Number(highest.card?.price || 0).toFixed(2)}
+            Highest Visible Wanted: {highest.card?.name} ({highest.card?.variant}) — ${Number(highest.card?.price || 0).toFixed(2)}
+          </div>
+        ) : null}
+
+        {setSummary.length > 0 ? (
+          <div style={{ marginTop: "8px" }}>
+            <div style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "6px" }}>Top Wanted Sets</div>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {setSummary.map((item) => (
+                <div
+                  key={item.setCode}
+                  style={{
+                    border: "1px solid #334155",
+                    background: "#0f172a",
+                    borderRadius: "999px",
+                    padding: "6px 9px",
+                    color: "#cbd5e1",
+                    fontSize: "12px",
+                  }}
+                >
+                  {item.setCode}: {item.count} / ${item.value.toFixed(2)}
+                </div>
+              ))}
+            </div>
           </div>
         ) : null}
       </section>
@@ -197,6 +257,25 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
         />
 
         <select
+          value={setFilter}
+          onChange={(e) => setSetFilter(e.target.value)}
+          style={{
+            padding: "10px 12px",
+            borderRadius: "10px",
+            border: "1px solid #334155",
+            background: "#0f172a",
+            color: "#e5edf7",
+          }}
+        >
+          <option value="all">All Sets</option>
+          {setOptions.map((setCode) => (
+            <option key={setCode} value={setCode}>
+              {setCode}
+            </option>
+          ))}
+        </select>
+
+        <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
           style={{
@@ -211,7 +290,7 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
           <option value="price_asc">Price Low-High</option>
           <option value="name_asc">Name A-Z</option>
           <option value="name_desc">Name Z-A</option>
-          <option value="set_asc">Set A-Z</option>
+          <option value="set_asc">Set / Number</option>
         </select>
       </div>
 
@@ -225,7 +304,7 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
             color: "#cbd5e1",
           }}
         >
-          No wanted cards yet. Use the Want button on the Missing Cards page.
+          No wanted cards match the current filters.
         </div>
       ) : (
         <div
