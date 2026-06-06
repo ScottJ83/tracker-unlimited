@@ -29,20 +29,18 @@ function CardImage({ src, name }: { src?: string | null; name: string }) {
     <div
       style={{
         position: "relative",
-        width: "56px",
-        minWidth: "56px",
-        height: "78px",
-        borderRadius: "8px",
-        border: "1px solid #334155",
-        background: "#0b1220",
+        width: "62px",
+        minWidth: "62px",
+        height: "86px",
+        borderRadius: "7px",
+        border: "1px solid rgba(255,255,255,0.18)",
+        background: "#02040a",
         overflow: "visible",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
-      onMouseEnter={() => {
-        if (src) setHover(true);
-      }}
+      onMouseEnter={() => src && setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       {src ? (
@@ -51,10 +49,10 @@ function CardImage({ src, name }: { src?: string | null; name: string }) {
             src={src}
             alt={name}
             style={{
-              width: "56px",
-              height: "78px",
+              width: "62px",
+              height: "86px",
               objectFit: "cover",
-              borderRadius: "8px",
+              borderRadius: "7px",
               display: "block",
             }}
           />
@@ -64,20 +62,20 @@ function CardImage({ src, name }: { src?: string | null; name: string }) {
               alt={name}
               style={{
                 position: "absolute",
-                top: "-18px",
-                left: "66px",
-                width: "220px",
+                top: "-24px",
+                left: "76px",
+                width: "260px",
                 borderRadius: "12px",
-                border: "1px solid #334155",
-                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
-                zIndex: 999,
+                border: "1px solid rgba(255,255,255,0.22)",
+                boxShadow: "0 28px 75px rgba(0,0,0,0.72)",
+                zIndex: 9999,
                 background: "#02040a",
               }}
             />
           ) : null}
         </>
       ) : (
-        <div style={{ fontSize: "10px", color: "#475569", userSelect: "none" }}>—</div>
+        <div style={{ fontSize: "10px", color: "#64748b", userSelect: "none" }}>—</div>
       )}
     </div>
   );
@@ -137,6 +135,7 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
 
   const totalWantedValue = rows.reduce((sum: number, item: any) => sum + Number(item.card?.price || 0), 0);
   const highest = [...rows].sort((a: any, b: any) => Number(b.card?.price || 0) - Number(a.card?.price || 0))[0];
+  const setCount = new Set(rows.map((item: any) => item.card?.set_code).filter(Boolean)).size;
 
   async function removeFromWishlist(wishlistId: string) {
     setRemovingId(wishlistId);
@@ -159,53 +158,45 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
 
   return (
     <div>
-      <section
-        style={{
-          border: "1px solid #334155",
-          borderRadius: "18px",
-          padding: "18px",
-          background: "linear-gradient(180deg, #172033, #111827)",
-          marginBottom: "18px",
-          display: "grid",
-          gap: "6px",
-        }}
-      >
-        <div style={{ fontWeight: 700, fontSize: "18px" }}>Wishlist Summary</div>
-        <div style={{ color: "#cbd5e1" }}>Wanted Cards: {rows.length}</div>
-        <div style={{ color: "#cbd5e1" }}>Wanted Value: ${totalWantedValue.toFixed(2)}</div>
-        {highest ? (
-          <div style={{ color: "#cbd5e1" }}>
-            Highest Wanted: {highest.card?.name} ({highest.card?.variant}) — ${Number(highest.card?.price || 0).toFixed(2)}
+      <section className="sw-wide-panel" style={{ padding: "18px", marginBottom: "18px" }}>
+        <div className="sw-dashboard-grid">
+          <div className="sw-stat-card">
+            <div className="sw-muted" style={{ fontSize: 12 }}>Wanted Cards</div>
+            <strong>{rows.length}</strong>
           </div>
-        ) : null}
+          <div className="sw-stat-card">
+            <div className="sw-muted" style={{ fontSize: 12 }}>Wanted Value</div>
+            <strong>${totalWantedValue.toFixed(2)}</strong>
+          </div>
+          <div className="sw-stat-card">
+            <div className="sw-muted" style={{ fontSize: 12 }}>Sets Represented</div>
+            <strong>{setCount}</strong>
+          </div>
+          <div className="sw-stat-card">
+            <div className="sw-muted" style={{ fontSize: 12 }}>Highest Wanted</div>
+            <strong style={{ fontSize: "18px" }}>{highest?.card?.name || "-"}</strong>
+            {highest ? (
+              <div className="sw-muted" style={{ marginTop: 8, fontSize: 12 }}>
+                {highest.card?.set_code} #{highest.card?.card_number} • ${Number(highest.card?.price || 0).toFixed(2)}
+              </div>
+            ) : null}
+          </div>
+        </div>
       </section>
 
-      <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
+      <section className="sw-panel" style={{ marginBottom: "18px", padding: "14px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
         <input
           type="text"
           placeholder="Search wishlist"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            minWidth: "320px",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
+          style={{ minWidth: "320px", padding: "10px 12px" }}
         />
 
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          style={{
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
+          style={{ padding: "10px 12px" }}
         >
           <option value="price_desc">Price High-Low</option>
           <option value="price_asc">Price Low-High</option>
@@ -213,28 +204,12 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
           <option value="name_desc">Name Z-A</option>
           <option value="set_asc">Set A-Z</option>
         </select>
-      </div>
+      </section>
 
       {rows.length === 0 ? (
-        <div
-          style={{
-            border: "1px solid #334155",
-            borderRadius: "18px",
-            padding: "24px",
-            background: "linear-gradient(180deg, #172033, #111827)",
-            color: "#cbd5e1",
-          }}
-        >
-          No wanted cards yet. Use the Want button on the Missing Cards page.
-        </div>
+        <div className="sw-list-panel">No wanted cards yet. Use the Want button on the Missing Cards page.</div>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "14px",
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(315px, 1fr))", gap: "14px", overflow: "visible" }}>
           {rows.map((item: any) => {
             const card = item.card;
             const aspectPills = getAspectPills(card?.aspect);
@@ -242,56 +217,44 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
             return (
               <div
                 key={item.id}
+                className="sw-card-tile"
                 style={{
-                  border: "1px solid #334155",
-                  borderRadius: "14px",
-                  padding: "10px",
+                  padding: "12px",
                   minHeight: "170px",
-                  background: "#0f172a",
                   display: "flex",
-                  gap: "10px",
-                  overflow: "hidden",
+                  gap: "12px",
                   boxSizing: "border-box",
                   position: "relative",
                 }}
               >
-                <div style={{ width: "56px", minWidth: "56px" }}>
-                  <CardImage src={card?.front_art} name={card?.name || "Card"} />
-                </div>
+                <CardImage src={card?.front_art} name={card?.name || "Card"} />
 
                 <div style={{ flex: 1, minWidth: 0, paddingBottom: "42px" }}>
-                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#e5edf7", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div className="sw-card-title" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {card?.name || "Unknown card"}
                   </div>
-                  <div style={{ fontSize: "11px", color: "#94a3b8", minHeight: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div className="sw-card-meta" style={{ minHeight: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {card?.subtitle || ""}
                   </div>
-                  <div style={{ fontSize: "11px", marginTop: "5px", color: "#cbd5e1" }}>
-                    {card?.set_code || "-"} #{card?.card_number ?? "-"} • {card?.variant || "-"}
-                  </div>
-                  <div style={{ fontSize: "11px", color: "#cbd5e1" }}>
+                  <div className="sw-card-meta" style={{ marginTop: "6px" }}>
+                    Set: {card?.set_code || "-"}<br />
+                    #{card?.card_number ?? "-"} • {card?.variant || "-"}<br />
                     {card?.card_type || "-"}{card?.arena ? ` • ${card.arena}` : ""}
                   </div>
-                  <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "6px" }}>
+
+                  <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "7px" }}>
                     {aspectPills.map((pill) => (
                       <div
                         key={pill.name}
-                        style={{
-                          fontSize: "9px",
-                          lineHeight: 1,
-                          padding: "3px 5px",
-                          borderRadius: "999px",
-                          background: `${pill.color}22`,
-                          border: `1px solid ${pill.color}`,
-                          color: pill.color,
-                          whiteSpace: "nowrap",
-                        }}
+                        className="sw-badge"
+                        style={{ color: pill.color, borderColor: pill.color }}
                       >
                         {pill.name}
                       </div>
                     ))}
                   </div>
-                  <div style={{ color: "#e5edf7", fontWeight: 700, marginTop: "6px", fontSize: "12px" }}>
+
+                  <div className="sw-card-price" style={{ marginTop: "7px", fontSize: "12px" }}>
                     ${Number(card?.price || 0).toFixed(2)}
                   </div>
                 </div>
@@ -300,18 +263,14 @@ export default function WishlistClient({ data, userId }: { data: any[]; userId: 
                   type="button"
                   onClick={() => removeFromWishlist(item.id)}
                   disabled={removingId === item.id}
+                  className="sw-danger-button"
                   style={{
                     position: "absolute",
                     right: "10px",
                     bottom: "8px",
-                    padding: "7px 9px",
-                    borderRadius: "9px",
-                    border: "1px solid #7f1d1d",
-                    background: "#2a0f14",
-                    color: "#fecaca",
+                    padding: "7px 10px",
                     cursor: removingId === item.id ? "not-allowed" : "pointer",
                     fontSize: "11px",
-                    fontWeight: 700,
                   }}
                 >
                   {removingId === item.id ? "Removing..." : "Remove"}

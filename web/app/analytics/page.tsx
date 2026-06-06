@@ -66,6 +66,34 @@ function topEntries(map: Map<string, number>, limit = 8) {
     .slice(0, limit);
 }
 
+function statCard(label: string, value: string, sub?: string) {
+  return (
+    <div className="sw-stat-card">
+      <div className="sw-muted" style={{ fontSize: 12 }}>{label}</div>
+      <strong style={{ fontSize: value.length > 18 ? "18px" : undefined }}>{value}</strong>
+      {sub ? <div className="sw-muted" style={{ fontSize: 12, marginTop: 8 }}>{sub}</div> : null}
+    </div>
+  );
+}
+
+function listPanel(title: string, rows: { label: string; value: number }[], prefix = "", suffix = "") {
+  return (
+    <section className="sw-list-panel">
+      <div style={{ color: "#fff", fontWeight: 900, marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+        {title}
+      </div>
+      <div style={{ display: "grid", gap: "2px" }}>
+        {rows.map((row) => (
+          <div key={row.label} className="sw-list-row">
+            <span>{row.label}</span>
+            <strong style={{ color: "#fff" }}>{prefix}{row.value.toFixed(prefix ? 2 : 0)}{suffix}</strong>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default async function AnalyticsPage() {
   const supabase = await createClient();
 
@@ -159,61 +187,31 @@ export default async function AnalyticsPage() {
   const mostComplete = [...setCompletion].filter((s) => s.baseTotal > 0).sort((a, b) => b.basePercent - a.basePercent)[0];
   const leastComplete = [...setCompletion].filter((s) => s.baseTotal > 0).sort((a, b) => a.basePercent - b.basePercent)[0];
 
-  const cardBox = (label: string, value: string, sub?: string) => (
-    <div
-      style={{
-        border: "1px solid #334155",
-        borderRadius: "18px",
-        padding: "18px",
-        background: "linear-gradient(180deg, #172033, #111827)",
-      }}
-    >
-      <div style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "8px" }}>{label}</div>
-      <div style={{ color: "#e5edf7", fontWeight: 800, fontSize: "22px" }}>{value}</div>
-      {sub ? <div style={{ color: "#cbd5e1", fontSize: "13px", marginTop: "6px" }}>{sub}</div> : null}
-    </div>
-  );
-
-  const listBox = (title: string, rows: { label: string; value: number }[], prefix = "", suffix = "") => (
-    <div
-      style={{
-        border: "1px solid #334155",
-        borderRadius: "18px",
-        padding: "18px",
-        background: "linear-gradient(180deg, #172033, #111827)",
-      }}
-    >
-      <div style={{ color: "#e5edf7", fontWeight: 800, marginBottom: "12px" }}>{title}</div>
-      <div style={{ display: "grid", gap: "8px" }}>
-        {rows.map((row) => (
-          <div key={row.label} style={{ display: "flex", justifyContent: "space-between", gap: "12px", color: "#cbd5e1" }}>
-            <span>{row.label}</span>
-            <span>{prefix}{row.value.toFixed(prefix ? 2 : 0)}{suffix}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
   return (
     <main>
-      <h1 style={{ marginBottom: "18px" }}>Analytics</h1>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "16px", marginBottom: "18px" }}>
-        {cardBox("Total Collection Value", `$${totalCollectionValue.toFixed(2)}`)}
-        {cardBox("Total Cards Owned", String(totalCardsOwned))}
-        {cardBox("Unique Cards Owned", String(totalUniqueOwned))}
-        {cardBox("Most Valuable Card", highestOwned?.card?.name || "-", highestOwned ? `${highestOwned.card?.set_code} #${highestOwned.card?.card_number} • $${Number(highestOwned.card?.price || 0).toFixed(2)}` : undefined)}
-        {cardBox("Most Complete Set", mostComplete?.setCode || "-", mostComplete ? `${mostComplete.baseOwned}/${mostComplete.baseTotal} base (${mostComplete.basePercent.toFixed(1)}%)` : undefined)}
-        {cardBox("Least Complete Set", leastComplete?.setCode || "-", leastComplete ? `${leastComplete.baseOwned}/${leastComplete.baseTotal} base (${leastComplete.basePercent.toFixed(1)}%)` : undefined)}
+      <div className="sw-page-header">
+        <div className="sw-kicker">Collection Intelligence</div>
+        <h1 className="sw-page-title">Analytics</h1>
+        <div className="sw-page-subtitle">A databank overview of your collection value, completion, rarity, and aspect spread.</div>
       </div>
 
+      <section className="sw-wide-panel" style={{ padding: "18px", marginBottom: "20px" }}>
+        <div className="sw-dashboard-grid">
+          {statCard("Total Collection Value", `$${totalCollectionValue.toFixed(2)}`)}
+          {statCard("Total Cards Owned", String(totalCardsOwned))}
+          {statCard("Unique Cards Owned", String(totalUniqueOwned))}
+          {statCard("Most Valuable Card", highestOwned?.card?.name || "-", highestOwned ? `${highestOwned.card?.set_code} #${highestOwned.card?.card_number} • $${Number(highestOwned.card?.price || 0).toFixed(2)}` : undefined)}
+          {statCard("Most Complete Set", mostComplete?.setCode || "-", mostComplete ? `${mostComplete.baseOwned}/${mostComplete.baseTotal} base (${mostComplete.basePercent.toFixed(1)}%)` : undefined)}
+          {statCard("Least Complete Set", leastComplete?.setCode || "-", leastComplete ? `${leastComplete.baseOwned}/${leastComplete.baseTotal} base (${leastComplete.basePercent.toFixed(1)}%)` : undefined)}
+        </div>
+      </section>
+
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "16px" }}>
-        {listBox("Most Valuable Sets", topEntries(valueBySet), "$")}
-        {listBox("Most Owned Sets", topEntries(countBySet))}
-        {listBox("Most Owned Aspects", topEntries(countByAspect))}
-        {listBox("Most Valuable Aspects", topEntries(valueByAspect), "$")}
-        {listBox("Most Owned Rarities", topEntries(countByRarity))}
+        {listPanel("Most Valuable Sets", topEntries(valueBySet), "$")}
+        {listPanel("Most Owned Sets", topEntries(countBySet))}
+        {listPanel("Most Owned Aspects", topEntries(countByAspect))}
+        {listPanel("Most Valuable Aspects", topEntries(valueByAspect), "$")}
+        {listPanel("Most Owned Rarities", topEntries(countByRarity))}
       </div>
     </main>
   );

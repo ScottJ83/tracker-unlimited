@@ -226,14 +226,14 @@ function DeckCardTile({
   return (
     <div
       style={{
-        border: "1px solid #22c55e",
+        border: "1px solid rgba(255,255,255,0.14)",
         borderRadius: "14px",
         padding: "10px",
         minHeight: "170px",
         background: "#0f172a",
         display: "flex",
         gap: "10px",
-        overflow: "hidden",
+        overflow: "visible",
         boxSizing: "border-box",
         position: "relative",
       }}
@@ -267,7 +267,7 @@ function DeckCardTile({
                   fontSize: "14px",
                   color: "#e5edf7",
                   whiteSpace: "nowrap",
-                  overflow: "hidden",
+                  overflow: "visible",
                   textOverflow: "ellipsis",
                 }}
               >
@@ -280,7 +280,7 @@ function DeckCardTile({
                   color: "#94a3b8",
                   minHeight: "14px",
                   whiteSpace: "nowrap",
-                  overflow: "hidden",
+                  overflow: "visible",
                   textOverflow: "ellipsis",
                 }}
               >
@@ -346,7 +346,7 @@ function DeckCardTile({
               marginTop: "5px",
               color: "#cbd5e1",
               whiteSpace: "nowrap",
-              overflow: "hidden",
+              overflow: "visible",
               textOverflow: "ellipsis",
             }}
           >
@@ -358,7 +358,7 @@ function DeckCardTile({
               fontSize: "11px",
               color: "#cbd5e1",
               whiteSpace: "nowrap",
-              overflow: "hidden",
+              overflow: "visible",
               textOverflow: "ellipsis",
             }}
           >
@@ -371,7 +371,7 @@ function DeckCardTile({
               fontSize: "11px",
               color: "#cbd5e1",
               whiteSpace: "nowrap",
-              overflow: "hidden",
+              overflow: "visible",
               textOverflow: "ellipsis",
             }}
           >
@@ -387,7 +387,7 @@ function DeckCardTile({
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
-              overflow: "hidden",
+              overflow: "visible",
               maxHeight: "26px",
             }}
           >
@@ -454,14 +454,14 @@ function CollectionCardTile({
   return (
     <div
       style={{
-        border: "1px solid #22c55e",
+        border: "1px solid rgba(255,255,255,0.14)",
         borderRadius: "14px",
         padding: "10px",
         minHeight: "202px",
         background: "#0f172a",
         display: "flex",
         gap: "10px",
-        overflow: "hidden",
+        overflow: "visible",
         boxSizing: "border-box",
         position: "relative",
       }}
@@ -495,7 +495,7 @@ function CollectionCardTile({
                   fontSize: "14px",
                   color: "#e5edf7",
                   whiteSpace: "nowrap",
-                  overflow: "hidden",
+                  overflow: "visible",
                   textOverflow: "ellipsis",
                 }}
               >
@@ -508,7 +508,7 @@ function CollectionCardTile({
                   color: "#94a3b8",
                   minHeight: "14px",
                   whiteSpace: "nowrap",
-                  overflow: "hidden",
+                  overflow: "visible",
                   textOverflow: "ellipsis",
                 }}
               >
@@ -574,7 +574,7 @@ function CollectionCardTile({
               marginTop: "5px",
               color: "#cbd5e1",
               whiteSpace: "nowrap",
-              overflow: "hidden",
+              overflow: "visible",
               textOverflow: "ellipsis",
             }}
           >
@@ -586,7 +586,7 @@ function CollectionCardTile({
               fontSize: "11px",
               color: "#cbd5e1",
               whiteSpace: "nowrap",
-              overflow: "hidden",
+              overflow: "visible",
               textOverflow: "ellipsis",
             }}
           >
@@ -599,7 +599,7 @@ function CollectionCardTile({
               fontSize: "11px",
               color: "#cbd5e1",
               whiteSpace: "nowrap",
-              overflow: "hidden",
+              overflow: "visible",
               textOverflow: "ellipsis",
             }}
           >
@@ -615,7 +615,7 @@ function CollectionCardTile({
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
-              overflow: "hidden",
+              overflow: "visible",
               maxHeight: "26px",
             }}
           >
@@ -1099,14 +1099,21 @@ export default function DeckEditorClient({
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "minmax(360px, 1.05fr) minmax(360px, 0.95fr)",
-        gap: "18px",
-        alignItems: "start",
-      }}
-    >
+    <div>
+      <div className="sw-page-header">
+        <div className="sw-kicker">Deck Database</div>
+        <h1 className="sw-page-title">Deck Builder</h1>
+        <div className="sw-page-subtitle">Build, validate, and tune decks from your collection.</div>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(360px, 1.05fr) minmax(360px, 0.95fr)",
+          gap: "18px",
+          alignItems: "start",
+        }}
+      >
       <section
         style={{
           border: "1px solid #334155",
@@ -1703,6 +1710,7 @@ export default function DeckEditorClient({
           )}
         </div>
       </section>
+      </div>
     </div>
   );
 }
