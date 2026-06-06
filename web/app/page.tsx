@@ -165,17 +165,6 @@ const lastRefreshLabel = lastPriceRefresh?.refreshed_at
             >
               View Collection
             </Link>
-            <Link
-              href="/missing"
-              style={{
-                padding: "12px 16px",
-                borderRadius: "12px",
-                background: "#0f172a",
-                border: "1px solid #334155",
-              }}
-            >
-              Missing Cards
-            </Link>
           </div>
         </div>
       </section>
