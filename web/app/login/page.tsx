@@ -89,7 +89,7 @@ export default function LoginPage() {
               border: "1px solid #475569",
               background: "#1e293b",
               color: "#e5edf7",
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
             }}
           >
             {loading ? "Logging in..." : "Log In"}
@@ -98,8 +98,13 @@ export default function LoginPage() {
 
         {error ? <div style={{ color: "#fca5a5", marginTop: "12px" }}>{error}</div> : null}
 
-        <div style={{ marginTop: "14px", color: "#cbd5e1" }}>
-          Need an account? <Link href="/signup">Sign up</Link>
+        <div style={{ marginTop: "14px", color: "#cbd5e1", display: "grid", gap: "8px" }}>
+          <div>
+            <Link href="/forgot-password">Forgot password?</Link>
+          </div>
+          <div>
+            Need an account? <Link href="/signup">Sign up</Link>
+          </div>
         </div>
       </div>
     </main>

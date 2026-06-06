@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function UpdatePasswordForm() {
@@ -10,44 +11,62 @@ export default function UpdatePasswordForm() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
+    async function loadSessionFromUrl() {
+      setError("");
 
-    async function checkSession() {
-      const { data } = await supabase.auth.getSession();
-      if (mounted && data.session) {
-        setReady(true);
+      const hash = window.location.hash;
+      const params = new URLSearchParams(hash.replace(/^#/, ""));
+
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+      const type = params.get("type");
+
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (error) {
+          setError(error.message);
+          setReady(false);
+          return;
+        }
+
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session && type !== "recovery") {
+        setError("This password reset link is invalid or has expired. Please request a new one.");
+        setReady(false);
+        return;
+      }
+
+      setReady(true);
     }
 
-    const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY" || session) {
-        setReady(true);
-      }
-    });
+    loadSessionFromUrl();
+  }, [supabase.auth]);
 
-    checkSession();
-
-    return () => {
-      mounted = false;
-      data.subscription.unsubscribe();
-    };
-  }, [supabase]);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleUpdate(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
     setError("");
 
-    if (password.length < 8) {
+    if (password.length < 6) {
       setLoading(false);
-      setError("Password must be at least 8 characters.");
+      setError("Password must be at least 6 characters.");
       return;
     }
 
@@ -68,116 +87,92 @@ export default function UpdatePasswordForm() {
       return;
     }
 
-    setMessage("Password updated successfully. Redirecting to login...");
+    setMessage("Password updated. Redirecting to login...");
 
     await supabase.auth.signOut();
 
     setTimeout(() => {
       router.push("/login");
       router.refresh();
-    }, 1000);
+    }, 1200);
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "grid", gap: "12px" }}>
-      {!ready ? (
-        <div
-          style={{
-            border: "1px solid #92400e",
-            background: "#2a1a0a",
-            color: "#fed7aa",
-            borderRadius: "12px",
-            padding: "12px",
-            fontSize: "14px",
-          }}
-        >
-          Waiting for password reset session. If this does not change, open the reset link from your email again.
-        </div>
-      ) : null}
-
-      <label style={{ display: "grid", gap: "6px" }}>
-        <span style={{ color: "#cbd5e1", fontSize: "14px", fontWeight: 700 }}>New Password</span>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="At least 8 characters"
-          autoComplete="new-password"
-          style={{
-            padding: "12px 14px",
-            borderRadius: "12px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-            fontSize: "16px",
-          }}
-        />
-      </label>
-
-      <label style={{ display: "grid", gap: "6px" }}>
-        <span style={{ color: "#cbd5e1", fontSize: "14px", fontWeight: 700 }}>Confirm Password</span>
-        <input
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Re-enter password"
-          autoComplete="new-password"
-          style={{
-            padding: "12px 14px",
-            borderRadius: "12px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-            fontSize: "16px",
-          }}
-        />
-      </label>
-
-      <button
-        type="submit"
-        disabled={loading || !ready}
+    <main style={{ padding: "24px" }}>
+      <div
         style={{
-          padding: "12px 16px",
-          borderRadius: "12px",
-          border: "1px solid #475569",
-          background: loading || !ready ? "#0f172a" : "#1e293b",
-          color: loading || !ready ? "#64748b" : "#e5edf7",
-          cursor: loading || !ready ? "not-allowed" : "pointer",
-          fontWeight: 700,
+          maxWidth: "420px",
+          margin: "40px auto",
+          border: "1px solid #334155",
+          borderRadius: "18px",
+          padding: "24px",
+          background: "#111827",
         }}
       >
-        {loading ? "Updating..." : "Update Password"}
-      </button>
+        <h1 style={{ marginBottom: "10px" }}>Choose New Password</h1>
 
-      {message ? (
-        <div
-          style={{
-            border: "1px solid #166534",
-            background: "#052e16",
-            color: "#bbf7d0",
-            borderRadius: "12px",
-            padding: "12px",
-            fontSize: "14px",
-          }}
-        >
-          {message}
-        </div>
-      ) : null}
+        <p style={{ color: "#cbd5e1", lineHeight: 1.5, marginBottom: "18px" }}>
+          Enter your new password below.
+        </p>
 
-      {error ? (
-        <div
-          style={{
-            border: "1px solid #7f1d1d",
-            background: "#2a0f14",
-            color: "#fecaca",
-            borderRadius: "12px",
-            padding: "12px",
-            fontSize: "14px",
-          }}
-        >
-          {error}
+        {ready ? (
+          <form onSubmit={handleUpdate} style={{ display: "grid", gap: "12px" }}>
+            <input
+              type="password"
+              placeholder="New password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              style={{
+                padding: "10px 12px",
+                borderRadius: "10px",
+                border: "1px solid #334155",
+                background: "#0f172a",
+                color: "#e5edf7",
+              }}
+            />
+
+            <input
+              type="password"
+              placeholder="Confirm new password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              style={{
+                padding: "10px 12px",
+                borderRadius: "10px",
+                border: "1px solid #334155",
+                background: "#0f172a",
+                color: "#e5edf7",
+              }}
+            />
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                padding: "10px 12px",
+                borderRadius: "10px",
+                border: "1px solid #475569",
+                background: "#1e293b",
+                color: "#e5edf7",
+                cursor: loading ? "not-allowed" : "pointer",
+              }}
+            >
+              {loading ? "Updating..." : "Update Password"}
+            </button>
+          </form>
+        ) : null}
+
+        {message ? <div style={{ color: "#86efac", marginTop: "12px" }}>{message}</div> : null}
+        {error ? <div style={{ color: "#fca5a5", marginTop: "12px" }}>{error}</div> : null}
+
+        <div style={{ marginTop: "14px", color: "#cbd5e1" }}>
+          <Link href="/forgot-password">Request a new reset link</Link>
         </div>
-      ) : null}
-    </form>
+      </div>
+    </main>
   );
 }
