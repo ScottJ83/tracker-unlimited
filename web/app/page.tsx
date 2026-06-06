@@ -116,7 +116,7 @@ export default async function HomePage() {
           minHeight: "calc(100vh - 190px)",
           border: "1px solid rgba(255,255,255,0.16)",
           background:
-            "linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.76) 46%, rgba(0,0,0,0.38) 100%), radial-gradient(circle at 76% 42%, rgba(245,197,66,0.16), transparent 25%), linear-gradient(180deg, rgba(30,30,30,0.72), rgba(0,0,0,0.96))",
+            "linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,6,18,0.80) 46%, rgba(0,0,0,0.38) 100%), radial-gradient(circle at 18% 82%, rgba(12,54,105,0.32), transparent 30%), radial-gradient(circle at 76% 42%, rgba(245,197,66,0.13), transparent 25%), linear-gradient(180deg, rgba(15,29,52,0.54), rgba(0,0,0,0.96))",
           boxShadow: "0 24px 90px rgba(0,0,0,0.62)",
           padding: "54px 44px",
           position: "relative",
@@ -149,7 +149,7 @@ export default async function HomePage() {
           </h1>
           <div style={{ width: "92px", height: "6px", background: "var(--accent)", marginBottom: "28px" }} />
           <p style={{ color: "#d5d5d5", lineHeight: 1.75, fontSize: "18px", maxWidth: "680px" }}>
-            Track your collection, monitor set completion, manage wishlists, and build decks with a cinematic databank-style interface.
+            Track your collection, monitor set completion, manage wishlists, and build decks for Star Wars Unlimited
           </p>
 
           <div

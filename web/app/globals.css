@@ -27,8 +27,10 @@ body {
     radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.10), transparent 1px),
     radial-gradient(circle at 76% 22%, rgba(255, 255, 255, 0.08), transparent 1px),
     radial-gradient(circle at 45% 72%, rgba(255, 255, 255, 0.08), transparent 1px),
+    radial-gradient(circle at 18% 92%, rgba(12, 54, 105, 0.36), transparent 34%),
+    radial-gradient(circle at 84% 18%, rgba(8, 37, 88, 0.28), transparent 32%),
     radial-gradient(circle at 82% 84%, rgba(245, 197, 66, 0.08), transparent 28%),
-    linear-gradient(180deg, #000000 0%, #050505 48%, #0a0a0a 100%);
+    linear-gradient(180deg, #000000 0%, #020714 46%, #05070d 100%);
   background-size: auto, auto, auto, auto, auto;
   color: var(--text);
   font-family: "Arial Narrow", "Roboto Condensed", "Oswald", "Arial", sans-serif;
@@ -148,4 +150,85 @@ h3 {
 .sw-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+}
+
+
+/* Global cinematic restyle for older inline page cards/panels */
+main h1:first-child {
+  color: #fff !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 18px rgba(255,255,255,0.14) !important;
+}
+
+main > section,
+main > div[style*="border"],
+main section[style*="border"],
+main div[style*="border: \"1px"],
+main a[style*="border"],
+main [style*="#172033"],
+main [style*="#111827"],
+main [style*="#0f172a"],
+main [style*="#1e293b"] {
+  border-color: rgba(255,255,255,0.14) !important;
+  background: linear-gradient(180deg, rgba(18, 22, 31, 0.92), rgba(3, 6, 13, 0.96)) !important;
+  box-shadow: 0 18px 55px rgba(0,0,0,0.36) !important;
+}
+
+main [style*="borderRadius: \"18px"],
+main [style*="borderRadius: \"24px"],
+main [style*="borderRadius: \"14px"] {
+  border-radius: 8px !important;
+}
+
+main a[style*="padding"],
+main button[style*="padding"] {
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  font-weight: 800 !important;
+}
+
+main a[style*="background: \"#1e293b"],
+main button[style*="background: \"#1e293b"] {
+  background: rgba(245,197,66,0.92) !important;
+  color: #000 !important;
+  border-color: #ffd95e !important;
+}
+
+main [style*="color: \"#7dd3fc"],
+main [style*="color: \"#86efac"] {
+  color: var(--accent) !important;
+}
+
+main [style*="color: \"#94a3b8"],
+main [style*="color: \"#cbd5e1"] {
+  color: #cfcfcf !important;
+}
+
+main img {
+  filter: contrast(1.04) saturate(0.95);
+}
+
+.sw-logo-wordmark {
+  display: inline-block;
+  color: #fff;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: -0.055em;
+  line-height: 0.82;
+  font-size: 24px;
+  text-align: center;
+  text-shadow: 0 0 16px rgba(255,255,255,0.28);
+  transform: scaleX(1.18);
+}
+
+@media (max-width: 760px) {
+  main {
+    padding: 20px 14px 36px;
+  }
+
+  .sw-logo-wordmark {
+    font-size: 20px;
+  }
 }

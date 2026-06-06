@@ -70,18 +70,9 @@ export default async function NavBar() {
         <Link
           href="/"
           aria-label="Tracker Unlimited Home"
-          style={{
-            textAlign: "center",
-            color: "#fff",
-            fontWeight: 1000,
-            letterSpacing: "0.02em",
-            textTransform: "uppercase",
-            fontSize: "22px",
-            lineHeight: 0.85,
-            textShadow: "0 0 14px rgba(255,255,255,0.25)",
-          }}
+          className="sw-logo-wordmark"
         >
-          STAR<br />WARS
+          TRACKER<br />UNLIMITED
         </Link>
 
         <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "14px" }}>
