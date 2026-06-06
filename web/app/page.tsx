@@ -87,7 +87,7 @@ export default async function HomePage() {
   )[0];
 
 const lastRefreshLabel = lastPriceRefresh?.refreshed_at
-  ? new Date(lastPriceRefresh.refreshed_at).toLocaleString()
+  ? new Date(lastPriceRefresh.refreshed_at).toLocaleDateString()
   : "Not recorded yet";
 
   return (
