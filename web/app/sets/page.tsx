@@ -1,49 +1,8 @@
 export const dynamic = "force-dynamic";
 
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import ProgressBar from "@/components/ProgressBar";
-
-const setOrder = [
-  "LAW",
-  "SEC",
-  "JTL",
-  "SOR",
-  "LOF",
-  "SHD",
-  "TWI",
-   "IBH",
-  "SECOP",
-  "JTLOP",
-  "SOROP",
-  "LOFOP",
-  "SHDOP",
-   "LAWOP",
-"TWIOP",
-];
-
-const setColors: Record<string, string> = {
-  LAW: "#c87a2c",
-  LAWOP: "#c87a2c",
-  SEC: "#5b3aa6",
-  SECOP: "#5b3aa6",
-  JTL: "#f2c200",
-  JTLOP: "#f2c200",
-  SOR: "#d32f2f",
-  SOROP: "#d32f2f",
-  LOF: "#2f6fd3",
-  LOFOP: "#2f6fd3",
-  SHD: "#3949ab",
-  SHDOP: "#3949ab",
-  TWI: "#8b1e2d",
-  TWIOP: "#8b1e2d",
-  IBH: "#e5e7eb",
-};
-
-function getBaseKey(card: any) {
-  return `${card.name || ""}|${card.subtitle || ""}`;
-}
+import SetsClient from "@/components/SetsClient";
 
 async function getAllCards(supabase: any) {
   let allCards: any[] = [];
@@ -104,98 +63,19 @@ export default async function SetsPage() {
   }
 
   const { data: sets, error } = await supabase.from("sets").select("*");
+
   if (error) {
-    return <main>Error loading sets.</main>;
+    return <main>Error loading sets: {error.message}</main>;
   }
 
   const cards = await getAllCards(supabase);
   const collection = await getAllCollection(supabase, user.id);
 
-  const ownedCardIds = new Set(
-    (collection || [])
-      .filter((item: any) => item.quantity > 0)
-      .map((item: any) => item.card_id)
-  );
-
-  const sortedSets = [...(sets || [])].sort((a, b) => {
-    const aIndex = setOrder.indexOf(a.code);
-    const bIndex = setOrder.indexOf(b.code);
-    return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
-  });
-
   return (
-    <main>
-      <h1 style={{ marginBottom: "18px" }}>Sets</h1>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: "16px",
-        }}
-      >
-        {sortedSets.map((set) => {
-          const setCards = (cards || []).filter(
-            (card: any) =>
-              String(card.set_code).trim().toUpperCase() ===
-              String(set.code).trim().toUpperCase()
-          );
-
-          const allBaseKeys = new Set(
-            setCards.map((card: any) => getBaseKey(card))
-          );
-
-          const cardIdToBaseKey = new Map(
-            setCards.map((card: any) => [card.id, getBaseKey(card)])
-          );
-
-          const ownedBaseKeys = new Set(
-            (collection || [])
-              .filter((item: any) => item.quantity > 0)
-              .map((item: any) => cardIdToBaseKey.get(item.card_id))
-              .filter(Boolean)
-          );
-
-          const baseTotal = allBaseKeys.size;
-          const baseOwned = ownedBaseKeys.size;
-          const basePercent = baseTotal > 0 ? (baseOwned / baseTotal) * 100 : 0;
-
-          const fullTotal = setCards.length;
-          const fullOwned = setCards.filter((card: any) => ownedCardIds.has(card.id)).length;
-          const fullPercent = fullTotal > 0 ? (fullOwned / fullTotal) * 100 : 0;
-
-          return (
-            <Link
-              key={set.code}
-              href={`/sets/${set.code}`}
-              style={{
-                border: "1px solid #334155",
-                borderRadius: "18px",
-                padding: "18px",
-                background: "linear-gradient(180deg, #172033, #111827)",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-                borderTop: `4px solid ${setColors[set.code] || "#475569"}`,
-              }}
-            >
-              <div style={{ color: "#7dd3fc", fontSize: "13px", marginBottom: "8px" }}>
-                {set.code}
-              </div>
-
-              <div style={{ fontWeight: 700, fontSize: "18px", marginBottom: "14px" }}>
-                {set.name}
-              </div>
-
-              <ProgressBar label="Base" value={basePercent} />
-              <ProgressBar label="Full" value={fullPercent} />
-
-              <div style={{ fontSize: "14px", color: "#cbd5e1", marginTop: "10px" }}>
-                <div>Base: {baseOwned} / {baseTotal}</div>
-                <div>Full: {fullOwned} / {fullTotal}</div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    </main>
+    <SetsClient
+      sets={sets || []}
+      cards={cards || []}
+      collection={collection || []}
+    />
   );
 }
