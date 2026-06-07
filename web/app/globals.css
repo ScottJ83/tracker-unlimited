@@ -476,3 +476,206 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
     justify-content: center;
   }
 }
+
+/* V8 route + card spacing polish */
+.tu-nav-link {
+  padding-bottom: 5px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.18s ease, border-color 0.18s ease, text-shadow 0.18s ease;
+}
+
+.tu-nav-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  text-shadow: 0 0 16px rgba(245,197,66,0.35);
+}
+
+.tu-filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.tu-card-grid-polished {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  overflow: visible;
+}
+
+.tu-card-tile-polished {
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 225px;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.90) 0%, rgba(5,12,25,0.78) 58%, rgba(0,0,0,0.86) 100%),
+    linear-gradient(180deg, rgba(18,28,47,0.40), rgba(3,6,13,0.98));
+  box-shadow: 0 14px 42px rgba(0,0,0,0.34);
+  display: flex;
+  gap: 12px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: visible;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.tu-card-tile-polished:hover {
+  transform: translateY(-1px);
+  border-color: rgba(245,197,66,0.42);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.50), 0 0 26px rgba(245,197,66,0.08);
+}
+
+.tu-card-tile-polished.is-unowned {
+  opacity: 0.82;
+}
+
+.tu-card-image-wrap-polished {
+  position: relative;
+  width: 64px;
+  min-width: 64px;
+  height: 90px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: #05070d;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.tu-card-image-polished {
+  width: 64px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+}
+
+.tu-card-image-preview-polished {
+  position: absolute;
+  top: -26px;
+  left: 78px;
+  width: 285px;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: 14px;
+  border: 1px solid rgba(245,197,66,0.65);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.85);
+  z-index: 99999;
+  background: #02040a;
+}
+
+.tu-card-body-polished {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 48px;
+}
+
+.tu-card-title-polished {
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tu-card-subtitle-polished {
+  color: #aeb8c7;
+  font-size: 11px;
+  min-height: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tu-card-meta-polished {
+  color: #cfd7e4;
+  font-size: 11px;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tu-card-text-polished {
+  color: #cfd7e4;
+  font-size: 10px;
+  line-height: 1.25;
+  margin-top: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 38px;
+}
+
+.tu-card-chip-row-polished {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.tu-card-chip-polished {
+  font-size: 9px;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid currentColor;
+  white-space: nowrap;
+  font-weight: 800;
+}
+
+.tu-card-value-row-polished {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 8px;
+  font-size: 11px;
+}
+
+.tu-card-value-row-polished strong,
+.tu-gold-text {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.tu-card-actions-polished {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+}
+
+.tu-spoiler-question {
+  color: var(--accent);
+  font-size: 26px;
+  font-weight: 1000;
+  text-shadow: 0 0 18px rgba(245,197,66,0.26);
+}
+
+.tu-summary-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 760px) {
+  .tu-card-grid-polished { grid-template-columns: 1fr; }
+  .tu-card-image-preview-polished {
+    left: 0;
+    top: 100px;
+    width: min(280px, 78vw);
+  }
+}

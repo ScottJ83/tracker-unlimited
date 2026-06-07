@@ -7,16 +7,18 @@ function getCardDisplayName(card: any) {
   return card?.subtitle ? `${card.name}: ${card.subtitle}` : card?.name || "Unknown card";
 }
 
-function getAspectPills(aspect: string | null | undefined) {
+type Pill = { name: string; color: string };
+
+function getAspectPills(aspect: string | null | undefined): Pill[] {
   const text = String(aspect || "").toLowerCase();
-  const pills: { name: string; color: string }[] = [];
+  const pills: Pill[] = [];
 
   if (text.includes("vigilance")) pills.push({ name: "Vigilance", color: "#3b82f6" });
   if (text.includes("command")) pills.push({ name: "Command", color: "#16a34a" });
   if (text.includes("aggression")) pills.push({ name: "Aggression", color: "#dc2626" });
   if (text.includes("cunning")) pills.push({ name: "Cunning", color: "#d97706" });
   if (text.includes("heroism")) pills.push({ name: "Heroism", color: "#d4d4aa" });
-  if (text.includes("villainy")) pills.push({ name: "Villainy", color: "#4c1d95" });
+  if (text.includes("villainy")) pills.push({ name: "Villainy", color: "#7c3aed" });
 
   return pills;
 }
@@ -26,7 +28,7 @@ function CardImage({ src, name, hidden }: { src?: string | null; name: string; h
 
   return (
     <div
-      className="tu-card-image-wrap"
+      className="tu-card-image-wrap-polished"
       onMouseEnter={() => {
         if (!hidden && src) setHover(true);
       }}
@@ -34,11 +36,11 @@ function CardImage({ src, name, hidden }: { src?: string | null; name: string; h
     >
       {!hidden && src ? (
         <>
-          <img src={src} alt={name} className="tu-card-image" />
-          {hover ? <img src={src} alt={name} className="tu-card-image-preview" /> : null}
+          <img src={src} alt={name} className="tu-card-image-polished" />
+          {hover ? <img src={src} alt={name} className="tu-card-image-preview-polished" /> : null}
         </>
       ) : (
-        <div className="tu-spoiler-card">?</div>
+        <div className="tu-spoiler-question">?</div>
       )}
     </div>
   );
@@ -67,7 +69,7 @@ export default function MissingCardsClient({
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
 
-    let rows = (cards || []).filter((card) => {
+    const rows = (cards || []).filter((card) => {
       const haystack = [
         card?.name,
         card?.subtitle,
@@ -103,114 +105,119 @@ export default function MissingCardsClient({
     return rows;
   }, [cards, search, setFilter, sortBy]);
 
-  const totalMissingValue = filtered.reduce((sum, card) => sum + Number(card?.price || 0), 0);
+  const totalUncollectedValue = filtered.reduce((sum, card) => sum + Number(card?.price || 0), 0);
   const wantedVisible = filtered.filter((card) => wantedSet.has(card.id)).length;
 
   return (
     <div>
-      <section className="tu-summary-panel">
-        <div className="tu-summary-title">Uncollected Summary</div>
-        <div className="tu-summary-grid">
-          <div className="tu-stat-card">
-            <div className="tu-stat-label">Visible Uncollected Cards</div>
+      <section className="sw-shell" style={{ padding: "18px", marginBottom: "18px" }}>
+        <div className="tu-summary-title-row">
+          <div className="tu-summary-title" style={{ marginBottom: 0 }}>Uncollected Summary</div>
+          <button type="button" className="sw-button" onClick={() => setShowCards((value) => !value)}>
+            {showCards ? "Hide Details" : "Show Details"}
+          </button>
+        </div>
+
+        <div className="tu-summary-grid" style={{ marginTop: "14px" }}>
+          <div className="sw-stat-card">
+            <div className="sw-muted" style={{ fontSize: 12 }}>Visible Cards</div>
             <strong>{filtered.length}</strong>
           </div>
-          <div className="tu-stat-card">
-            <div className="tu-stat-label">Visible Uncollected Value</div>
-            <strong>${totalMissingValue.toFixed(2)}</strong>
+          <div className="sw-stat-card">
+            <div className="sw-muted" style={{ fontSize: 12 }}>Visible Value</div>
+            <strong>${totalUncollectedValue.toFixed(2)}</strong>
           </div>
-          <div className="tu-stat-card">
-            <div className="tu-stat-label">Wanted From Visible</div>
+          <div className="sw-stat-card">
+            <div className="sw-muted" style={{ fontSize: 12 }}>Wanted Visible</div>
             <strong>{wantedVisible}</strong>
           </div>
-          <div className="tu-stat-card">
-            <div className="tu-stat-label">Spoiler Mode</div>
+          <div className="sw-stat-card">
+            <div className="sw-muted" style={{ fontSize: 12 }}>Spoiler Mode</div>
             <strong>{showCards ? "Shown" : "Hidden"}</strong>
           </div>
         </div>
       </section>
 
-      <section className="tu-filter-panel">
-        <input
-          type="text"
-          placeholder="Search uncollected cards"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <section className="sw-panel" style={{ padding: "14px", marginBottom: "18px" }}>
+        <div className="tu-filter-bar" style={{ marginBottom: 0 }}>
+          <input
+            type="text"
+            placeholder="Search uncollected cards"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            style={{ minWidth: "280px", padding: "10px 12px" }}
+          />
 
-        <select value={setFilter} onChange={(e) => setSetFilter(e.target.value)}>
-          <option value="all">All Sets</option>
-          {setOptions.map((setCode) => (
-            <option key={setCode} value={setCode}>
-              {setCode}
-            </option>
-          ))}
-        </select>
+          <select value={setFilter} onChange={(event) => setSetFilter(event.target.value)} style={{ padding: "10px 12px" }}>
+            <option value="all">All Sets</option>
+            {setOptions.map((setCode) => (
+              <option key={setCode} value={setCode}>
+                {setCode}
+              </option>
+            ))}
+          </select>
 
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="value_desc">Value High-Low</option>
-          <option value="value_asc">Value Low-High</option>
-          <option value="name_asc">Name A-Z</option>
-          <option value="set_number">Set / Number</option>
-        </select>
-
-        <button type="button" className="tu-gold-button" onClick={() => setShowCards((value) => !value)}>
-          {showCards ? "Hide Card Details" : "Show Card Details"}
-        </button>
+          <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} style={{ padding: "10px 12px" }}>
+            <option value="value_desc">Value High-Low</option>
+            <option value="value_asc">Value Low-High</option>
+            <option value="name_asc">Name A-Z</option>
+            <option value="set_number">Set / Number</option>
+          </select>
+        </div>
       </section>
 
       {!showCards ? (
-        <section className="tu-spoiler-panel">
-          <div className="tu-summary-title">Spoiler Safe Mode</div>
-          <p>
-            Uncollected card details are hidden by default. Use filters to narrow the list, then reveal card details when you are ready.
+        <section className="sw-shell" style={{ padding: "22px", marginBottom: "18px" }}>
+          <div className="sw-kicker">Spoiler Safe Mode</div>
+          <p className="sw-page-subtitle" style={{ maxWidth: "760px" }}>
+            Uncollected card details are hidden by default. Use the filters to narrow the list, then reveal details when you are ready.
           </p>
-          <button type="button" className="tu-gold-button" onClick={() => setShowCards(true)}>
+          <button type="button" className="sw-button sw-button-primary" onClick={() => setShowCards(true)}>
             Show Uncollected Cards
           </button>
         </section>
       ) : null}
 
-      <div className="tu-card-grid">
+      <div className="tu-card-grid-polished">
         {filtered.map((card) => {
           const aspectPills = getAspectPills(card?.aspect);
           const displayName = getCardDisplayName(card);
           const hidden = !showCards;
 
           return (
-            <div key={card.id} className="tu-card-tile tu-card-tile--uncollected">
+            <div key={card.id} className="tu-card-tile-polished">
               <CardImage src={card?.front_art} name={displayName} hidden={hidden} />
 
-              <div className="tu-card-body">
+              <div className="tu-card-body-polished">
                 {hidden ? (
                   <>
-                    <div className="tu-card-title">Uncollected Card</div>
-                    <div className="tu-card-meta">{card?.set_code || "-"} #{card?.card_number ?? "-"}</div>
-                    <div className="tu-card-meta">Variant: {card?.variant || "-"}</div>
-                    <div className="tu-card-text">Details hidden to avoid spoilers.</div>
+                    <div className="tu-card-title-polished">Uncollected Card</div>
+                    <div className="tu-card-meta-polished">{card?.set_code || "-"} #{card?.card_number ?? "-"}</div>
+                    <div className="tu-card-meta-polished">Variant: {card?.variant || "-"}</div>
+                    <div className="tu-card-text-polished">Details hidden to avoid spoilers.</div>
                   </>
                 ) : (
                   <>
-                    <div className="tu-card-title">{displayName}</div>
-                    <div className="tu-card-meta">
-                      {card?.set_code || "-"} #{card?.card_number ?? "-"} • {card?.variant || "-"}
-                    </div>
-                    <div className="tu-pill-row">
+                    <div className="tu-card-title-polished">{displayName}</div>
+                    <div className="tu-card-subtitle-polished">{card?.subtitle || ""}</div>
+                    <div className="tu-card-chip-row-polished">
                       {aspectPills.map((pill) => (
-                        <span key={pill.name} className="tu-aspect-pill" style={{ borderColor: pill.color, color: pill.color }}>
+                        <span key={pill.name} className="tu-card-chip-polished" style={{ color: pill.color, borderColor: pill.color }}>
                           {pill.name}
                         </span>
                       ))}
                     </div>
-                    <div className="tu-card-meta">
-                      Type: {card?.card_type || "-"}{card?.arena ? ` • ${card.arena}` : ""}
+                    <div className="tu-card-meta-polished">{card?.set_code || "-"} #{card?.card_number ?? "-"} • {card?.variant || "-"}</div>
+                    <div className="tu-card-meta-polished">Type: {card?.card_type || "-"}{card?.arena ? ` • ${card.arena}` : ""}</div>
+                    <div className="tu-card-meta-polished">Traits: {card?.traits || "-"}</div>
+                    <div className="tu-card-value-row-polished">
+                      <span><strong>Value:</strong> ${Number(card?.price || 0).toFixed(2)}</span>
                     </div>
-                    <div className="tu-card-price">${Number(card?.price || 0).toFixed(2)}</div>
                   </>
                 )}
               </div>
 
-              <div className="tu-card-actions">
+              <div className="tu-card-actions-polished">
                 <WishlistButton cardId={card.id} initialWanted={wantedSet.has(card.id)} />
               </div>
             </div>

@@ -28,7 +28,7 @@ export default async function NavBar() {
     ["Collection", "/collection"],
     ["Cards", "/cards"],
     ["Decks", "/decks"],
-    ["Uncollected", "/missing"],
+    ["Uncollected", "/uncollected"],
     ["Wishlist", "/wishlist"],
     ["Analytics", "/analytics"],
   ];
@@ -193,10 +193,7 @@ export default async function NavBar() {
           <Link
             key={href}
             href={href}
-            style={{
-              paddingBottom: "5px",
-              borderBottom: "1px solid transparent",
-            }}
+            className="tu-nav-link"
           >
             {label}
           </Link>
