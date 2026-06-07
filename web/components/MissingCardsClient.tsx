@@ -163,6 +163,10 @@ export default function MissingCardsClient({
             <option value="name_asc">Name A-Z</option>
             <option value="set_number">Set / Number</option>
           </select>
+
+          <button type="button" className="sw-button" onClick={() => setShowCards((value) => !value)}>
+            {showCards ? "Hide Card Details" : "Show Card Details"}
+          </button>
         </div>
       </section>
 

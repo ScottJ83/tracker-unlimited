@@ -172,7 +172,7 @@ export default function CollectionClient({ data }: any) {
 
                 <div className="tu-card-value-row-polished">
                   <span><strong>Qty:</strong> {item.quantity}</span>
-                  <span>Unit: ${unitValue.toFixed(2)}</span>
+                  <span><strong>Unit:</strong> ${unitValue.toFixed(2)}</span>
                   <span><strong>Total:</strong> ${totalValue.toFixed(2)}</span>
                 </div>
               </div>

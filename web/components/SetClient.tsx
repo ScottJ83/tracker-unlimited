@@ -149,7 +149,7 @@ export default function SetClient({ cards, collection }: any) {
 
                     <div className="tu-card-value-row-polished">
                       <span><strong>Qty:</strong> {qty}</span>
-                      <span>Unit: ${price.toFixed(2)}</span>
+                      <span><strong>Unit:</strong> ${price.toFixed(2)}</span>
                     </div>
                   </>
                 )}

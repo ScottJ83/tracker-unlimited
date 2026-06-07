@@ -679,3 +679,30 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
     width: min(280px, 78vw);
   }
 }
+
+
+/* V8.1: keep value rows aligned and make uncollected toggle always available */
+.tu-card-value-row-polished {
+  align-items: center;
+  row-gap: 4px;
+  column-gap: 12px;
+  padding-right: 76px;
+  line-height: 1.2;
+}
+
+.tu-card-value-row-polished span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.tu-card-value-row-polished strong {
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.tu-filter-bar .sw-button {
+  min-height: 38px;
+}
