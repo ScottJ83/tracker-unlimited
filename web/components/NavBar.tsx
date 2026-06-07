@@ -166,10 +166,9 @@ export default async function NavBar() {
               </span>
             </Link>
           ) : null}
-<AuthButton
-  email={displayName}
-  avatarUrl={avatarUrl}
-/>        </div>
+
+          <AuthButton email={user?.email || null} />
+        </div>
       </div>
 
       <div className="sw-divider" />
@@ -192,11 +191,7 @@ export default async function NavBar() {
         }}
       >
         {navLinks.map(([label, href]) => (
-          <Link
-            key={href}
-            href={href}
-            className="tu-nav-link"
-          >
+          <Link key={href} href={href} className="tu-nav-link">
             {label}
           </Link>
         ))}
