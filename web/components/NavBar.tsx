@@ -166,8 +166,10 @@ export default async function NavBar() {
               </span>
             </Link>
           ) : null}
-          <AuthButton email={null} />
-        </div>
+<AuthButton
+  email={displayName}
+  avatarUrl={avatarUrl}
+/>        </div>
       </div>
 
       <div className="sw-divider" />

@@ -147,15 +147,16 @@ export default function ProfilePhotoUploader({
         </div>
       </div>
 
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) uploadPhoto(file);
-        }}
-      />
+<input
+  ref={inputRef}
+  type="file"
+  accept="image/png,image/jpeg,image/webp,image/gif"
+  style={{ display: "none" }}
+  onChange={(event) => {
+    const file = event.target.files?.[0];
+    if (file) uploadPhoto(file);
+  }}
+/>
 
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
         <button
