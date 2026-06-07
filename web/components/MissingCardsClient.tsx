@@ -163,10 +163,6 @@ export default function MissingCardsClient({
             <option value="name_asc">Name A-Z</option>
             <option value="set_number">Set / Number</option>
           </select>
-
-          <button type="button" className="sw-button" onClick={() => setShowCards((value) => !value)}>
-            {showCards ? "Hide Card Details" : "Show Card Details"}
-          </button>
         </div>
       </section>
 
@@ -176,9 +172,13 @@ export default function MissingCardsClient({
           <p className="sw-page-subtitle" style={{ maxWidth: "760px" }}>
             Uncollected card details are hidden by default. Use the filters to narrow the list, then reveal details when you are ready.
           </p>
-          <button type="button" className="sw-button sw-button-primary" onClick={() => setShowCards(true)}>
-            Show Uncollected Cards
-          </button>
+<button
+  onClick={() => setShowDetails(!showDetails)}
+>
+  {showDetails
+    ? "Hide Uncollected Cards"
+    : "Show Uncollected Cards"}
+</button>
         </section>
       ) : null}
 
