@@ -28,84 +28,45 @@ export default async function NavBar() {
     ["Collection", "/collection"],
     ["Cards", "/cards"],
     ["Decks", "/decks"],
-    ["Missing", "/missing"],
+    ["Uncollected", "/missing"],
     ["Wishlist", "/wishlist"],
     ["Analytics", "/analytics"],
   ];
 
   return (
-    <header
-      style={{
-        borderBottom: "1px solid rgba(255,255,255,0.14)",
-        background:
-          "linear-gradient(180deg, rgba(0,0,0,0.94), rgba(0,0,0,0.86))",
-        backdropFilter: "blur(10px)",
-        position: "sticky",
-        top: 0,
-        zIndex: 20,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1320px",
-          margin: "0 auto",
-          padding: "14px 24px 8px",
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
-          alignItems: "center",
-          gap: "18px",
-        }}
-      >
+    <header className="tu-navbar">
+      <div className="tu-navbar-top tu-navbar-top-compact">
         <div />
 
-        <Link
-          href="/"
-          aria-label="Tracker Unlimited Home"
-          className="sw-logo-wordmark"
-        >
+        <Link href="/" aria-label="Tracker Unlimited Home" className="sw-logo-wordmark">
           TRACKER<br />UNLIMITED
         </Link>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "14px",
-            minWidth: 0,
-          }}
-        >
-          <AuthButton email={displayName} avatarUrl={avatarUrl} />
+        <div className="tu-account-wrap tu-account-wrap-compact">
+          {user ? (
+            <Link href="/profile" className="tu-profile-nav-card" title="Profile">
+              <span className="tu-profile-nav-avatar">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Profile" />
+                ) : (
+                  <span>{String(displayName || "U").slice(0, 1).toUpperCase()}</span>
+                )}
+              </span>
+              <span className="tu-profile-nav-text">
+                <span className="tu-profile-nav-kicker">Profile</span>
+                <span className="tu-profile-nav-name">{displayName}</span>
+              </span>
+            </Link>
+          ) : null}
+          <AuthButton email={null} />
         </div>
       </div>
 
       <div className="sw-divider" />
 
-      <nav
-        style={{
-          maxWidth: "1320px",
-          margin: "0 auto",
-          padding: "10px 24px 11px",
-          display: "flex",
-          justifyContent: "center",
-          gap: "24px",
-          color: "#cfcfcf",
-          flexWrap: "wrap",
-          fontSize: "12px",
-          fontWeight: 900,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-        }}
-      >
+      <nav className="tu-nav-links">
         {navLinks.map(([label, href]) => (
-          <Link
-            key={href}
-            href={href}
-            style={{
-              paddingBottom: "4px",
-              borderBottom: "1px solid transparent",
-            }}
-          >
+          <Link key={href} href={href}>
             {label}
           </Link>
         ))}

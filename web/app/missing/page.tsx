@@ -76,7 +76,7 @@ async function getAllWishlist(supabase: any, userId: string) {
   return allRows;
 }
 
-export default async function MissingCardsPage() {
+export default async function UncollectedCardsPage() {
   const supabase = await createClient();
 
   const {
@@ -95,18 +95,18 @@ export default async function MissingCardsPage() {
 
   const ownedIds = new Set(collection.map((item: any) => item.card_id));
   const wantedIds = new Set(wishlist.map((item: any) => item.card_id));
-  const missingCards = cards.filter((card: any) => !ownedIds.has(card.id));
+  const uncollectedCards = cards.filter((card: any) => !ownedIds.has(card.id));
 
   return (
     <main>
       <div className="sw-page-header">
-        <div className="sw-kicker">Hidden Databank</div>
-        <h1 className="sw-page-title">Missing Cards</h1>
+        <div className="sw-kicker">Collection Database</div>
+        <h1 className="sw-page-title">Uncollected</h1>
         <div className="sw-page-subtitle">
-          Missing cards are hidden by default to avoid spoilers. Reveal them only when you want to browse.
+          Review cards not currently in your collection. Details are hidden by default to avoid spoilers.
         </div>
       </div>
-      <MissingCardsClient cards={missingCards} wantedIds={Array.from(wantedIds)} />
+      <MissingCardsClient cards={uncollectedCards} wantedIds={Array.from(wantedIds)} />
     </main>
   );
 }

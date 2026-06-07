@@ -21,36 +21,24 @@ function getAspectPills(aspect: string | null | undefined) {
   return pills;
 }
 
-function CardImage({ src, name }: { src?: string | null; name: string }) {
+function CardImage({ src, name, hidden }: { src?: string | null; name: string; hidden: boolean }) {
+  const [hover, setHover] = useState(false);
+
   return (
     <div
-      style={{
-        width: "56px",
-        minWidth: "56px",
-        height: "78px",
-        borderRadius: "8px",
-        border: "1px solid #334155",
-        background: "#0b1220",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
+      className="tu-card-image-wrap"
+      onMouseEnter={() => {
+        if (!hidden && src) setHover(true);
       }}
+      onMouseLeave={() => setHover(false)}
     >
-      {src ? (
-        <img
-          src={src}
-          alt={name}
-          style={{
-            width: "56px",
-            height: "78px",
-            objectFit: "cover",
-            borderRadius: "8px",
-            display: "block",
-          }}
-        />
+      {!hidden && src ? (
+        <>
+          <img src={src} alt={name} className="tu-card-image" />
+          {hover ? <img src={src} alt={name} className="tu-card-image-preview" /> : null}
+        </>
       ) : (
-        <div style={{ fontSize: "10px", color: "#475569" }}>—</div>
+        <div className="tu-spoiler-card">?</div>
       )}
     </div>
   );
@@ -66,6 +54,7 @@ export default function MissingCardsClient({
   const [search, setSearch] = useState("");
   const [setFilter, setSetFilter] = useState("all");
   const [sortBy, setSortBy] = useState("value_desc");
+  const [showCards, setShowCards] = useState(false);
 
   const wantedSet = useMemo(() => new Set(wantedIds || []), [wantedIds]);
 
@@ -114,57 +103,42 @@ export default function MissingCardsClient({
     return rows;
   }, [cards, search, setFilter, sortBy]);
 
-  const totalMissingValue = filtered.reduce(
-    (sum, card) => sum + Number(card?.price || 0),
-    0
-  );
+  const totalMissingValue = filtered.reduce((sum, card) => sum + Number(card?.price || 0), 0);
+  const wantedVisible = filtered.filter((card) => wantedSet.has(card.id)).length;
 
   return (
     <div>
-      <div
-        style={{
-          marginBottom: "18px",
-          padding: "18px",
-          border: "1px solid #334155",
-          borderRadius: "16px",
-          background: "linear-gradient(180deg, #172033, #111827)",
-          display: "grid",
-          gap: "8px",
-          color: "#e5edf7",
-        }}
-      >
-        <div style={{ fontWeight: 800, fontSize: "16px" }}>Missing Summary</div>
-        <div>Visible Missing Cards: {filtered.length}</div>
-        <div>Visible Missing Value: ${totalMissingValue.toFixed(2)}</div>
-      </div>
+      <section className="tu-summary-panel">
+        <div className="tu-summary-title">Uncollected Summary</div>
+        <div className="tu-summary-grid">
+          <div className="tu-stat-card">
+            <div className="tu-stat-label">Visible Uncollected Cards</div>
+            <strong>{filtered.length}</strong>
+          </div>
+          <div className="tu-stat-card">
+            <div className="tu-stat-label">Visible Uncollected Value</div>
+            <strong>${totalMissingValue.toFixed(2)}</strong>
+          </div>
+          <div className="tu-stat-card">
+            <div className="tu-stat-label">Wanted From Visible</div>
+            <strong>{wantedVisible}</strong>
+          </div>
+          <div className="tu-stat-card">
+            <div className="tu-stat-label">Spoiler Mode</div>
+            <strong>{showCards ? "Shown" : "Hidden"}</strong>
+          </div>
+        </div>
+      </section>
 
-      <div style={{ display: "flex", gap: "12px", marginBottom: "18px", flexWrap: "wrap" }}>
+      <section className="tu-filter-panel">
         <input
           type="text"
-          placeholder="Search missing cards"
+          placeholder="Search uncollected cards"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            minWidth: "280px",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
         />
 
-        <select
-          value={setFilter}
-          onChange={(e) => setSetFilter(e.target.value)}
-          style={{
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
-        >
+        <select value={setFilter} onChange={(e) => setSetFilter(e.target.value)}>
           <option value="all">All Sets</option>
           {setOptions.map((setCode) => (
             <option key={setCode} value={setCode}>
@@ -173,100 +147,70 @@ export default function MissingCardsClient({
           ))}
         </select>
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          style={{
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#0f172a",
-            color: "#e5edf7",
-          }}
-        >
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="value_desc">Value High-Low</option>
           <option value="value_asc">Value Low-High</option>
           <option value="name_asc">Name A-Z</option>
           <option value="set_number">Set / Number</option>
         </select>
-      </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gap: "14px",
-        }}
-      >
+        <button type="button" className="tu-gold-button" onClick={() => setShowCards((value) => !value)}>
+          {showCards ? "Hide Card Details" : "Show Card Details"}
+        </button>
+      </section>
+
+      {!showCards ? (
+        <section className="tu-spoiler-panel">
+          <div className="tu-summary-title">Spoiler Safe Mode</div>
+          <p>
+            Uncollected card details are hidden by default. Use filters to narrow the list, then reveal card details when you are ready.
+          </p>
+          <button type="button" className="tu-gold-button" onClick={() => setShowCards(true)}>
+            Show Uncollected Cards
+          </button>
+        </section>
+      ) : null}
+
+      <div className="tu-card-grid">
         {filtered.map((card) => {
           const aspectPills = getAspectPills(card?.aspect);
           const displayName = getCardDisplayName(card);
+          const hidden = !showCards;
 
           return (
-            <div
-              key={card.id}
-              style={{
-                border: "1px solid #334155",
-                borderRadius: "14px",
-                padding: "10px",
-                minHeight: "170px",
-                background: "#0f172a",
-                display: "flex",
-                gap: "10px",
-                boxSizing: "border-box",
-                position: "relative",
-              }}
-            >
-              <CardImage src={card?.front_art} name={displayName} />
+            <div key={card.id} className="tu-card-tile tu-card-tile--uncollected">
+              <CardImage src={card?.front_art} name={displayName} hidden={hidden} />
 
-              <div style={{ flex: 1, minWidth: 0, paddingBottom: "42px" }}>
-                <div
-                  style={{
-                    fontWeight: 700,
-                    fontSize: "14px",
-                    color: "#e5edf7",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {displayName}
-                </div>
-
-                <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "5px" }}>
-                  {card?.set_code || "-"} #{card?.card_number ?? "-"} • {card?.variant || "-"}
-                </div>
-
-                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "6px" }}>
-                  {aspectPills.map((pill) => (
-                    <div
-                      key={pill.name}
-                      style={{
-                        fontSize: "9px",
-                        lineHeight: 1,
-                        padding: "3px 5px",
-                        borderRadius: "999px",
-                        background: `${pill.color}22`,
-                        border: `1px solid ${pill.color}`,
-                        color: pill.color,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {pill.name}
+              <div className="tu-card-body">
+                {hidden ? (
+                  <>
+                    <div className="tu-card-title">Uncollected Card</div>
+                    <div className="tu-card-meta">{card?.set_code || "-"} #{card?.card_number ?? "-"}</div>
+                    <div className="tu-card-meta">Variant: {card?.variant || "-"}</div>
+                    <div className="tu-card-text">Details hidden to avoid spoilers.</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="tu-card-title">{displayName}</div>
+                    <div className="tu-card-meta">
+                      {card?.set_code || "-"} #{card?.card_number ?? "-"} • {card?.variant || "-"}
                     </div>
-                  ))}
-                </div>
-
-                <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "6px" }}>
-                  Type: {card?.card_type || "-"}{card?.arena ? ` • ${card.arena}` : ""}
-                </div>
-
-                <div style={{ fontSize: "11px", color: "#86efac", fontWeight: 700, marginTop: "6px" }}>
-                  ${Number(card?.price || 0).toFixed(2)}
-                </div>
+                    <div className="tu-pill-row">
+                      {aspectPills.map((pill) => (
+                        <span key={pill.name} className="tu-aspect-pill" style={{ borderColor: pill.color, color: pill.color }}>
+                          {pill.name}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="tu-card-meta">
+                      Type: {card?.card_type || "-"}{card?.arena ? ` • ${card.arena}` : ""}
+                    </div>
+                    <div className="tu-card-price">${Number(card?.price || 0).toFixed(2)}</div>
+                  </>
+                )}
               </div>
 
-              <div style={{ position: "absolute", right: "10px", bottom: "8px" }}>
+              <div className="tu-card-actions">
                 <WishlistButton cardId={card.id} initialWanted={wantedSet.has(card.id)} />
               </div>
             </div>
