@@ -173,11 +173,11 @@ export default function MissingCardsClient({
             Uncollected card details are hidden by default. Use the filters to narrow the list, then reveal details when you are ready.
           </p>
 <button
-  onClick={() => setShowDetails(!showDetails)}
+  type="button"
+  className="tu-gold-button"
+  onClick={() => setShowCards((value) => !value)}
 >
-  {showDetails
-    ? "Hide Uncollected Cards"
-    : "Show Uncollected Cards"}
+  {showCards ? "Hide Uncollected Cards" : "Show Uncollected Cards"}
 </button>
         </section>
       ) : null}
