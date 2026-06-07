@@ -477,38 +477,119 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   }
 }
 
-/* V8 route + card spacing polish */
-.tu-nav-link {
-  padding-bottom: 5px;
-  border-bottom: 1px solid transparent;
-  transition: color 0.18s ease, border-color 0.18s ease, text-shadow 0.18s ease;
+/* V8.2 Uncollected page class styling restored */
+.tu-summary-panel,
+.tu-filter-panel,
+.tu-spoiler-panel {
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.90) 0%, rgba(6,14,29,0.76) 54%, rgba(0,0,0,0.86) 100%),
+    radial-gradient(circle at 22% 96%, rgba(12,54,105,0.22), transparent 36%),
+    linear-gradient(180deg, rgba(18,28,47,0.44), rgba(3,6,13,0.96));
+  box-shadow: 0 20px 70px rgba(0,0,0,0.48);
 }
 
-.tu-nav-link:hover {
+.tu-summary-panel {
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.tu-summary-title {
   color: var(--accent);
-  border-bottom-color: var(--accent);
-  text-shadow: 0 0 16px rgba(245,197,66,0.35);
+  font-weight: 1000;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-bottom: 14px;
 }
 
-.tu-filter-bar {
+.tu-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.tu-stat-card {
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 88px;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.88) 0%, rgba(6,14,29,0.78) 54%, rgba(0,0,0,0.84) 100%),
+    radial-gradient(circle at 18% 92%, rgba(12,54,105,0.22), transparent 34%),
+    linear-gradient(180deg, rgba(18,28,47,0.50), rgba(3,6,13,0.96));
+}
+
+.tu-stat-label {
+  color: #aeb8c7;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.tu-stat-card strong {
+  display: block;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.tu-filter-panel {
+  padding: 14px;
+  margin-bottom: 18px;
   display: flex;
   gap: 12px;
-  margin-bottom: 18px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-.tu-card-grid-polished {
+.tu-filter-panel input,
+.tu-filter-panel select {
+  min-height: 42px;
+}
+
+.tu-spoiler-panel {
+  padding: 22px;
+  margin-bottom: 18px;
+  color: #cbd5e1;
+}
+
+.tu-spoiler-panel p {
+  margin: 0 0 18px;
+  line-height: 1.6;
+  color: #d5d5d5;
+}
+
+.tu-gold-button {
+  border: 1px solid rgba(245,197,66,0.80) !important;
+  border-radius: 999px !important;
+  background: rgba(245,197,66,0.94) !important;
+  color: #000 !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  padding: 11px 16px !important;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(245,197,66,0.12);
+}
+
+.tu-gold-button:hover {
+  background: rgba(255,217,94,0.98) !important;
+  box-shadow: 0 0 28px rgba(245,197,66,0.26);
+}
+
+.tu-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 14px;
   overflow: visible;
 }
 
-.tu-card-tile-polished {
+.tu-card-tile {
   border: 1px solid rgba(255,255,255,0.14);
   border-radius: 12px;
   padding: 12px;
-  min-height: 225px;
+  min-height: 220px;
   background:
     linear-gradient(90deg, rgba(0,0,0,0.90) 0%, rgba(5,12,25,0.78) 58%, rgba(0,0,0,0.86) 100%),
     linear-gradient(180deg, rgba(18,28,47,0.40), rgba(3,6,13,0.98));
@@ -518,24 +599,20 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   box-sizing: border-box;
   position: relative;
   overflow: visible;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
 }
 
-.tu-card-tile-polished:hover {
-  transform: translateY(-1px);
-  border-color: rgba(245,197,66,0.42);
+.tu-card-tile:hover {
+  border-color: rgba(245,197,66,0.34);
   box-shadow: 0 18px 60px rgba(0,0,0,0.50), 0 0 26px rgba(245,197,66,0.08);
+  transform: translateY(-1px);
 }
 
-.tu-card-tile-polished.is-unowned {
-  opacity: 0.82;
-}
-
-.tu-card-image-wrap-polished {
+.tu-card-image-wrap {
   position: relative;
-  width: 64px;
-  min-width: 64px;
-  height: 90px;
+  width: 56px;
+  min-width: 56px;
+  height: 78px;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.18);
   background: #05070d;
@@ -543,23 +620,21 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 30;
 }
 
-.tu-card-image-polished {
-  width: 64px;
-  height: 90px;
+.tu-card-image {
+  width: 56px;
+  height: 78px;
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
   display: block;
 }
 
-.tu-card-image-preview-polished {
-  position: absolute;
-  top: -26px;
-  left: 78px;
-  width: 285px;
+.tu-card-image-preview {
+  position: fixed;
+  width: 280px;
   max-height: 78vh;
   object-fit: contain;
   border-radius: 14px;
@@ -567,64 +642,71 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   box-shadow: 0 30px 90px rgba(0,0,0,0.85);
   z-index: 99999;
   background: #02040a;
+  transform: translate(72px, -22px);
 }
 
-.tu-card-body-polished {
+.tu-spoiler-card {
+  font-size: 26px;
+  color: var(--accent);
+  font-weight: 1000;
+  line-height: 1;
+  text-shadow: 0 0 16px rgba(245,197,66,0.20);
+}
+
+.tu-card-body {
   flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 48px;
+  padding-bottom: 52px;
 }
 
-.tu-card-title-polished {
+.tu-card-title {
   color: #fff;
-  font-weight: 900;
-  font-size: 14px;
-  letter-spacing: 0.02em;
+  font-weight: 1000;
+  font-size: 15px;
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.tu-card-subtitle-polished {
-  color: #aeb8c7;
-  font-size: 11px;
-  min-height: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tu-card-meta-polished {
+.tu-card-meta,
+.tu-card-text {
   color: #cfd7e4;
   font-size: 11px;
   margin-top: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.tu-card-text-polished {
-  color: #cfd7e4;
-  font-size: 10px;
-  line-height: 1.25;
-  margin-top: 6px;
+.tu-card-text {
+  line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 38px;
 }
 
-.tu-card-chip-row-polished {
+.tu-card-price {
+  color: var(--accent);
+  font-weight: 1000;
+  font-size: 12px;
+}
+
+.tu-card-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 8px;
+  padding-right: 82px;
+  line-height: 1.1;
+}
+
+.tu-pill-row {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
-  margin-top: 6px;
+  margin-top: 7px;
 }
 
-.tu-card-chip-polished {
+.tu-aspect-pill {
   font-size: 9px;
   line-height: 1;
   padding: 3px 5px;
@@ -632,77 +714,16 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   background: rgba(255,255,255,0.03);
   border: 1px solid currentColor;
   white-space: nowrap;
-  font-weight: 800;
 }
 
-.tu-card-value-row-polished {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: auto;
-  padding-top: 8px;
-  font-size: 11px;
-}
-
-.tu-card-value-row-polished strong,
-.tu-gold-text {
-  color: var(--accent);
-  font-weight: 900;
-}
-
-.tu-card-actions-polished {
+.tu-card-actions {
   position: absolute;
-  right: 12px;
-  bottom: 10px;
-}
-
-.tu-spoiler-question {
-  color: var(--accent);
-  font-size: 26px;
-  font-weight: 1000;
-  text-shadow: 0 0 18px rgba(245,197,66,0.26);
-}
-
-.tu-summary-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  right: 10px;
+  bottom: 8px;
 }
 
 @media (max-width: 760px) {
-  .tu-card-grid-polished { grid-template-columns: 1fr; }
-  .tu-card-image-preview-polished {
-    left: 0;
-    top: 100px;
-    width: min(280px, 78vw);
+  .tu-card-grid {
+    grid-template-columns: 1fr;
   }
-}
-
-
-/* V8.1: keep value rows aligned and make uncollected toggle always available */
-.tu-card-value-row-polished {
-  align-items: center;
-  row-gap: 4px;
-  column-gap: 12px;
-  padding-right: 76px;
-  line-height: 1.2;
-}
-
-.tu-card-value-row-polished span {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
-  white-space: nowrap;
-  line-height: 1.2;
-}
-
-.tu-card-value-row-polished strong {
-  display: inline-block;
-  line-height: 1.2;
-}
-
-.tu-filter-bar .sw-button {
-  min-height: 38px;
 }
