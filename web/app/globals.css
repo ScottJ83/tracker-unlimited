@@ -747,3 +747,117 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
 .tu-card-grid > * { min-width: 0; }
 .tu-card-text { max-height: 56px; }
 .tu-card-tile .tu-spoiler-card { display: flex; align-items: center; justify-content: center; }
+
+/* Collection page compatibility */
+
+.tu-card-grid-polished {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 14px;
+}
+
+.tu-card-tile-polished {
+  @apply-none;
+}
+
+.tu-card-tile-polished,
+.tu-card-tile-polished * {
+  box-sizing: border-box;
+}
+
+.tu-card-tile-polished {
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 220px;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.90) 0%, rgba(5,12,25,0.78) 58%, rgba(0,0,0,0.86) 100%),
+    linear-gradient(180deg, rgba(18,28,47,0.40), rgba(3,6,13,0.98));
+  box-shadow: 0 14px 42px rgba(0,0,0,0.34);
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.tu-card-body-polished {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 58px;
+}
+
+.tu-card-title-polished {
+  color: #fff;
+  font-weight: 1000;
+  font-size: 15px;
+}
+
+.tu-card-subtitle-polished {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.tu-card-meta-polished {
+  color: #cfd7e4;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.tu-card-text-polished {
+  color: #cfd7e4;
+  font-size: 11px;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.tu-card-value-row-polished {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  color: #f5c542;
+  font-weight: 900;
+}
+
+.tu-card-actions-polished {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+}
+
+.tu-card-chip-row-polished {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 7px;
+}
+
+.tu-card-chip-polished {
+  font-size: 9px;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: rgba(255,255,255,0.03);
+}
+
+.tu-card-image-wrap-polished {
+  width: 56px;
+  min-width: 56px;
+  height: 78px;
+}
+
+.tu-card-image-polished {
+  width: 56px;
+  height: 78px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.tu-spoiler-question {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 78px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.14);
+}
