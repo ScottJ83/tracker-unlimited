@@ -31,6 +31,7 @@ export default async function NavBar() {
     ["Uncollected", "/uncollected"],
     ["Wishlist", "/wishlist"],
     ["Analytics", "/analytics"],
+    ["About", "/about"],
   ];
 
   return (
