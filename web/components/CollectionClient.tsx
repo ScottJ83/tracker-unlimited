@@ -19,11 +19,25 @@ function getAspectPills(aspect: string | null | undefined): Pill[] {
   return pills;
 }
 
-function StatPill({ label, value, color }: { label: string; value: any; color: string }) {
+function StatPill({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: any;
+  color: string;
+}) {
   if (value === null || value === undefined || value === "") return null;
 
   return (
-    <span className="tu-card-chip-polished" style={{ color, borderColor: color }}>
+    <span
+      className="tu-aspect-pill"
+      style={{
+        color,
+        borderColor: color,
+      }}
+    >
       {label}: {value}
     </span>
   );
@@ -34,7 +48,7 @@ function CardImage({ src, name }: { src?: string | null; name: string }) {
 
   return (
     <div
-      className="tu-card-image-wrap-polished"
+      className="tu-card-image-wrap"
       onMouseEnter={() => {
         if (src) setHover(true);
       }}
@@ -42,11 +56,11 @@ function CardImage({ src, name }: { src?: string | null; name: string }) {
     >
       {src ? (
         <>
-          <img src={src} alt={name} className="tu-card-image-polished" />
-          {hover ? <img src={src} alt={name} className="tu-card-image-preview-polished" /> : null}
+          <img src={src} alt={name} className="tu-card-image" />
+          {hover ? <img src={src} alt={name} className="tu-card-image-preview" /> : null}
         </>
       ) : (
-        <div className="tu-spoiler-question">—</div>
+        <div className="tu-spoiler-card">—</div>
       )}
     </div>
   );
@@ -54,6 +68,58 @@ function CardImage({ src, name }: { src?: string | null; name: string }) {
 
 function normalizeCard(item: any) {
   return Array.isArray(item?.cards) ? item.cards[0] : item?.cards;
+}
+
+function displayName(card: any) {
+  if (!card) return "Unknown card";
+  return card?.subtitle ? `${card.name}: ${card.subtitle}` : card?.name || "Unknown card";
+}
+
+function CompactValueRow({
+  quantity,
+  unitValue,
+  totalValue,
+}: {
+  quantity: number;
+  unitValue: number;
+  totalValue: number;
+}) {
+  const itemStyle = {
+    fontSize: "11px",
+    lineHeight: 1.15,
+    fontWeight: 700,
+    letterSpacing: "0.01em",
+    color: "#cfd7e4",
+    whiteSpace: "nowrap" as const,
+  };
+
+  const labelStyle = {
+    color: "var(--accent)",
+    fontWeight: 900,
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "baseline",
+        gap: "10px",
+        marginTop: "8px",
+        paddingRight: "82px",
+        flexWrap: "wrap",
+      }}
+    >
+      <span style={itemStyle}>
+        <strong style={labelStyle}>Qty:</strong> {quantity}
+      </span>
+      <span style={itemStyle}>
+        <strong style={labelStyle}>Unit:</strong> ${unitValue.toFixed(2)}
+      </span>
+      <span style={itemStyle}>
+        <strong style={labelStyle}>Total:</strong> ${totalValue.toFixed(2)}
+      </span>
+    </div>
+  );
 }
 
 export default function CollectionClient({ data }: any) {
@@ -75,6 +141,7 @@ export default function CollectionClient({ data }: any) {
         card?.card_number,
         card?.aspect,
         card?.traits,
+        card?.variant,
       ]
         .map((value) => String(value || "").toLowerCase())
         .join(" ");
@@ -86,6 +153,8 @@ export default function CollectionClient({ data }: any) {
         card?.cost,
         card?.power,
         card?.hp,
+        card?.card_type,
+        card?.arena,
       ]
         .map((value) => String(value ?? "").toLowerCase())
         .join(" ");
@@ -110,7 +179,7 @@ export default function CollectionClient({ data }: any) {
 
   return (
     <div>
-      <div className="tu-filter-bar">
+      <section className="tu-filter-bar">
         <input
           type="text"
           placeholder="Search name, set, number, aspect, or traits"
@@ -127,57 +196,66 @@ export default function CollectionClient({ data }: any) {
           style={{ minWidth: "320px", padding: "10px 12px" }}
         />
 
-        <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} style={{ padding: "10px 12px" }}>
+        <select
+          value={sortBy}
+          onChange={(event) => setSortBy(event.target.value)}
+          style={{ padding: "10px 12px" }}
+        >
           <option value="price_desc">Price High-Low</option>
           <option value="price_asc">Price Low-High</option>
           <option value="name_asc">Name A-Z</option>
           <option value="name_desc">Name Z-A</option>
         </select>
-      </div>
+      </section>
 
-      <div className="tu-card-grid-polished">
+      <div className="tu-card-grid">
         {filtered.map((item: any) => {
           const card = normalizeCard(item);
           const aspectPills = getAspectPills(card?.aspect);
           const unitValue = Number(card?.price || 0);
-          const totalValue = unitValue * Number(item.quantity || 0);
+          const quantity = Number(item.quantity || 0);
+          const totalValue = unitValue * quantity;
 
           return (
-            <div key={item.id} className="tu-card-tile-polished">
-              <CardImage src={card?.front_art} name={card?.name || "Card"} />
+            <div key={item.id} className="tu-card-tile">
+              <CardImage src={card?.front_art} name={displayName(card)} />
 
-              <div className="tu-card-body-polished">
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: "flex-start" }}>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div className="tu-card-title-polished">{card?.name || "Unknown card"}</div>
-                    <div className="tu-card-subtitle-polished">{card?.subtitle || ""}</div>
-                  </div>
+              <div className="tu-card-body">
+                <div className="tu-card-title">{displayName(card)}</div>
+
+                <div className="tu-card-meta">
+                  {card?.set_code || "-"} #{card?.card_number ?? "-"} • {card?.variant || "-"}
                 </div>
 
-                <div className="tu-card-chip-row-polished">
+                <div className="tu-pill-row">
                   <StatPill label="Cost" value={card?.cost} color="#f5c542" />
                   <StatPill label="Power" value={card?.power} color="#ef4444" />
                   <StatPill label="HP" value={card?.hp} color="#3b82f6" />
                   {aspectPills.map((pill) => (
-                    <span key={pill.name} className="tu-card-chip-polished" style={{ color: pill.color, borderColor: pill.color }}>
+                    <span
+                      key={pill.name}
+                      className="tu-aspect-pill"
+                      style={{
+                        color: pill.color,
+                        borderColor: pill.color,
+                      }}
+                    >
                       {pill.name}
                     </span>
                   ))}
                 </div>
 
-                <div className="tu-card-meta-polished">Set: {card?.set_code || "-"}</div>
-                <div className="tu-card-meta-polished">#{card?.card_number ?? "-"} • {card?.variant || "-"}</div>
-                <div className="tu-card-meta-polished">Traits: {card?.traits || "-"}</div>
-                <div className="tu-card-text-polished">{card?.front_text || "-"}</div>
+                <div className="tu-card-meta">Traits: {card?.traits || "-"}</div>
+                <div className="tu-card-text">{card?.front_text || "-"}</div>
 
-                <div className="tu-card-value-row-polished">
-                  <span><strong>Qty:</strong> {item.quantity}</span>
-                  <span><strong>Unit:</strong> ${unitValue.toFixed(2)}</span>
-                  <span><strong>Total:</strong> ${totalValue.toFixed(2)}</span>
-                </div>
+                <CompactValueRow
+                  quantity={quantity}
+                  unitValue={unitValue}
+                  totalValue={totalValue}
+                />
               </div>
 
-              <div className="tu-card-actions-polished">
+              <div className="tu-card-actions">
                 <AddCardButton cardId={item.card_id} />
               </div>
             </div>
