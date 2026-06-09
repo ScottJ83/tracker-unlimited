@@ -874,3 +874,58 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
     min-height: 0;
   }
 }
+
+/* About timeline persistent line fix */
+.tu-about-timeline {
+  position: relative;
+}
+
+.tu-about-timeline::before {
+  content: "";
+  position: sticky;
+  left: 48px;
+  right: 48px;
+  top: 42px;
+  display: block;
+  height: 1px;
+  width: calc(100% - 96px);
+  min-width: calc(100% - 96px);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(245,197,66,0.72),
+    rgba(255,255,255,0.18),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tu-about-timeline-marker {
+  position: relative;
+  z-index: 5;
+}
+
+.tu-about-timeline-card {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 900px) {
+  .tu-about-timeline::before {
+    position: absolute;
+    left: 21px;
+    right: auto;
+    top: 18px;
+    bottom: 18px;
+    width: 1px;
+    min-width: 1px;
+    height: auto;
+    background: linear-gradient(
+      180deg,
+      rgba(245,197,66,0.72),
+      rgba(255,255,255,0.14),
+      transparent
+    );
+  }
+}
