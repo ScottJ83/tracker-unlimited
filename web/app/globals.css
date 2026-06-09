@@ -761,15 +761,10 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   scrollbar-color: rgba(245,197,66,0.55) rgba(255,255,255,0.08);
 }
 
+/* The line is built from each timeline item instead of one large scrolling pseudo-element.
+   This keeps it visible while scrolling and prevents fade/clipping issues. */
 .tu-about-timeline::before {
-  content: "";
-  position: absolute;
-  left: 48px;
-  right: 48px;
-  top: 42px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(245,197,66,0.72), rgba(255,255,255,0.18), transparent);
-  pointer-events: none;
+  display: none;
 }
 
 .tu-about-timeline-item {
@@ -780,9 +775,38 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   gap: 12px;
 }
 
+.tu-about-timeline-item::before {
+  content: "";
+  position: absolute;
+  top: 23px;
+  left: 50%;
+  width: calc(100% + 18px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(245,197,66,0.72),
+    rgba(255,255,255,0.18)
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tu-about-timeline-item:first-child::before {
+  left: 50%;
+}
+
+.tu-about-timeline-item:last-child::before {
+  width: 50%;
+  background: linear-gradient(
+    90deg,
+    rgba(245,197,66,0.72),
+    transparent
+  );
+}
+
 .tu-about-timeline-marker {
   position: relative;
-  z-index: 2;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -794,8 +818,8 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   border-radius: 999px;
   border: 1px solid rgba(245,197,66,0.72);
   background:
-    radial-gradient(circle at center, rgba(245,197,66,0.18), rgba(0,0,0,0.92) 70%),
-    linear-gradient(180deg, rgba(18,28,47,0.86), rgba(0,0,0,0.96));
+    radial-gradient(circle at center, rgba(245,197,66,0.18), rgba(0,0,0,0.96) 70%),
+    linear-gradient(180deg, rgba(18,28,47,0.94), rgba(0,0,0,0.98));
   color: var(--accent);
   display: inline-flex;
   align-items: center;
@@ -804,9 +828,13 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   font-weight: 1000;
   letter-spacing: 0.08em;
   box-shadow: 0 0 24px rgba(245,197,66,0.16);
+  position: relative;
+  z-index: 6;
 }
 
 .tu-about-timeline-card {
+  position: relative;
+  z-index: 2;
   border: 1px solid rgba(255,255,255,0.14);
   border-radius: 12px;
   padding: 16px;
@@ -853,16 +881,6 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
     padding-left: 0;
   }
 
-  .tu-about-timeline::before {
-    left: 21px;
-    right: auto;
-    top: 18px;
-    bottom: 18px;
-    width: 1px;
-    height: auto;
-    background: linear-gradient(180deg, rgba(245,197,66,0.72), rgba(255,255,255,0.14), transparent);
-  }
-
   .tu-about-timeline-item {
     grid-template-columns: 42px 1fr;
     grid-template-rows: auto;
@@ -870,62 +888,30 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
     min-width: 0;
   }
 
-  .tu-about-timeline-card {
-    min-height: 0;
-  }
-}
-
-/* About timeline persistent line fix */
-.tu-about-timeline {
-  position: relative;
-}
-
-.tu-about-timeline::before {
-  content: "";
-  position: sticky;
-  left: 48px;
-  right: 48px;
-  top: 42px;
-  display: block;
-  height: 1px;
-  width: calc(100% - 96px);
-  min-width: calc(100% - 96px);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(245,197,66,0.72),
-    rgba(255,255,255,0.18),
-    transparent
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-.tu-about-timeline-marker {
-  position: relative;
-  z-index: 5;
-}
-
-.tu-about-timeline-card {
-  position: relative;
-  z-index: 2;
-}
-
-@media (max-width: 900px) {
-  .tu-about-timeline::before {
-    position: absolute;
+  .tu-about-timeline-item::before {
     left: 21px;
-    right: auto;
-    top: 18px;
-    bottom: 18px;
+    top: 21px;
+    bottom: -32px;
     width: 1px;
-    min-width: 1px;
     height: auto;
     background: linear-gradient(
       180deg,
       rgba(245,197,66,0.72),
-      rgba(255,255,255,0.14),
+      rgba(255,255,255,0.14)
+    );
+  }
+
+  .tu-about-timeline-item:last-child::before {
+    height: 42px;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(245,197,66,0.72),
       transparent
     );
+  }
+
+  .tu-about-timeline-card {
+    min-height: 0;
   }
 }
