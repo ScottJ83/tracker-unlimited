@@ -756,10 +756,6 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   gap: 14px;
 }
 
-.tu-card-tile-polished {
-  @apply-none;
-}
-
 .tu-card-tile-polished,
 .tu-card-tile-polished * {
   box-sizing: border-box;
@@ -889,4 +885,38 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
 .tu-card-value-row .tu-card-meta {
   color: #cfd7e4;
   font-weight: 700;
+}
+
+
+/* V8.6 compact collection value row */
+.tu-compact-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 8px;
+  padding-right: 82px;
+  line-height: 1.15;
+  flex-wrap: wrap;
+  font-size: 11px;
+  letter-spacing: 0.01em;
+}
+
+.tu-compact-value-row span {
+  font-size: 11px !important;
+  line-height: 1.15 !important;
+  font-weight: 700 !important;
+}
+
+.tu-compact-value-row strong {
+  color: var(--accent);
+  font-size: 11px !important;
+  font-weight: 900 !important;
+}
+
+.tu-compact-value-row .tu-value-normal {
+  color: #cfd7e4 !important;
+}
+
+.tu-compact-value-row .tu-value-highlight {
+  color: var(--accent) !important;
 }
