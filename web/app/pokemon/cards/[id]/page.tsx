@@ -1,5 +1,9 @@
 import PokemonPrintCard from "@/components/pokemon/PokemonPrintCard";
-import { getPokemonCollectionEntries, getPokemonUser, getPokemonWishlistEntries } from "@/lib/pokemon/queries";
+import {
+  getPokemonCollectionEntries,
+  getPokemonUser,
+  getPokemonWishlistEntries,
+} from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -20,14 +24,26 @@ export default async function PokemonCardPage({ params }: Props) {
     getPokemonWishlistEntries(supabase, user?.id),
   ]);
 
-  const ownedByPrint = new Map((owned || []).map((entry: any) => [entry.print_id, entry]));
-  const wished = new Set((wishlist || []).map((entry: any) => entry.print_id));
+  const ownedByPrint = new Map<string, any>(
+    (owned || []).map((entry: any) => [String(entry.print_id), entry])
+  );
+
+  const wished = new Set<string>(
+    (wishlist || []).map((entry: any) => String(entry.print_id))
+  );
 
   if (!card) {
-    return <main className="pkdx-page"><section className="pkdx-panel">Card not found.</section></main>;
+    return (
+      <main className="pkdx-page">
+        <section className="pkdx-panel">Card not found.</section>
+      </main>
+    );
   }
 
-  const ownedPrintCount = (prints || []).filter((print: any) => Number(ownedByPrint.get(print.id)?.quantity || 0) > 0).length;
+  const ownedPrintCount = (prints || []).filter((print: any) => {
+    const entry = ownedByPrint.get(String(print.id));
+    return Number(entry?.quantity || 0) > 0;
+  }).length;
 
   return (
     <main className="pkdx-page">
@@ -35,8 +51,11 @@ export default async function PokemonCardPage({ params }: Props) {
         <div className="pkdx-topbar">
           <div className="pkdx-lens"><span /></div>
           <div className="pkdx-title-pill">{card.name}</div>
-          <div className="pkdx-number">{ownedPrintCount}/{prints?.length || 0}</div>
+          <div className="pkdx-number">
+            {ownedPrintCount}/{prints?.length || 0}
+          </div>
         </div>
+
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
             <div>
@@ -45,23 +64,29 @@ export default async function PokemonCardPage({ params }: Props) {
             </div>
             <div className="pkdx-status-light" />
           </div>
+
           <p className="pkdx-intro">
-            {card.pokemon_sets?.name || "Unknown Set"} #{card.local_id || "-"} • {card.rarity || "Unknown rarity"}
+            {card.pokemon_sets?.name || "Unknown Set"} #{card.local_id || "-"} •{" "}
+            {card.rarity || "Unknown rarity"}
           </p>
         </div>
       </section>
 
       <section className="pkdx-panel">
         <div className="pkdx-card-grid">
-          {(prints || []).map((print: any) => (
-            <PokemonPrintCard
-              key={print.id}
-              print={print}
-              quantity={Number(ownedByPrint.get(print.id)?.quantity || 0)}
-              wished={wished.has(print.id)}
-              linkCard={false}
-            />
-          ))}
+          {(prints || []).map((print: any) => {
+            const entry = ownedByPrint.get(String(print.id));
+
+            return (
+              <PokemonPrintCard
+                key={print.id}
+                print={print}
+                quantity={Number(entry?.quantity || 0)}
+                wished={wished.has(String(print.id))}
+                linkCard={false}
+              />
+            );
+          })}
         </div>
       </section>
     </main>
