@@ -2248,3 +2248,232 @@ a.sw-button:not(.tu-hub-open):hover {
   max-width: 150px;
 }
 
+
+/* TU Option A museum archive home theme */
+/* Cream museum archive theme for the neutral Tracker Unlimited hub.
+   Archive cards remain their own SWU / Pokemon themes. */
+
+:root {
+  --tu-museum-bg: #f2eee6;
+  --tu-museum-bg-2: #e7e0d3;
+  --tu-museum-bg-3: #d8d0c0;
+  --tu-museum-ink: #1d2430;
+  --tu-museum-ink-2: #2a3442;
+  --tu-museum-muted: #667085;
+  --tu-museum-muted-2: #8a8173;
+  --tu-museum-gold: #c79a45;
+  --tu-museum-gold-2: #9d7531;
+  --tu-museum-panel: rgba(255, 255, 255, 0.64);
+  --tu-museum-panel-2: rgba(255, 255, 255, 0.82);
+  --tu-museum-border: rgba(42, 52, 66, 0.16);
+  --tu-museum-border-strong: rgba(42, 52, 66, 0.26);
+}
+
+/* Main archive selector page becomes bright and museum-like. */
+body:has(.tu-hub-page) {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255,255,255,0.92), transparent 32%),
+    radial-gradient(circle at 12% 86%, rgba(199,154,69,0.14), transparent 28%),
+    radial-gradient(circle at 88% 82%, rgba(42,52,66,0.08), transparent 30%),
+    linear-gradient(180deg, var(--tu-museum-bg) 0%, var(--tu-museum-bg-2) 58%, var(--tu-museum-bg-3) 100%) !important;
+  color: var(--tu-museum-ink) !important;
+  font-family:
+    "Inter",
+    "Aptos",
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+}
+
+body:has(.tu-hub-page)::before {
+  background:
+    linear-gradient(90deg, rgba(42,52,66,0.040) 1px, transparent 1px),
+    linear-gradient(rgba(42,52,66,0.030) 1px, transparent 1px) !important;
+  background-size: 72px 72px !important;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.26), transparent 74%) !important;
+  opacity: 0.55 !important;
+}
+
+body:has(.tu-hub-page)::after {
+  background:
+    radial-gradient(circle at center, transparent 0%, rgba(119,103,77,0.18) 86%) !important;
+  opacity: 1 !important;
+}
+
+/* Header changes only on the neutral archive hub. */
+body:has(.tu-hub-page) header {
+  background: rgba(242, 238, 230, 0.84) !important;
+  border-bottom: 1px solid rgba(42,52,66,0.14) !important;
+  backdrop-filter: blur(14px) !important;
+  box-shadow: 0 12px 38px rgba(42,52,66,0.08) !important;
+}
+
+body:has(.tu-hub-page) .sw-divider {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(199,154,69,0.48),
+    rgba(42,52,66,0.20),
+    transparent
+  ) !important;
+}
+
+body:has(.tu-hub-page) .sw-logo-wordmark {
+  color: var(--tu-museum-ink) !important;
+  text-shadow: 0 2px 0 rgba(255,255,255,0.85), 0 10px 28px rgba(42,52,66,0.16) !important;
+}
+
+body:has(.tu-hub-page) .tu-nav-link {
+  color: rgba(29,36,48,0.78) !important;
+}
+
+body:has(.tu-hub-page) .tu-nav-link:hover {
+  color: var(--tu-museum-gold-2) !important;
+  border-color: rgba(199,154,69,0.50) !important;
+  background: rgba(255,255,255,0.50) !important;
+}
+
+body:has(.tu-hub-page) .sw-button:not(.tu-hub-open),
+body:has(.tu-hub-page) button.sw-button:not(.tu-hub-open),
+body:has(.tu-hub-page) a.sw-button:not(.tu-hub-open) {
+  color: var(--tu-museum-ink) !important;
+  border-color: rgba(42,52,66,0.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(232,224,211,0.78)) !important;
+  box-shadow: 0 8px 24px rgba(42,52,66,0.10) !important;
+}
+
+body:has(.tu-hub-page) .sw-button:not(.tu-hub-open):hover {
+  color: var(--tu-museum-gold-2) !important;
+  border-color: rgba(199,154,69,0.54) !important;
+}
+
+/* Profile button for the archive hub. */
+body:has(.tu-hub-page) .tu-profile-pill {
+  border-color: rgba(42,52,66,0.18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(232,224,211,0.74)) !important;
+  color: var(--tu-museum-ink) !important;
+  box-shadow: 0 10px 28px rgba(42,52,66,0.10) !important;
+}
+
+body:has(.tu-hub-page) .tu-profile-pill:hover {
+  border-color: rgba(199,154,69,0.58) !important;
+  box-shadow: 0 14px 38px rgba(42,52,66,0.14), 0 0 22px rgba(199,154,69,0.12) !important;
+}
+
+body:has(.tu-hub-page) .tu-profile-avatar {
+  border-color: rgba(199,154,69,0.68) !important;
+  background:
+    radial-gradient(circle at 36% 30%, #fff, rgba(199,154,69,0.32) 42%, rgba(42,52,66,0.80) 78%) !important;
+}
+
+body:has(.tu-hub-page) .tu-profile-label {
+  color: var(--tu-museum-gold-2) !important;
+}
+
+body:has(.tu-hub-page) .tu-profile-name,
+body:has(.tu-hub-page) .tu-profile-initial {
+  color: var(--tu-museum-ink) !important;
+}
+
+/* Page body / orientation stays the same; only colors and fonts change. */
+body:has(.tu-hub-page) main {
+  background: transparent !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-page {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.50), transparent 26%),
+    radial-gradient(circle at 6% 84%, rgba(199,154,69,0.14), transparent 30%),
+    radial-gradient(circle at 94% 82%, rgba(42,52,66,0.08), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02)) !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-hero {
+  font-family:
+    "Inter",
+    "Aptos",
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-kicker {
+  color: var(--tu-museum-gold-2) !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.20em !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-hero h1 {
+  color: var(--tu-museum-ink) !important;
+  font-family:
+    "Inter",
+    "Aptos",
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.085em !important;
+  text-shadow:
+    0 2px 0 rgba(255,255,255,0.95),
+    0 18px 42px rgba(42,52,66,0.18) !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-hero p {
+  color: var(--tu-museum-ink-2) !important;
+  font-size: 15px !important;
+  line-height: 1.85 !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-future {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.58), rgba(255,255,255,0.32), rgba(255,255,255,0.58)) !important;
+  border-color: var(--tu-museum-border) !important;
+  box-shadow: 0 18px 52px rgba(42,52,66,0.10) !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-future p {
+  color: var(--tu-museum-ink-2) !important;
+}
+
+/* Keep archive cards theme-specific while harmonizing the typography. */
+body:has(.tu-hub-page) .tu-hub-card,
+body:has(.tu-hub-page) .tu-hub-card h2,
+body:has(.tu-hub-page) .tu-hub-card p,
+body:has(.tu-hub-page) .tu-hub-card-top,
+body:has(.tu-hub-page) .tu-hub-open,
+body:has(.tu-hub-page) .tu-hub-badge {
+  font-family:
+    "Inter",
+    "Aptos",
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+}
+
+/* Slightly soften the cards on the brighter hub without changing their identity. */
+body:has(.tu-hub-page) .tu-hub-card {
+  box-shadow: 0 24px 70px rgba(42,52,66,0.18) !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-card-swu {
+  border-color: rgba(42,52,66,0.22) !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-card-pokemon {
+  box-shadow: 0 24px 70px rgba(42,52,66,0.16), inset 0 0 0 2px rgba(220,38,38,0.20) !important;
+}
+
+/* Keep Pokemon pages using the Pokédex theme from the previous patch. */
+body:has(.pkdx-page) {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255,255,255,0.55), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(186,230,253,0.80), transparent 28%),
+    linear-gradient(180deg, #baf3fb 0%, #e9fbff 44%, #f8feff 100%) !important;
+}
+
