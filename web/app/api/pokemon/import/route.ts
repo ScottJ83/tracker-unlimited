@@ -18,6 +18,28 @@ function asDate(value: any) {
   return null;
 }
 
+function normalizeDexIds(card: any) {
+  const candidates = [
+    card?.dexId,
+    card?.dexIds,
+    card?.dex_id,
+    card?.dex_ids,
+  ];
+
+  for (const value of candidates) {
+    if (Array.isArray(value)) {
+      return value.map((item) => Number(item)).filter((item) => Number.isFinite(item));
+    }
+
+    const asNumber = Number(value);
+    if (Number.isFinite(asNumber) && asNumber > 0) {
+      return [asNumber];
+    }
+  }
+
+  return [];
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -93,11 +115,7 @@ export async function POST(request: Request) {
             category: card.category || null,
             illustrator: card.illustrator || null,
             rarity: card.rarity || null,
-            dex_ids: Array.isArray(card.dexId)
-              ? card.dexId
-              : Array.isArray(card.dexIds)
-                ? card.dexIds
-                : [],
+            dex_ids: normalizeDexIds(card),
             hp: card.hp ? String(card.hp) : null,
             types: Array.isArray(card.types) ? card.types : [],
             stage: card.stage || null,
