@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getPokemonRegions, getPokemonUser } from "@/lib/pokemon/queries";
+import { getPokemonRegionsWithCompletion, getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function PokemonRegionsPage() {
-  const { supabase } = await getPokemonUser();
-  const regions = await getPokemonRegions(supabase);
+  const { supabase, user } = await getPokemonUser();
+  const regions = await getPokemonRegionsWithCompletion(supabase, user?.id);
 
   return (
     <main className="pkdx-page">
@@ -23,7 +23,7 @@ export default async function PokemonRegionsPage() {
             </div>
             <div className="pkdx-status-light" />
           </div>
-          <p className="pkdx-intro">Browse Pokémon by region, then open a Pokémon to see every imported card and variant.</p>
+          <p className="pkdx-intro">Browse Pokémon by region with region-level ownership completion.</p>
         </div>
       </section>
 
@@ -34,7 +34,8 @@ export default async function PokemonRegionsPage() {
               <div className="pkdx-resource-number">{region.start}</div>
               <div>
                 <h3>{region.name}</h3>
-                <p>{region.pokemonCount} Pokémon • {region.cardCount} cards imported</p>
+                <p>{region.ownedPokemon} / {region.end - region.start + 1} Pokémon owned • {region.completion.toFixed(1)}%</p>
+                <div className="pkdx-mini-progress"><span style={{ width: `${region.completion}%` }} /></div>
               </div>
             </Link>
           ))}

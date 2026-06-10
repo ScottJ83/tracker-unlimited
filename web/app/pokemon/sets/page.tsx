@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getPokemonSets, getPokemonUser } from "@/lib/pokemon/queries";
+import { getPokemonSetsWithCompletion, getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function PokemonSetsPage() {
-  const { supabase } = await getPokemonUser();
-  const sets = await getPokemonSets(supabase);
+  const { supabase, user } = await getPokemonUser();
+  const sets = await getPokemonSetsWithCompletion(supabase, user?.id);
 
   return (
     <main className="pkdx-page">
@@ -23,20 +23,21 @@ export default async function PokemonSetsPage() {
             </div>
             <div className="pkdx-status-light" />
           </div>
-          <p className="pkdx-intro">Every imported set. Open a set to see cards, then open a card to see its variants and prints.</p>
+          <p className="pkdx-intro">Every imported set with print-level completion tracking.</p>
         </div>
       </section>
 
       <section className="pkdx-panel">
         <div className="pkdx-resource-grid">
           {sets.map((set: any) => (
-            <Link key={set.id} href={`/pokemon/sets/${set.id}`} className="pkdx-resource-card">
+            <Link key={set.id} href={`/pokemon/sets/${set.id}`} className="pkdx-resource-card pkdx-set-card">
               <div className="pkdx-resource-number">
-                {set.symbol ? <img src={set.symbol} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : "SET"}
+                {set.symbol ? <img src={set.symbol} alt="" /> : "SET"}
               </div>
               <div>
                 <h3>{set.name}</h3>
-                <p>{set.card_count_total || 0} cards • {set.release_date || "Unknown date"}</p>
+                <p>{set.ownedPrints} / {set.printTotal} prints owned • {set.completion.toFixed(1)}%</p>
+                <div className="pkdx-mini-progress"><span style={{ width: `${set.completion}%` }} /></div>
               </div>
             </Link>
           ))}

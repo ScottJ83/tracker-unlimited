@@ -1,22 +1,27 @@
 import Link from "next/link";
-import { getPokemonUser } from "@/lib/pokemon/queries";
+import { getPokemonCollectionEntries, getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
+type Props = { params: Promise<{ id: string }> };
 
 export default async function PokemonSetPage({ params }: Props) {
   const { id } = await params;
-  const { supabase } = await getPokemonUser();
+  const { supabase, user } = await getPokemonUser();
 
-  const { data: set } = await supabase.from("pokemon_sets").select("*").eq("id", id).maybeSingle();
-  const { data: cards } = await supabase
-    .from("pokemon_cards")
-    .select("*")
-    .eq("set_id", id)
-    .order("local_id", { ascending: true });
+  const [{ data: set }, { data: cards }, owned] = await Promise.all([
+    supabase.from("pokemon_sets").select("*").eq("id", id).maybeSingle(),
+    supabase.from("pokemon_cards").select("*").eq("set_id", id).order("local_id", { ascending: true }),
+    getPokemonCollectionEntries(supabase, user?.id),
+  ]);
+
+  const ownedPrintIds = new Set((owned || []).map((entry: any) => entry.print_id));
+  const ownedCardIds = new Set<string>();
+
+  if (ownedPrintIds.size) {
+    const { data: prints } = await supabase.from("pokemon_prints").select("id, card_id").eq("set_id", id).in("id", Array.from(ownedPrintIds));
+    for (const print of prints || []) ownedCardIds.add(print.card_id);
+  }
 
   return (
     <main className="pkdx-page">
@@ -24,7 +29,7 @@ export default async function PokemonSetPage({ params }: Props) {
         <div className="pkdx-topbar">
           <div className="pkdx-lens"><span /></div>
           <div className="pkdx-title-pill">{set?.name || "Set"}</div>
-          <div className="pkdx-number">{cards?.length || 0}</div>
+          <div className="pkdx-number">{ownedCardIds.size}/{cards?.length || 0}</div>
         </div>
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
@@ -41,7 +46,7 @@ export default async function PokemonSetPage({ params }: Props) {
       <section className="pkdx-panel">
         <div className="pkdx-card-grid">
           {(cards || []).map((card: any) => (
-            <Link key={card.id} href={`/pokemon/cards/${card.id}`} className="pkdx-card-tile">
+            <Link key={card.id} href={`/pokemon/cards/${card.id}`} className={ownedCardIds.has(card.id) ? "pkdx-card-tile pkdx-owned" : "pkdx-card-tile"}>
               <div className="pkdx-card-image">
                 {card.image ? <img src={card.image} alt={card.name} /> : "?"}
               </div>

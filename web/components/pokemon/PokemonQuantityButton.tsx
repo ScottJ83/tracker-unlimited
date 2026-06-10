@@ -50,9 +50,9 @@ export default function PokemonQuantityButton({
 
   return (
     <div className="pkdx-qty">
-      <button type="button" onClick={() => change(-1)}>-</button>
+      <button type="button" onClick={() => change(-1)} aria-label="Decrease quantity">−</button>
       <span>{quantity}</span>
-      <button type="button" onClick={() => change(1)}>+</button>
+      <button type="button" onClick={() => change(1)} aria-label="Increase quantity">+</button>
     </div>
   );
 }

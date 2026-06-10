@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { getPokemonPokedexRows, getPokemonUser } from "@/lib/pokemon/queries";
+import PokemonProgress from "@/components/pokemon/PokemonProgress";
+import { getPokemonCounts, getPokemonPokedexRows, getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function PokemonPokedexPage() {
-  const { supabase } = await getPokemonUser();
-  const rows = await getPokemonPokedexRows(supabase);
+  const { supabase, user } = await getPokemonUser();
+  const [rows, counts] = await Promise.all([
+    getPokemonPokedexRows(supabase, user?.id),
+    getPokemonCounts(supabase, user?.id),
+  ]);
 
   return (
     <main className="pkdx-page">
@@ -13,7 +17,7 @@ export default async function PokemonPokedexPage() {
         <div className="pkdx-topbar">
           <div className="pkdx-lens"><span /></div>
           <div className="pkdx-title-pill">POKÉDEX</div>
-          <div className="pkdx-number">{rows.length || "000"}</div>
+          <div className="pkdx-number">{counts.ownedPokemon}/{counts.nationalPokemonTotal}</div>
         </div>
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
@@ -24,22 +28,26 @@ export default async function PokemonPokedexPage() {
             <div className="pkdx-status-light" />
           </div>
           <p className="pkdx-intro">
-            Each Pokémon shows a cycling-style preview of card art. Open a Pokémon to see every card currently imported for that species.
+            Each Pokémon shows imported card art. A Pokémon counts as owned when you own at least one print of one card for that Pokémon.
           </p>
         </div>
       </section>
 
       <section className="pkdx-panel">
+        <PokemonProgress label="Pokémon Completion" value={counts.ownedPokemon} total={counts.nationalPokemonTotal} percent={counts.pokemonCompletion} />
+      </section>
+
+      <section className="pkdx-panel">
         <div className="pkdx-resource-grid">
           {rows.map((row: any) => (
-            <Link key={row.slug} href={`/pokemon/pokedex/${row.slug}`} className="pkdx-pokemon-card">
+            <Link key={row.slug} href={`/pokemon/pokedex/${row.slug}`} className={row.ownedCardCount > 0 ? "pkdx-pokemon-card pkdx-owned" : "pkdx-pokemon-card"}>
               <div className="pkdx-pokemon-image">
                 {row.images?.[0] ? <img src={row.images[0]} alt={row.name} /> : "?"}
               </div>
               <div>
                 <div className="pkdx-resource-number">#{String(row.dex || "?").padStart(3, "0")}</div>
                 <h3>{row.name}</h3>
-                <p>{row.cardCount} cards imported</p>
+                <p>{row.ownedCardCount} / {row.cardCount} cards owned</p>
               </div>
             </Link>
           ))}

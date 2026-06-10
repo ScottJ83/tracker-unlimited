@@ -39,7 +39,7 @@ export default function PokemonWishlistButton({
   }
 
   return (
-    <button type="button" className="pkdx-wishlist-button" onClick={toggle}>
+    <button type="button" className={wished ? "pkdx-wishlist-button pkdx-wished" : "pkdx-wishlist-button"} onClick={toggle}>
       {wished ? "Wanted" : "Want"}
     </button>
   );

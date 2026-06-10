@@ -1,53 +1,33 @@
-import PokemonQuantityButton from "@/components/pokemon/PokemonQuantityButton";
-import PokemonWishlistButton from "@/components/pokemon/PokemonWishlistButton";
-import { getPokemonUser } from "@/lib/pokemon/queries";
+import PokemonPrintCard from "@/components/pokemon/PokemonPrintCard";
+import { getPokemonCollectionEntries, getPokemonUser, getPokemonWishlistEntries } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
+type Props = { params: Promise<{ id: string }> };
 
 export default async function PokemonCardPage({ params }: Props) {
   const { id } = await params;
   const { supabase, user } = await getPokemonUser();
 
-  const { data: card } = await supabase
-    .from("pokemon_cards")
-    .select("*, pokemon_sets(*)")
-    .eq("id", id)
-    .maybeSingle();
-
-  const { data: prints } = await supabase
-    .from("pokemon_prints")
-    .select("*")
-    .eq("card_id", id)
-    .order("print_name", { ascending: true });
-
-  const { data: owned } = user
-    ? await supabase
-        .from("pokemon_collection_entries")
-        .select("*")
-        .eq("user_id", user.id)
-    : { data: [] as any[] };
-
-  const { data: wishlist } = user
-    ? await supabase
-        .from("pokemon_wishlist_entries")
-        .select("*")
-        .eq("user_id", user.id)
-    : { data: [] as any[] };
+  const [{ data: card }, { data: prints }, owned, wishlist] = await Promise.all([
+    supabase.from("pokemon_cards").select("*, pokemon_sets(*)").eq("id", id).maybeSingle(),
+    supabase
+      .from("pokemon_prints")
+      .select("*, pokemon_cards(*), pokemon_sets(*)")
+      .eq("card_id", id)
+      .order("print_name", { ascending: true }),
+    getPokemonCollectionEntries(supabase, user?.id),
+    getPokemonWishlistEntries(supabase, user?.id),
+  ]);
 
   const ownedByPrint = new Map((owned || []).map((entry: any) => [entry.print_id, entry]));
   const wished = new Set((wishlist || []).map((entry: any) => entry.print_id));
 
   if (!card) {
-    return (
-      <main className="pkdx-page">
-        <section className="pkdx-panel">Card not found.</section>
-      </main>
-    );
+    return <main className="pkdx-page"><section className="pkdx-panel">Card not found.</section></main>;
   }
+
+  const ownedPrintCount = (prints || []).filter((print: any) => Number(ownedByPrint.get(print.id)?.quantity || 0) > 0).length;
 
   return (
     <main className="pkdx-page">
@@ -55,7 +35,7 @@ export default async function PokemonCardPage({ params }: Props) {
         <div className="pkdx-topbar">
           <div className="pkdx-lens"><span /></div>
           <div className="pkdx-title-pill">{card.name}</div>
-          <div className="pkdx-number">{prints?.length || 0}</div>
+          <div className="pkdx-number">{ownedPrintCount}/{prints?.length || 0}</div>
         </div>
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
@@ -73,25 +53,15 @@ export default async function PokemonCardPage({ params }: Props) {
 
       <section className="pkdx-panel">
         <div className="pkdx-card-grid">
-          {(prints || []).map((print: any) => {
-            const quantity = Number(ownedByPrint.get(print.id)?.quantity || 0);
-            return (
-              <article key={print.id} className="pkdx-card-tile">
-                <div className="pkdx-card-image">
-                  {print.image || card.image ? <img src={print.image || card.image} alt={card.name} /> : "?"}
-                </div>
-                <div className="pkdx-card-info">
-                  <h3>{print.print_name}</h3>
-                  <p>Language: {print.language}</p>
-                  <p>Market: ${Number(print.price_market || 0).toFixed(2)}</p>
-                </div>
-                <div className="pkdx-card-actions">
-                  <PokemonQuantityButton printId={print.id} quantity={quantity} />
-                  <PokemonWishlistButton printId={print.id} wished={wished.has(print.id)} />
-                </div>
-              </article>
-            );
-          })}
+          {(prints || []).map((print: any) => (
+            <PokemonPrintCard
+              key={print.id}
+              print={print}
+              quantity={Number(ownedByPrint.get(print.id)?.quantity || 0)}
+              wished={wished.has(print.id)}
+              linkCard={false}
+            />
+          ))}
         </div>
       </section>
     </main>

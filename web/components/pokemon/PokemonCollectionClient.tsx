@@ -1,16 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import PokemonQuantityButton from "./PokemonQuantityButton";
-import PokemonWishlistButton from "./PokemonWishlistButton";
-
-function cardFromPrint(print: any) {
-  return Array.isArray(print?.pokemon_cards) ? print.pokemon_cards[0] : print?.pokemon_cards;
-}
-
-function setFromPrint(print: any) {
-  return Array.isArray(print?.pokemon_sets) ? print.pokemon_sets[0] : print?.pokemon_sets;
-}
+import PokemonPrintCard from "./PokemonPrintCard";
 
 export default function PokemonCollectionClient({
   prints,
@@ -31,8 +22,8 @@ export default function PokemonCollectionClient({
     const q = search.trim().toLowerCase();
 
     return (prints || []).filter((print: any) => {
-      const card = cardFromPrint(print);
-      const set = setFromPrint(print);
+      const card = Array.isArray(print?.pokemon_cards) ? print.pokemon_cards[0] : print?.pokemon_cards;
+      const set = Array.isArray(print?.pokemon_sets) ? print.pokemon_sets[0] : print?.pokemon_sets;
       const quantity = Number(ownedByPrint.get(print.id)?.quantity || 0);
       const isWished = wished.has(print.id);
 
@@ -82,33 +73,14 @@ export default function PokemonCollectionClient({
       </section>
 
       <div className="pkdx-card-grid">
-        {rows.map((print: any) => {
-          const card = cardFromPrint(print);
-          const set = setFromPrint(print);
-          const quantity = Number(ownedByPrint.get(print.id)?.quantity || 0);
-
-          return (
-            <article key={print.id} className="pkdx-card-tile">
-              <div className="pkdx-card-image">
-                {print.image || card?.image ? <img src={print.image || card?.image} alt={card?.name || "Pokémon card"} /> : "?"}
-              </div>
-
-              <div className="pkdx-card-info">
-                <h3>{card?.name || "Unknown Card"}</h3>
-                <p>{set?.name || "Unknown Set"} #{card?.local_id || "-"}</p>
-                <p>{print.print_name} • {card?.rarity || "Unknown rarity"}</p>
-                <div className="pkdx-card-price">
-                  Qty: {quantity} • Market: ${Number(print.price_market || 0).toFixed(2)}
-                </div>
-              </div>
-
-              <div className="pkdx-card-actions">
-                <PokemonQuantityButton printId={print.id} quantity={quantity} />
-                <PokemonWishlistButton printId={print.id} wished={wished.has(print.id)} />
-              </div>
-            </article>
-          );
-        })}
+        {rows.map((print: any) => (
+          <PokemonPrintCard
+            key={print.id}
+            print={print}
+            quantity={Number(ownedByPrint.get(print.id)?.quantity || 0)}
+            wished={wished.has(print.id)}
+          />
+        ))}
       </div>
     </div>
   );

@@ -1,34 +1,20 @@
 export const TCGDEX_API_BASE = "https://api.tcgdex.net/v2/en";
+export const POKEMON_NATIONAL_TOTAL = 1025;
 
 export type TcgDexSetResume = {
   id: string;
   name: string;
   logo?: string;
   symbol?: string;
-  cardCount?: {
-    total?: number;
-    official?: number;
-  };
+  cardCount?: { total?: number; official?: number };
   releaseDate?: string;
-  serie?: {
-    id?: string;
-    name?: string;
-  };
-};
-
-export type TcgDexCardResume = {
-  id: string;
-  localId?: string;
-  name: string;
-  image?: string;
+  serie?: { id?: string; name?: string };
 };
 
 export async function tcgdexFetch<T>(path: string): Promise<T> {
   const res = await fetch(`${TCGDEX_API_BASE}${path}`, {
     next: { revalidate: 60 * 60 * 24 },
-    headers: {
-      accept: "application/json",
-    },
+    headers: { accept: "application/json" },
   });
 
   if (!res.ok) {
@@ -66,15 +52,6 @@ export function setAssetUrl(asset?: string | null) {
   return `${asset}.webp`;
 }
 
-/**
- * Backwards-compatible helper.
- * Card image fields should use cardImageUrl().
- * Set logo/symbol fields should use setAssetUrl().
- */
-export function imageUrl(image?: string | null) {
-  return cardImageUrl(image, "high");
-}
-
 export function slugifyPokemonName(name: string) {
   return String(name || "")
     .toLowerCase()
@@ -84,6 +61,60 @@ export function slugifyPokemonName(name: string) {
     .replace(/♂/g, "m")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+export function getFirstDexId(card: any) {
+  const ids = Array.isArray(card?.dex_ids)
+    ? card.dex_ids
+    : Array.isArray(card?.dexId)
+      ? card.dexId
+      : Array.isArray(card?.dexIds)
+        ? card.dexIds
+        : [];
+
+  const first = Number(ids?.[0]);
+  return Number.isFinite(first) ? first : null;
+}
+
+export function getVariantMarketPrice(card: any, variantKey: string) {
+  const prices = card?.pricing || card?.prices || card?.markets || {};
+
+  const direct =
+    prices?.[variantKey]?.market ??
+    prices?.[variantKey]?.price ??
+    prices?.[variantKey]?.average ??
+    prices?.[variantKey]?.low ??
+    null;
+
+  if (typeof direct === "number") return direct;
+
+  const tcg = prices?.tcgplayer?.prices || prices?.tcgplayer || {};
+  const mapped =
+    tcg?.[variantKey]?.market ??
+    tcg?.[variantKey]?.mid ??
+    tcg?.[variantKey]?.low ??
+    null;
+
+  return typeof mapped === "number" ? mapped : null;
+}
+
+export function prettyVariantName(key: string) {
+  const map: Record<string, string> = {
+    normal: "Normal",
+    holo: "Holo",
+    reverse: "Reverse Holo",
+    firstEdition: "1st Edition",
+    wPromo: "Wizards Promo",
+  };
+
+  return (
+    map[key] ||
+    key
+      .replace(/([A-Z])/g, " $1")
+      .replace(/[-_]/g, " ")
+      .replace(/^./, (char) => char.toUpperCase())
+      .trim()
+  );
 }
 
 export function extractPrintsFromCard(card: any) {
@@ -105,10 +136,7 @@ export function extractPrintsFromCard(card: any) {
     if (available) {
       prints.push({
         print_key: key,
-        print_name: key
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (char) => char.toUpperCase())
-          .trim(),
+        print_name: prettyVariantName(key),
         is_available: true,
         price_market: getVariantMarketPrice(card, key),
         raw: value,
@@ -129,27 +157,6 @@ export function extractPrintsFromCard(card: any) {
   return prints;
 }
 
-export function getVariantMarketPrice(card: any, variantKey: string) {
-  const prices = card?.pricing || card?.prices || card?.markets || {};
-  const direct =
-    prices?.[variantKey]?.market ??
-    prices?.[variantKey]?.price ??
-    prices?.[variantKey]?.average ??
-    prices?.[variantKey]?.low ??
-    null;
-
-  if (typeof direct === "number") return direct;
-
-  const tcg = prices?.tcgplayer?.prices || prices?.tcgplayer || {};
-  const mapped =
-    tcg?.[variantKey]?.market ??
-    tcg?.[variantKey]?.mid ??
-    tcg?.[variantKey]?.low ??
-    null;
-
-  return typeof mapped === "number" ? mapped : null;
-}
-
 export const pokemonRegions = [
   { name: "Kanto", slug: "kanto", start: 1, end: 151 },
   { name: "Johto", slug: "johto", start: 152, end: 251 },
@@ -161,3 +168,12 @@ export const pokemonRegions = [
   { name: "Galar", slug: "galar", start: 810, end: 905 },
   { name: "Paldea", slug: "paldea", start: 906, end: 1025 },
 ];
+
+export function percent(part: number, total: number) {
+  if (!total) return 0;
+  return Math.max(0, Math.min(100, (part / total) * 100));
+}
+
+export function money(value: number) {
+  return `$${Number(value || 0).toFixed(2)}`;
+}
