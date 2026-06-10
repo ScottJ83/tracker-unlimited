@@ -2477,3 +2477,94 @@ body:has(.pkdx-page) {
     linear-gradient(180deg, #baf3fb 0%, #e9fbff 44%, #f8feff 100%) !important;
 }
 
+
+/* TU square buttons clean home patch */
+body:has(.tu-hub-page),
+body:has(.tu-hub-page) *:not(.tu-hub-card-swu):not(.tu-hub-card-swu *) {
+  font-family:
+    "Manrope",
+    "Inter",
+    "Aptos",
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-page {
+  min-height: calc(100vh - 190px);
+  align-content: center;
+  gap: 34px;
+}
+
+body:has(.tu-hub-page) .tu-hub-card-top {
+  min-height: 28px;
+}
+
+body:has(.tu-hub-page) .tu-hub-card h2 {
+  margin-top: 18px !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-card-pokemon h2 {
+  margin-top: 72px !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-hero h1 {
+  font-weight: 800 !important;
+  letter-spacing: 0.045em !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-kicker {
+  font-weight: 800 !important;
+  letter-spacing: 0.17em !important;
+}
+
+body:has(.tu-hub-page) .tu-profile-pill {
+  border-radius: 14px !important;
+  padding: 8px 12px !important;
+  min-height: 46px !important;
+  border-color: rgba(42,52,66,0.18) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.82), rgba(232,224,211,0.76)) !important;
+}
+
+body:has(.tu-hub-page) .tu-profile-avatar {
+  border-radius: 10px !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+}
+
+body:has(.tu-hub-page) .tu-profile-avatar img {
+  border-radius: 9px !important;
+}
+
+body:has(.tu-hub-page) .sw-button,
+body:has(.tu-hub-page) button.sw-button,
+body:has(.tu-hub-page) a.sw-button {
+  border-radius: 14px !important;
+  min-height: 46px !important;
+  padding: 0 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+}
+
+body:has(.tu-hub-page) .tu-nav-link {
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-open {
+  border-radius: 14px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+}
+
+body:has(.tu-hub-page) .tu-hub-future,
+body:has(.tu-hub-page) .tu-vault-roadmap {
+  display: none !important;
+}
+

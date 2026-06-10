@@ -2,14 +2,12 @@ import Link from "next/link";
 
 function ArchiveCard({
   href,
-  kicker,
   title,
   description,
   tone,
   badge,
 }: {
   href: string;
-  kicker: string;
   title: string;
   description: string;
   tone: "swu" | "pokemon";
@@ -20,7 +18,7 @@ function ArchiveCard({
       <div className="tu-hub-card-bg" />
 
       <div className="tu-hub-card-top">
-        <div className="tu-hub-kicker">{kicker}</div>
+        <div />
         <div className="tu-hub-badge">{badge}</div>
       </div>
 
@@ -47,7 +45,6 @@ export default function TrackerUnlimitedHomePage() {
       <section className="tu-hub-grid">
         <ArchiveCard
           href="/swu"
-          kicker="Original Archive"
           title="Star Wars Unlimited"
           description="A cinematic databank archive for Star Wars Unlimited cards, sets, collections, decks, wishlist, uncollected cards, and analytics."
           tone="swu"
@@ -56,17 +53,11 @@ export default function TrackerUnlimitedHomePage() {
 
         <ArchiveCard
           href="/pokemon"
-          kicker="New Archive"
           title="Pokémon"
           description="A Pokédex-inspired archive for regions, sets, Pokédex browsing, collection tracking, wishlists, decks, and analytics."
           tone="pokemon"
           badge="PKMN"
         />
-      </section>
-
-      <section className="tu-hub-future">
-        <div className="tu-hub-kicker">Future Ready</div>
-        <p>Magic, Lorcana, One Piece, Yu-Gi-Oh, and more can join the archive later.</p>
       </section>
     </main>
   );
