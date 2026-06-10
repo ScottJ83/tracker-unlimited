@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "pokemon:import": "node scripts/import-pokemon-tcgdex.mjs",
+    "pokemon:check": "node scripts/check-pokemon-coverage.mjs",
+    "pokemon:prices": "node scripts/check-pokemon-prices.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
