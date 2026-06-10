@@ -20,89 +20,20 @@ function ProfilePill({
   if (!displayName) return null;
 
   return (
-    <Link
-      href="/profile"
-      title="Profile"
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "10px",
-        padding: "7px 10px",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "999px",
-        background: "linear-gradient(135deg, rgba(2,6,12,0.72), rgba(8,18,35,0.54))",
-        color: "#f5f5f5",
-        maxWidth: "220px",
-      }}
-    >
-      <span
-        style={{
-          width: "34px",
-          height: "34px",
-          minWidth: "34px",
-          borderRadius: "999px",
-          border: "1px solid rgba(245,197,66,0.62)",
-          background: "rgba(245,197,66,0.08)",
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-          boxShadow: "0 0 20px rgba(245,197,66,0.12)",
-        }}
-      >
+    <Link href="/profile" title="Profile" className="tu-profile-pill">
+      <span className="tu-profile-avatar">
         {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="Profile"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              borderRadius: "999px",
-              display: "block",
-            }}
-          />
+          <img src={avatarUrl} alt="Profile" />
         ) : (
-          <span
-            style={{
-              color: "#f5c542",
-              fontWeight: 900,
-              fontSize: "14px",
-              letterSpacing: "0.04em",
-            }}
-          >
+          <span className="tu-profile-initial">
             {String(displayName || "U").slice(0, 1).toUpperCase()}
           </span>
         )}
       </span>
 
-      <span style={{ minWidth: 0, display: "grid", gap: "1px", lineHeight: 1.05 }}>
-        <span
-          style={{
-            color: "#f5c542",
-            fontSize: "9px",
-            fontWeight: 900,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-          }}
-        >
-          Profile
-        </span>
-        <span
-          style={{
-            color: "#f5f5f5",
-            fontSize: "12px",
-            fontWeight: 900,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: "150px",
-          }}
-        >
-          {displayName}
-        </span>
+      <span className="tu-profile-text">
+        <span className="tu-profile-label">Profile</span>
+        <span className="tu-profile-name">{displayName}</span>
       </span>
     </Link>
   );
@@ -118,21 +49,11 @@ function NavLink({ href, label }: { href: string; label: string }) {
 
 function CollectionMenu({ base }: { base: "/swu" | "/pokemon" }) {
   return (
-    <details
-      style={{
-        position: "relative",
-        display: "inline-block",
-      }}
-    >
-      <summary
-        className="tu-nav-link"
-        style={{
-          listStyle: "none",
-          cursor: "pointer",
-        }}
-      >
+    <details style={{ position: "relative", display: "inline-block" }}>
+      <summary className="tu-nav-link" style={{ listStyle: "none", cursor: "pointer" }}>
         Collection ▾
       </summary>
+
       <div
         style={{
           position: "absolute",
@@ -140,10 +61,10 @@ function CollectionMenu({ base }: { base: "/swu" | "/pokemon" }) {
           left: "50%",
           transform: "translateX(-50%)",
           minWidth: "190px",
-          border: "1px solid rgba(255,255,255,0.14)",
+          border: "1px solid rgba(246,241,229,0.16)",
           borderRadius: "12px",
           background:
-            "linear-gradient(180deg, rgba(5,8,14,0.98), rgba(0,0,0,0.96))",
+            "linear-gradient(180deg, rgba(15,15,18,0.98), rgba(5,6,8,0.98))",
           boxShadow: "0 20px 70px rgba(0,0,0,0.55)",
           padding: "10px",
           zIndex: 5000,
@@ -152,9 +73,15 @@ function CollectionMenu({ base }: { base: "/swu" | "/pokemon" }) {
           textAlign: "left",
         }}
       >
-        <Link className="tu-nav-link" href={`${base}/collection`}>Collection</Link>
-        <Link className="tu-nav-link" href={`${base}/uncollected`}>Uncollected</Link>
-        <Link className="tu-nav-link" href={`${base}/wishlist`}>Wishlist</Link>
+        <Link className="tu-nav-link" href={`${base}/collection`}>
+          Collection
+        </Link>
+        <Link className="tu-nav-link" href={`${base}/uncollected`}>
+          Uncollected
+        </Link>
+        <Link className="tu-nav-link" href={`${base}/wishlist`}>
+          Wishlist
+        </Link>
       </div>
     </details>
   );
@@ -177,9 +104,9 @@ export default function NavBarClient({
   return (
     <header
       style={{
-        borderBottom: "1px solid rgba(255,255,255,0.12)",
-        background: "rgba(0,0,0,0.9)",
-        backdropFilter: "blur(10px)",
+        borderBottom: "1px solid rgba(246,241,229,0.12)",
+        background: "rgba(5,6,8,0.88)",
+        backdropFilter: "blur(12px)",
         position: "sticky",
         top: 0,
         zIndex: 2000,
@@ -231,8 +158,8 @@ export default function NavBarClient({
           color: "#cfcfcf",
           flexWrap: "wrap",
           fontSize: "12px",
-          fontWeight: 900,
-          letterSpacing: "0.12em",
+          fontWeight: 850,
+          letterSpacing: "0.11em",
           textTransform: "uppercase",
         }}
       >
