@@ -1,107 +1,72 @@
 import Link from "next/link";
 
-const archives = [
-  {
-    href: "/swu",
-    label: "Active Archive",
-    title: "Star Wars Unlimited",
-    description:
-      "Cards, sets, collection tracking, decks, wishlist, uncollected cards, values, and analytics.",
-    code: "SWU",
-    tone: "swu",
-  },
-  {
-    href: "/pokemon",
-    label: "Framework Archive",
-    title: "Pokémon",
-    description:
-      "Pokédex, regions, sets, collection tracking, variants, wishlists, decks, and future master completion.",
-    code: "PKMN",
-    tone: "pokemon",
-  },
-];
-
-function ArchiveTile({ archive }: { archive: (typeof archives)[number] }) {
+function ArchiveCard({
+  href,
+  kicker,
+  title,
+  description,
+  tone,
+  badge,
+}: {
+  href: string;
+  kicker: string;
+  title: string;
+  description: string;
+  tone: "swu" | "pokemon";
+  badge: string;
+}) {
   return (
-    <Link href={archive.href} className={`tu-vault-tile tu-vault-tile-${archive.tone}`}>
-      <div className="tu-vault-tile-glow" />
+    <Link href={href} className={`tu-hub-card tu-hub-card-${tone}`}>
+      <div className="tu-hub-card-bg" />
 
-      <div className="tu-vault-tile-top">
-        <span>{archive.label}</span>
-        <strong>{archive.code}</strong>
+      <div className="tu-hub-card-top">
+        <div className="tu-hub-kicker">{kicker}</div>
+        <div className="tu-hub-badge">{badge}</div>
       </div>
 
-      <div>
-        <h2>{archive.title}</h2>
-        <p>{archive.description}</p>
-      </div>
+      <h2>{title}</h2>
+      <p>{description}</p>
 
-      <div className="tu-vault-tile-bottom">
-        <span>Open Archive</span>
-        <span className="tu-vault-arrow">→</span>
-      </div>
+      <div className="tu-hub-open">Open Archive</div>
     </Link>
   );
 }
 
 export default function TrackerUnlimitedHomePage() {
   return (
-    <main className="tu-vault-page">
-      <section className="tu-vault-hero">
-        <div className="tu-vault-kicker">Collection Archive Platform</div>
-
-        <h1>
-          Tracker
-          <span>Unlimited</span>
-        </h1>
-
+    <main className="tu-hub-page">
+      <section className="tu-hub-hero">
+        <div className="tu-hub-kicker">Universal Collection Archives</div>
+        <h1>Tracker Unlimited</h1>
         <p>
-          A universal card collection archive built for collectors who care about
-          completion, variants, values, wishlists, decks, and long-term collection history.
+          Choose your archive. Each game keeps its own identity while sharing the same
+          collection, completion, wishlist, deck, and analytics platform.
         </p>
-
-        <div className="tu-vault-stats" aria-label="Tracker Unlimited platform features">
-          <div>
-            <span>01</span>
-            <strong>Collection</strong>
-          </div>
-          <div>
-            <span>02</span>
-            <strong>Completion</strong>
-          </div>
-          <div>
-            <span>03</span>
-            <strong>Variants</strong>
-          </div>
-          <div>
-            <span>04</span>
-            <strong>Analytics</strong>
-          </div>
-        </div>
       </section>
 
-      <section className="tu-vault-selector" aria-label="Choose archive">
-        <div className="tu-vault-selector-header">
-          <div>
-            <div className="tu-vault-kicker">Choose Your Archive</div>
-            <h2>Available Collections</h2>
-          </div>
-          <p>
-            Each archive keeps its own theme, data structure, and collecting tools while
-            sharing the Tracker Unlimited platform.
-          </p>
-        </div>
+      <section className="tu-hub-grid">
+        <ArchiveCard
+          href="/swu"
+          kicker="Original Archive"
+          title="Star Wars Unlimited"
+          description="A cinematic databank archive for Star Wars Unlimited cards, sets, collections, decks, wishlist, uncollected cards, and analytics."
+          tone="swu"
+          badge="SWU"
+        />
 
-        <div className="tu-vault-grid">
-          {archives.map((archive) => (
-            <ArchiveTile key={archive.href} archive={archive} />
-          ))}
-        </div>
+        <ArchiveCard
+          href="/pokemon"
+          kicker="New Archive"
+          title="Pokémon"
+          description="A Pokédex-inspired archive for regions, sets, Pokédex browsing, collection tracking, wishlists, decks, and analytics."
+          tone="pokemon"
+          badge="PKMN"
+        />
       </section>
 
-      <section className="tu-vault-roadmap">
-        <div className="tu-vault-kicker">Future Archives</div>
-        <p>Designed to expand later into Magic, Lorcana, One Piece, Yu-Gi-Oh, and more.</p>
+      <section className="tu-hub-future">
+        <div className="tu-hub-kicker">Future Ready</div>
+        <p>Magic, Lorcana, One Piece, Yu-Gi-Oh, and more can join the archive later.</p>
       </section>
     </main>
   );
