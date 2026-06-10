@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 type ImportResult = {
   ok: boolean;
+  mode?: string;
   offsetSets: number;
   limitSets: number;
   totalSets: number;
@@ -13,21 +14,44 @@ type ImportResult = {
   setsImported: number;
   cardsImported: number;
   printsImported: number;
+  setResults?: any[];
   errors: any[];
 };
 
 export default function PokemonImportClient() {
   const router = useRouter();
   const [offsetSets, setOffsetSets] = useState(0);
-  const [limitSets, setLimitSets] = useState(2);
+  const [limitSets, setLimitSets] = useState(1);
   const [maxCardsPerSet, setMaxCardsPerSet] = useState(0);
+  const [singleSetId, setSingleSetId] = useState("base1");
   const [loading, setLoading] = useState(false);
   const [autoImporting, setAutoImporting] = useState(false);
-  const [result, setResult] = useState<ImportResult | null>(null);
+  const [result, setResult] = useState<any>(null);
   const [log, setLog] = useState<ImportResult[]>([]);
   const [error, setError] = useState("");
 
-  async function runBatch(customOffset = offsetSets) {
+  async function testConnection() {
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    try {
+      const response = await fetch("/api/pokemon/import/test");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || `Test failed with status ${response.status}`);
+      }
+
+      setResult(data);
+    } catch (err: any) {
+      setError(err?.message || "Connection test failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function runBatch(customOffset = offsetSets, customSingleSetId = "") {
     const response = await fetch("/api/pokemon/import", {
       method: "POST",
       headers: {
@@ -37,6 +61,7 @@ export default function PokemonImportClient() {
         offsetSets: customOffset,
         limitSets,
         maxCardsPerSet,
+        singleSetId: customSingleSetId,
       }),
     });
 
@@ -48,20 +73,36 @@ export default function PokemonImportClient() {
 
     setResult(data);
     setLog((current) => [data, ...current].slice(0, 20));
-    setOffsetSets(data.nextOffset || 0);
-    router.refresh();
 
+    if (!customSingleSetId) {
+      setOffsetSets(data.nextOffset || 0);
+    }
+
+    router.refresh();
     return data as ImportResult;
   }
 
-  async function runSingleImport() {
+  async function runSingleSetImport() {
+    setLoading(true);
+    setError("");
+
+    try {
+      await runBatch(offsetSets, singleSetId.trim());
+    } catch (err: any) {
+      setError(err?.message || "Single set import failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function runSingleBatchImport() {
     setLoading(true);
     setError("");
 
     try {
       await runBatch(offsetSets);
     } catch (err: any) {
-      setError(err?.message || "Import failed.");
+      setError(err?.message || "Batch import failed.");
     } finally {
       setLoading(false);
     }
@@ -96,10 +137,30 @@ export default function PokemonImportClient() {
     <section className="pkdx-panel">
       <div className="pkdx-panel-header">
         <div>
-          <div className="pkdx-kicker">Alpha Import</div>
-          <h2>TCGDex Full Import</h2>
+          <div className="pkdx-kicker">Importer Debug</div>
+          <h2>TCGDex Import</h2>
         </div>
         <div className="pkdx-mini-dpad"><span /></div>
+      </div>
+
+      <div className="pkdx-import-controls">
+        <button type="button" className="pkdx-button" onClick={testConnection} disabled={loading}>
+          Test TCGDex
+        </button>
+
+        <label>
+          <span>Single set ID</span>
+          <input
+            value={singleSetId}
+            onChange={(event) => setSingleSetId(event.target.value)}
+            disabled={loading}
+            placeholder="base1"
+          />
+        </label>
+
+        <button type="button" className="pkdx-button pkdx-button-white" onClick={runSingleSetImport} disabled={loading}>
+          Import Single Set
+        </button>
       </div>
 
       <div className="pkdx-import-controls">
@@ -119,7 +180,7 @@ export default function PokemonImportClient() {
           <input
             type="number"
             min={1}
-            max={10}
+            max={5}
             value={limitSets}
             onChange={(event) => setLimitSets(Number(event.target.value))}
             disabled={loading}
@@ -137,33 +198,23 @@ export default function PokemonImportClient() {
           />
         </label>
 
-        <button type="button" className="pkdx-button" onClick={runSingleImport} disabled={loading}>
+        <button type="button" className="pkdx-button" onClick={runSingleBatchImport} disabled={loading}>
           {loading && !autoImporting ? "Importing..." : "Import Next Batch"}
         </button>
 
-        <button
-          type="button"
-          className="pkdx-button pkdx-button-white"
-          onClick={runFullImport}
-          disabled={loading}
-        >
+        <button type="button" className="pkdx-button pkdx-button-white" onClick={runFullImport} disabled={loading}>
           {autoImporting ? "Importing All..." : "Import All From Offset"}
         </button>
       </div>
 
       <p className="pkdx-panel-text">
-        Set <strong>Max cards per set</strong> to <strong>0</strong> to import every card from each set.
-        Keep <strong>Sets per batch</strong> at 2 or 3 if Vercel times out.
+        Start by clicking <strong>Test TCGDex</strong>, then <strong>Import Single Set</strong> with <strong>base1</strong>. If Bulbasaur appears after that, resume the full import.
       </p>
 
       {totalSets ? (
         <div className="pkdx-import-progress">
-          <div>
-            <span style={{ width: `${progress}%` }} />
-          </div>
-          <p>
-            {importedThrough} / {totalSets} sets processed ({progress}%)
-          </p>
+          <div><span style={{ width: `${progress}%` }} /></div>
+          <p>{importedThrough} / {totalSets} sets processed ({progress}%)</p>
         </div>
       ) : null}
 
@@ -180,8 +231,7 @@ export default function PokemonImportClient() {
           <h3>Recent Batches</h3>
           {log.map((item, index) => (
             <div key={`${item.offsetSets}-${index}`}>
-              Sets {item.offsetSets}–{item.nextOffset - 1}: {item.setsImported} sets,{" "}
-              {item.cardsImported} cards, {item.printsImported} prints
+              {item.mode || "batch"}: {item.setsImported} sets, {item.cardsImported} cards, {item.printsImported} prints
               {item.errors?.length ? `, ${item.errors.length} errors` : ""}
             </div>
           ))}

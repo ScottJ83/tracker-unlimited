@@ -30,7 +30,7 @@ export default async function PokemonImportPage() {
           </div>
 
           <p className="pkdx-intro">
-            Run a small authenticated import directly from your browser. This uses your current login session, unlike PowerShell.
+            Test the TCGDex connection, import a single set, or resume the full English archive import.
           </p>
         </div>
       </section>
