@@ -15,82 +15,58 @@ function ArchiveCard({
   tone: "swu" | "pokemon";
   badge: string;
 }) {
-  const isPokemon = tone === "pokemon";
-
   return (
-    <Link
-      href={href}
-      className={isPokemon ? "tu-archive-card tu-archive-card-pokemon" : "tu-archive-card tu-archive-card-swu"}
-    >
-      <div className="tu-archive-card-bg" />
+    <Link href={href} className={`tu-hub-card tu-hub-card-${tone}`}>
+      <div className="tu-hub-card-bg" />
 
-      <div className="tu-archive-card-top">
-        <div className="sw-kicker">{kicker}</div>
-        <div className="tu-archive-badge">{badge}</div>
+      <div className="tu-hub-card-top">
+        <div className="tu-hub-kicker">{kicker}</div>
+        <div className="tu-hub-badge">{badge}</div>
       </div>
 
       <h2>{title}</h2>
-
       <p>{description}</p>
 
-      {isPokemon ? (
-        <div className="tu-pokemon-orbits" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-      ) : (
-        <div className="tu-swu-stars" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-      )}
-
-      <div className="sw-button sw-button-primary" style={{ justifySelf: "start", position: "relative" }}>
-        Open Archive
-      </div>
+      <div className="tu-hub-open">Open Archive</div>
     </Link>
   );
 }
 
 export default function TrackerUnlimitedHomePage() {
   return (
-    <main>
-      <section className="tu-archive-home">
-        <div className="tu-archive-hero">
-          <div className="sw-kicker">Universal Collection Archives</div>
-          <h1>Tracker Unlimited</h1>
-          <p>
-            Choose your archive. Track collections, monitor completion, manage wishlists,
-            build decks, and explore card databases across supported trading card games.
-          </p>
-        </div>
+    <main className="tu-hub-page">
+      <section className="tu-hub-hero">
+        <div className="tu-hub-kicker">Universal Collection Archives</div>
+        <h1>Tracker Unlimited</h1>
+        <p>
+          Choose your archive. Each game keeps its own identity while sharing the same
+          collection, completion, wishlist, deck, and analytics platform.
+        </p>
+      </section>
 
-        <div className="tu-archive-grid">
-          <ArchiveCard
-            href="/swu"
-            kicker="Original Archive"
-            title="Star Wars Unlimited"
-            description="Open the cinematic databank archive for Star Wars Unlimited cards, sets, collections, decks, wishlist, uncollected cards, and analytics."
-            tone="swu"
-            badge="SWU"
-          />
+      <section className="tu-hub-grid">
+        <ArchiveCard
+          href="/swu"
+          kicker="Original Archive"
+          title="Star Wars Unlimited"
+          description="A cinematic databank archive for Star Wars Unlimited cards, sets, collections, decks, wishlist, uncollected cards, and analytics."
+          tone="swu"
+          badge="SWU"
+        />
 
-          <ArchiveCard
-            href="/pokemon"
-            kicker="New Archive"
-            title="Pokémon"
-            description="Enter a Pokédex-inspired archive framework for regions, sets, Pokédex browsing, collection tracking, wishlists, decks, and analytics."
-            tone="pokemon"
-            badge="PKMN"
-          />
-        </div>
+        <ArchiveCard
+          href="/pokemon"
+          kicker="New Archive"
+          title="Pokémon"
+          description="A Pokédex-inspired archive for regions, sets, Pokédex browsing, collection tracking, wishlists, decks, and analytics."
+          tone="pokemon"
+          badge="PKMN"
+        />
+      </section>
 
-        <section className="tu-future-archives">
-          <div className="sw-kicker">Future Ready</div>
-          <p>Magic, Lorcana, One Piece, Yu-Gi-Oh, and more can join the archive later.</p>
-        </section>
+      <section className="tu-hub-future">
+        <div className="tu-hub-kicker">Future Ready</div>
+        <p>Magic, Lorcana, One Piece, Yu-Gi-Oh, and more can join the archive later.</p>
       </section>
     </main>
   );

@@ -1730,3 +1730,241 @@ main div[style*="overflow: hidden"], main section[style*="overflow: hidden"] { o
   }
 }
 
+
+/* TU neutral platform hub + Pokemon background cleanup */
+
+/* Neutral landing page: not SWU, not Pokemon. */
+.tu-hub-page {
+  min-height: calc(100vh - 190px);
+  display: grid;
+  align-content: center;
+  gap: 34px;
+  padding: 10px 0 30px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 28%),
+    radial-gradient(circle at 10% 95%, rgba(45,212,191,0.10), transparent 28%),
+    radial-gradient(circle at 92% 86%, rgba(245,197,66,0.10), transparent 28%),
+    linear-gradient(180deg, rgba(5,8,14,0.20), rgba(0,0,0,0.20));
+}
+
+.tu-hub-hero {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tu-hub-kicker {
+  color: #f5c542;
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tu-hub-hero h1 {
+  margin: 14px 0;
+  color: #fff;
+  font-size: clamp(46px, 7vw, 92px);
+  line-height: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 30px rgba(255,255,255,0.20);
+}
+
+.tu-hub-hero p {
+  max-width: 780px;
+  margin: 0 auto;
+  color: #d5d5d5;
+  line-height: 1.75;
+}
+
+.tu-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 22px;
+}
+
+.tu-hub-card {
+  min-height: 330px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 28px;
+  display: grid;
+  align-content: space-between;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 26px 90px rgba(0,0,0,0.42);
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.tu-hub-card:hover {
+  transform: translateY(-3px);
+}
+
+.tu-hub-card-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tu-hub-card-swu {
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.96), rgba(5,12,25,0.90), rgba(0,0,0,0.96));
+}
+
+.tu-hub-card-swu .tu-hub-card-bg {
+  background:
+    radial-gradient(circle at 82% 22%, rgba(245,197,66,0.20), transparent 26%),
+    radial-gradient(circle at 16% 90%, rgba(12,54,105,0.30), transparent 30%),
+    linear-gradient(123deg, transparent 0 58%, rgba(245,197,66,0.08) 58% 60%, transparent 60%);
+}
+
+.tu-hub-card-swu:hover {
+  border-color: rgba(245,197,66,0.46);
+  box-shadow: 0 30px 110px rgba(0,0,0,0.64), 0 0 34px rgba(245,197,66,0.10);
+}
+
+.tu-hub-card-pokemon {
+  color: #0f172a;
+  background:
+    linear-gradient(180deg, #ef4444 0 24%, #dc2626 24% 26%, #ffffff 26% 100%);
+  border: 4px solid rgba(255,255,255,0.78);
+  box-shadow: 0 26px 90px rgba(0,0,0,0.38), inset 0 0 0 2px rgba(220,38,38,0.30);
+}
+
+.tu-hub-card-pokemon .tu-hub-card-bg {
+  background:
+    radial-gradient(circle at 88% 16%, #fff 0 15px, #a5f3fc 16px 28px, #0284c7 29px 40px, transparent 41px),
+    linear-gradient(124deg, transparent 0 58%, rgba(14,165,233,0.22) 58% 62%, rgba(255,255,255,0.46) 62% 64%, transparent 64%),
+    radial-gradient(circle at 78% 78%, rgba(14,165,233,0.18), transparent 26%);
+}
+
+.tu-hub-card-pokemon:hover {
+  border-color: rgba(14,165,233,0.68);
+  box-shadow: 0 30px 110px rgba(0,0,0,0.55), 0 0 34px rgba(14,165,233,0.18);
+}
+
+.tu-hub-card-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.tu-hub-card-pokemon .tu-hub-kicker {
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.20);
+}
+
+.tu-hub-badge {
+  border: 1px solid rgba(255,255,255,0.26);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: 0.16em;
+  background: rgba(0,0,0,0.24);
+}
+
+.tu-hub-card-pokemon .tu-hub-badge {
+  background: #fff;
+  color: #dc2626;
+  border-color: rgba(255,255,255,0.92);
+}
+
+.tu-hub-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 24px 0 0;
+  color: #fff;
+  font-size: clamp(30px, 4vw, 56px);
+  line-height: 0.96;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 24px rgba(255,255,255,0.18);
+}
+
+.tu-hub-card-pokemon h2 {
+  color: #0f172a;
+  text-shadow: 0 2px 0 rgba(255,255,255,0.8);
+  margin-top: 72px;
+}
+
+.tu-hub-card p {
+  position: relative;
+  z-index: 1;
+  color: #d5d5d5;
+  line-height: 1.7;
+  max-width: 560px;
+}
+
+.tu-hub-card-pokemon p {
+  color: #164e63;
+  font-weight: 750;
+}
+
+.tu-hub-open {
+  position: relative;
+  z-index: 1;
+  justify-self: start;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #f5c542;
+  color: #030712;
+  box-shadow: 0 12px 30px rgba(245,197,66,0.16);
+}
+
+.tu-hub-card-pokemon .tu-hub-open {
+  color: #fff;
+  background: linear-gradient(180deg, #22d3ee, #0284c7);
+  border: 3px solid rgba(255,255,255,0.9);
+  box-shadow: 0 12px 30px rgba(14,165,233,0.24);
+}
+
+.tu-hub-future {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.58), rgba(10,16,28,0.50), rgba(0,0,0,0.58));
+}
+
+.tu-hub-future p {
+  margin: 8px 0 0;
+  color: #cfd7e4;
+}
+
+/* Pokemon pages should not look like the SWU dark-blue space background. */
+body:has(.pkdx-page) {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255,255,255,0.55), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(186,230,253,0.80), transparent 28%),
+    linear-gradient(180deg, #baf3fb 0%, #e9fbff 44%, #f8feff 100%) !important;
+}
+
+body:has(.pkdx-page)::before {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.55), transparent 42%),
+    linear-gradient(115deg, transparent 0 62%, rgba(14,165,233,0.12) 62% 66%, transparent 66%) !important;
+  opacity: 1 !important;
+}
+
+body:has(.pkdx-page)::after {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,0.55), transparent 1px),
+    radial-gradient(circle at 72% 32%, rgba(14,165,233,0.24), transparent 1px),
+    radial-gradient(circle at 88% 74%, rgba(220,38,38,0.16), transparent 1px) !important;
+  opacity: 0.32 !important;
+}
+
+body:has(.pkdx-page) main {
+  background: transparent !important;
+}
+
