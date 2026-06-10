@@ -30,11 +30,18 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => ({}));
-  const limitSets = Number(body?.limitSets || 3);
-  const maxCardsPerSet = Number(body?.maxCardsPerSet || 80);
+
+  const offsetSets = Math.max(0, Number(body?.offsetSets || 0));
+  const limitSets = Math.max(1, Number(body?.limitSets || 2));
+
+  const maxCardsRaw = body?.maxCardsPerSet;
+  const maxCardsPerSet =
+    maxCardsRaw === undefined || maxCardsRaw === null || Number(maxCardsRaw) <= 0
+      ? null
+      : Math.max(1, Number(maxCardsRaw));
 
   const sets = await fetchTcgDexSets();
-  const selectedSets = sets.slice(0, Math.max(1, limitSets));
+  const selectedSets = sets.slice(offsetSets, offsetSets + limitSets);
 
   let setsImported = 0;
   let cardsImported = 0;
@@ -67,7 +74,8 @@ export async function POST(request: Request) {
       if (setError) throw setError;
       setsImported += 1;
 
-      const cards = Array.isArray(set.cards) ? set.cards.slice(0, maxCardsPerSet) : [];
+      const setCards = Array.isArray(set.cards) ? set.cards : [];
+      const cards = maxCardsPerSet ? setCards.slice(0, maxCardsPerSet) : setCards;
 
       for (const cardResume of cards) {
         try {
@@ -85,7 +93,11 @@ export async function POST(request: Request) {
             category: card.category || null,
             illustrator: card.illustrator || null,
             rarity: card.rarity || null,
-            dex_ids: Array.isArray(card.dexId) ? card.dexId : Array.isArray(card.dexIds) ? card.dexIds : [],
+            dex_ids: Array.isArray(card.dexId)
+              ? card.dexId
+              : Array.isArray(card.dexIds)
+                ? card.dexIds
+                : [],
             hp: card.hp ? String(card.hp) : null,
             types: Array.isArray(card.types) ? card.types : [],
             stage: card.stage || null,
@@ -137,8 +149,16 @@ export async function POST(request: Request) {
     }
   }
 
+  const nextOffset = offsetSets + selectedSets.length;
+  const done = nextOffset >= sets.length;
+
   return NextResponse.json({
     ok: true,
+    offsetSets,
+    limitSets,
+    totalSets: sets.length,
+    nextOffset,
+    done,
     setsImported,
     cardsImported,
     printsImported,
