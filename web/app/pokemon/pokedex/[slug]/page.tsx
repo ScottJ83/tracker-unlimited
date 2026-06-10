@@ -6,20 +6,34 @@ export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
 
+function cleanSpeciesName(name: string) {
+  return String(name || "")
+    .replace(/^.+?'s\s+/i, "")
+    .replace(/\b(GX|EX|VSTAR|VMAX|V-UNION|V)\b/gi, "")
+    .replace(/\b(Alolan|Galarian|Hisuian|Paldean)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export default async function PokemonSpeciesPage({ params }: Props) {
   const { slug } = await params;
   const { supabase, user } = await getPokemonUser();
 
+  const dexMatch = slug.match(/^dex-(\d+)$/);
+  const dexId = dexMatch ? Number(dexMatch[1]) : null;
+
+  const query = supabase
+    .from("pokemon_cards")
+    .select("*, pokemon_sets(name)")
+    .order("set_id", { ascending: false });
+
   const [{ data: cards }, ownedEntries] = await Promise.all([
-    supabase
-      .from("pokemon_cards")
-      .select("*, pokemon_sets(name)")
-      .eq("slug", slug)
-      .order("set_id", { ascending: false }),
+    dexId ? query.contains("dex_ids", [dexId]) : query.eq("slug", slug),
     getPokemonCollectionEntries(supabase, user?.id),
   ]);
 
-  const name = cards?.[0]?.name || slug;
+  const rawName = cards?.[0]?.name || slug;
+  const name = cleanSpeciesName(rawName) || rawName;
   const ownedPrintIds = new Set((ownedEntries || []).map((entry: any) => entry.print_id));
   const ownedCards = new Set<string>();
 
@@ -50,7 +64,7 @@ export default async function PokemonSpeciesPage({ params }: Props) {
             </div>
             <div className="pkdx-status-light" />
           </div>
-          <p className="pkdx-intro">Every imported {name} card. Open a card to view every print or variant.</p>
+          <p className="pkdx-intro">Every imported card grouped under this National Dex Pokémon. Open a card to view every print or variant.</p>
         </div>
       </section>
 

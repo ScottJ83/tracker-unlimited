@@ -28,7 +28,7 @@ export default async function PokemonPokedexPage() {
             <div className="pkdx-status-light" />
           </div>
           <p className="pkdx-intro">
-            Each Pokémon shows imported card art. A Pokémon counts as owned when you own at least one print of one card for that Pokémon.
+            One tile per Pokémon. Each tile groups every imported card and print under that Pokémon’s National Dex number.
           </p>
         </div>
       </section>

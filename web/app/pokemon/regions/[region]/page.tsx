@@ -32,7 +32,7 @@ export default async function PokemonRegionPage({ params }: Props) {
             </div>
             <div className="pkdx-status-light" />
           </div>
-          <p className="pkdx-intro">Pokémon imported for {region.name}. Open a Pokémon to see all imported cards.</p>
+          <p className="pkdx-intro">One tile per Pokémon in {region.name}, grouped by National Dex number.</p>
         </div>
       </section>
 

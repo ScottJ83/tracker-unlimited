@@ -33,6 +33,37 @@ export async function getPokemonWishlistEntries(supabase: any, userId?: string) 
   return data || [];
 }
 
+function firstDexId(card: any) {
+  const dex = Array.isArray(card?.dex_ids) ? Number(card.dex_ids[0]) : null;
+  return Number.isFinite(dex || NaN) ? dex : null;
+}
+
+function speciesKey(card: any) {
+  const dex = firstDexId(card);
+  return dex ? `dex-${dex}` : `name-${card.slug || card.name}`;
+}
+
+function cleanSpeciesName(name: string) {
+  return String(name || "")
+    .replace(/^.+?'s\s+/i, "")
+    .replace(/\b(GX|EX|VSTAR|VMAX|V-UNION|V)\b/gi, "")
+    .replace(/\b(Alolan|Galarian|Hisuian|Paldean)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function chooseSpeciesName(current: string | null, next: string) {
+  if (!current) return next;
+
+  const currentClean = cleanSpeciesName(current);
+  const nextClean = cleanSpeciesName(next);
+
+  if (nextClean.length && nextClean.length < currentClean.length) return next;
+  if (/^[A-Za-z0-9\s.-]+$/.test(next) && next.length < current.length) return next;
+
+  return current;
+}
+
 export async function getPokemonCounts(supabase: any, userId?: string) {
   const [{ count: cardCount }, { count: printCount }, { count: setCount }] = await Promise.all([
     supabase.from("pokemon_cards").select("*", { count: "exact", head: true }),
@@ -48,9 +79,8 @@ export async function getPokemonCounts(supabase: any, userId?: string) {
 
   const importedPokemon = new Set<string>();
   for (const card of dexCards || []) {
-    if (Array.isArray(card.dex_ids) && card.dex_ids.length) {
-      importedPokemon.add(card.slug || card.name);
-    }
+    const dex = firstDexId(card);
+    if (dex) importedPokemon.add(String(dex));
   }
 
   const ownedPrintIds = new Set((ownedEntries || []).map((entry: any) => entry.print_id));
@@ -76,8 +106,10 @@ export async function getPokemonCounts(supabase: any, userId?: string) {
       collectionValue += quantity * Number(print.price_market || 0);
 
       const card = Array.isArray(print.pokemon_cards) ? print.pokemon_cards[0] : print.pokemon_cards;
+      const dex = firstDexId(card);
+
       if (card?.id) ownedCardIds.add(card.id);
-      if (card?.slug && Array.isArray(card.dex_ids) && card.dex_ids.length) ownedSpecies.add(card.slug);
+      if (dex) ownedSpecies.add(String(dex));
     }
 
     ownedCards = ownedCardIds.size;
@@ -138,13 +170,14 @@ export async function getPokemonPokedexRows(supabase: any, userId?: string) {
   const grouped = new Map<string, any>();
 
   for (const card of cards || []) {
-    const dex = Array.isArray(card.dex_ids) ? Number(card.dex_ids[0]) : null;
-    const key = card.slug || card.name;
+    const dex = firstDexId(card);
+    const key = speciesKey(card);
 
     if (!grouped.has(key)) {
       grouped.set(key, {
-        name: card.name,
-        slug: card.slug,
+        name: cleanSpeciesName(card.name) || card.name,
+        displayName: card.name,
+        slug: dex ? `dex-${dex}` : card.slug,
         dex,
         images: [],
         cardCount: 0,
@@ -153,9 +186,12 @@ export async function getPokemonPokedexRows(supabase: any, userId?: string) {
     }
 
     const row = grouped.get(key);
+    row.displayName = chooseSpeciesName(row.displayName, card.name);
+    row.name = cleanSpeciesName(row.displayName) || row.displayName;
     row.cardCount += 1;
+
     if (ownedCardIds.has(card.id)) row.ownedCardCount += 1;
-    if (card.image && row.images.length < 12) row.images.push(card.image);
+    if (card.image && row.images.length < 18) row.images.push(card.image);
     if (!row.dex && dex) row.dex = dex;
   }
 
@@ -197,7 +233,7 @@ export async function getPokemonSetsWithCompletion(supabase: any, userId?: strin
 }
 
 export async function getPokemonRegionsWithCompletion(supabase: any, userId?: string) {
-  const [pokedexRows] = await Promise.all([getPokemonPokedexRows(supabase, userId)]);
+  const pokedexRows = await getPokemonPokedexRows(supabase, userId);
 
   return pokemonRegions.map((region) => {
     const rows = pokedexRows.filter((row: any) => row.dex && row.dex >= region.start && row.dex <= region.end);
