@@ -50,10 +50,29 @@ export async function fetchTcgDexCard(id: string) {
   return tcgdexFetch<any>(`/cards/${encodeURIComponent(id)}`);
 }
 
-export function imageUrl(image?: string | null) {
+function hasAssetExtension(url: string) {
+  return /\.(webp|png|jpg|jpeg)$/i.test(url);
+}
+
+export function cardImageUrl(image?: string | null, quality: "low" | "high" = "high") {
   if (!image) return null;
-  if (image.startsWith("http")) return image;
-  return `${image}/high.webp`;
+  if (hasAssetExtension(image)) return image;
+  return `${image}/${quality}.webp`;
+}
+
+export function setAssetUrl(asset?: string | null) {
+  if (!asset) return null;
+  if (hasAssetExtension(asset)) return asset;
+  return `${asset}.webp`;
+}
+
+/**
+ * Backwards-compatible helper.
+ * Card image fields should use cardImageUrl().
+ * Set logo/symbol fields should use setAssetUrl().
+ */
+export function imageUrl(image?: string | null) {
+  return cardImageUrl(image, "high");
 }
 
 export function slugifyPokemonName(name: string) {

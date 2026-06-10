@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
+  cardImageUrl,
+  setAssetUrl,
   fetchTcgDexCard,
   fetchTcgDexSet,
   fetchTcgDexSets,
-  imageUrl,
   slugifyPokemonName,
   extractPrintsFromCard,
 } from "@/lib/pokemon/tcgdex";
@@ -48,8 +49,8 @@ export async function POST(request: Request) {
         id: set.id,
         tcgdex_id: set.id,
         name: set.name,
-        logo: imageUrl(set.logo),
-        symbol: imageUrl(set.symbol),
+        logo: setAssetUrl(set.logo),
+        symbol: setAssetUrl(set.symbol),
         card_count_total: set.cardCount?.total || set.cardCount?.official || 0,
         card_count_official: set.cardCount?.official || 0,
         release_date: asDate(set.releaseDate),
@@ -72,6 +73,7 @@ export async function POST(request: Request) {
         try {
           const card = await fetchTcgDexCard(cardResume.id);
           const slug = slugifyPokemonName(card.name);
+          const cardImage = cardImageUrl(card.image);
 
           const cardRow = {
             id: card.id,
@@ -87,7 +89,7 @@ export async function POST(request: Request) {
             hp: card.hp ? String(card.hp) : null,
             types: Array.isArray(card.types) ? card.types : [],
             stage: card.stage || null,
-            image: imageUrl(card.image),
+            image: cardImage,
             variants: card.variants || {},
             prices: card.pricing || card.prices || card.markets || {},
             legal: card.legal || {},
@@ -115,7 +117,7 @@ export async function POST(request: Request) {
                   print_name: print.print_name,
                   language: "en",
                   is_available: print.is_available,
-                  image: imageUrl(card.image),
+                  image: cardImage,
                   price_market: print.price_market ?? null,
                   raw: print.raw || {},
                   updated_at: new Date().toISOString(),
