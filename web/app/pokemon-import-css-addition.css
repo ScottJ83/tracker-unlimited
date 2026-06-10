@@ -1,0 +1,49 @@
+
+/* Add this to bottom of web/app/globals.css if the import page looks unstyled */
+.pkdx-import-controls {
+  display: flex;
+  gap: 14px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.pkdx-import-controls label {
+  display: grid;
+  gap: 6px;
+  color: #164e63;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pkdx-import-controls input {
+  border-radius: 12px !important;
+  border: 2px solid rgba(14,165,233,0.26) !important;
+  background: #fff !important;
+  color: #0f172a !important;
+  padding: 10px 12px !important;
+  min-width: 160px;
+}
+
+.pkdx-import-result,
+.pkdx-import-error {
+  margin-top: 18px;
+  border-radius: 16px;
+  padding: 16px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.pkdx-import-result {
+  background: #0f172a;
+  color: #e0faff;
+}
+
+.pkdx-import-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 2px solid rgba(220,38,38,0.34);
+  font-weight: 900;
+}
