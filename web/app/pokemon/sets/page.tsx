@@ -1,77 +1,42 @@
 import Link from "next/link";
+import { getPokemonSets, getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
-const resources = [
-  ["Pokédex", "/pokemon/pokedex", "001"],
-  ["Sets", "/pokemon/sets", "151"],
-  ["Regions", "/pokemon/regions", "025"],
-  ["Collection", "/pokemon/collection", "493"],
-  ["Decks", "/pokemon/decks", "006"],
-  ["Analytics", "/pokemon/analytics", "881"],
-  ["About", "/pokemon/about", "TU"],
-];
+export default async function PokemonSetsPage() {
+  const { supabase } = await getPokemonUser();
+  const sets = await getPokemonSets(supabase);
 
-export default function Page() {
   return (
     <main className="pkdx-page">
       <section className="pkdx-device pkdx-device-small">
         <div className="pkdx-topbar">
-          <div className="pkdx-lens">
-            <span />
-          </div>
-
-          <div className="pkdx-title-pill">POKÉMON</div>
-
-          <div className="pkdx-number">151</div>
+          <div className="pkdx-lens"><span /></div>
+          <div className="pkdx-title-pill">SETS</div>
+          <div className="pkdx-number">{sets.length}</div>
         </div>
-
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
             <div>
-              <div className="pkdx-kicker">Pokémon TU</div>
+              <div className="pkdx-kicker">Set Archive</div>
               <h1>Pokémon Sets</h1>
             </div>
             <div className="pkdx-status-light" />
           </div>
-
-          <p className="pkdx-intro">Track expansions, set completion, variants, prices, languages, and master set progress.</p>
+          <p className="pkdx-intro">Every imported set. Open a set to see cards, then open a card to see its variants and prints.</p>
         </div>
       </section>
 
       <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Framework Status</div>
-            <h2>Coming Online</h2>
-          </div>
-          <div className="pkdx-mini-dpad">
-            <span />
-          </div>
-        </div>
-
-        <p className="pkdx-panel-text">
-          This page is part of the Pokémon Tracker Unlimited framework. TCGDex
-          integration, Pokémon card data, variants, languages, pricing, collection
-          entries, and completion tracking will be connected in a later phase.
-        </p>
-      </section>
-
-      <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Archive Resources</div>
-            <h2>Navigation</h2>
-          </div>
-        </div>
-
         <div className="pkdx-resource-grid">
-          {resources.map(([label, href, number]) => (
-            <Link key={href} href={href} className="pkdx-resource-card">
-              <div className="pkdx-resource-number">{number}</div>
+          {sets.map((set: any) => (
+            <Link key={set.id} href={`/pokemon/sets/${set.id}`} className="pkdx-resource-card">
+              <div className="pkdx-resource-number">
+                {set.symbol ? <img src={set.symbol} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : "SET"}
+              </div>
               <div>
-                <h3>{label}</h3>
-                <p>Open the {label} section.</p>
+                <h3>{set.name}</h3>
+                <p>{set.card_count_total || 0} cards • {set.release_date || "Unknown date"}</p>
               </div>
             </Link>
           ))}

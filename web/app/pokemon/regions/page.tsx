@@ -1,77 +1,40 @@
 import Link from "next/link";
+import { getPokemonRegions, getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
-const resources = [
-  ["Pokédex", "/pokemon/pokedex", "001"],
-  ["Sets", "/pokemon/sets", "151"],
-  ["Regions", "/pokemon/regions", "025"],
-  ["Collection", "/pokemon/collection", "493"],
-  ["Decks", "/pokemon/decks", "006"],
-  ["Analytics", "/pokemon/analytics", "881"],
-  ["About", "/pokemon/about", "TU"],
-];
+export default async function PokemonRegionsPage() {
+  const { supabase } = await getPokemonUser();
+  const regions = await getPokemonRegions(supabase);
 
-export default function Page() {
   return (
     <main className="pkdx-page">
       <section className="pkdx-device pkdx-device-small">
         <div className="pkdx-topbar">
-          <div className="pkdx-lens">
-            <span />
-          </div>
-
-          <div className="pkdx-title-pill">POKÉMON</div>
-
-          <div className="pkdx-number">025</div>
+          <div className="pkdx-lens"><span /></div>
+          <div className="pkdx-title-pill">REGIONS</div>
+          <div className="pkdx-number">{regions.length}</div>
         </div>
-
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
             <div>
-              <div className="pkdx-kicker">Pokémon TU</div>
-              <h1>Regional Archives</h1>
+              <div className="pkdx-kicker">Regional Archive</div>
+              <h1>Regions</h1>
             </div>
             <div className="pkdx-status-light" />
           </div>
-
-          <p className="pkdx-intro">Explore Kanto, Johto, Hoenn, Sinnoh, Unova, Kalos, Alola, Galar, Paldea, and future regions.</p>
+          <p className="pkdx-intro">Browse Pokémon by region, then open a Pokémon to see every imported card and variant.</p>
         </div>
       </section>
 
       <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Framework Status</div>
-            <h2>Coming Online</h2>
-          </div>
-          <div className="pkdx-mini-dpad">
-            <span />
-          </div>
-        </div>
-
-        <p className="pkdx-panel-text">
-          This page is part of the Pokémon Tracker Unlimited framework. TCGDex
-          integration, Pokémon card data, variants, languages, pricing, collection
-          entries, and completion tracking will be connected in a later phase.
-        </p>
-      </section>
-
-      <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Archive Resources</div>
-            <h2>Navigation</h2>
-          </div>
-        </div>
-
         <div className="pkdx-resource-grid">
-          {resources.map(([label, href, number]) => (
-            <Link key={href} href={href} className="pkdx-resource-card">
-              <div className="pkdx-resource-number">{number}</div>
+          {regions.map((region: any) => (
+            <Link key={region.slug} href={`/pokemon/regions/${region.slug}`} className="pkdx-resource-card">
+              <div className="pkdx-resource-number">{region.start}</div>
               <div>
-                <h3>{label}</h3>
-                <p>Open the {label} section.</p>
+                <h3>{region.name}</h3>
+                <p>{region.pokemonCount} Pokémon • {region.cardCount} cards imported</p>
               </div>
             </Link>
           ))}

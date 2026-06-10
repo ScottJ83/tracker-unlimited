@@ -1,82 +1,53 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
+import PokemonCollectionClient from "@/components/pokemon/PokemonCollectionClient";
+import { getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
-const resources = [
-  ["Pokédex", "/pokemon/pokedex", "001"],
-  ["Sets", "/pokemon/sets", "151"],
-  ["Regions", "/pokemon/regions", "025"],
-  ["Collection", "/pokemon/collection", "493"],
-  ["Decks", "/pokemon/decks", "006"],
-  ["Analytics", "/pokemon/analytics", "881"],
-  ["About", "/pokemon/about", "TU"],
-];
+export default async function PokemonCollectionPage() {
+  const { supabase, user } = await getPokemonUser();
 
-export default function Page() {
+  if (!user) {
+    redirect("/login");
+  }
+
+  const [{ data: prints }, { data: owned }, { data: wishlist }] = await Promise.all([
+    supabase
+      .from("pokemon_prints")
+      .select("*, pokemon_cards(*), pokemon_sets(*)")
+      .order("print_name", { ascending: true })
+      .limit(1500),
+    supabase
+      .from("pokemon_collection_entries")
+      .select("*")
+      .eq("user_id", user.id),
+    supabase
+      .from("pokemon_wishlist_entries")
+      .select("*")
+      .eq("user_id", user.id),
+  ]);
+
   return (
     <main className="pkdx-page">
       <section className="pkdx-device pkdx-device-small">
         <div className="pkdx-topbar">
-          <div className="pkdx-lens">
-            <span />
-          </div>
-
-          <div className="pkdx-title-pill">POKÉMON</div>
-
-          <div className="pkdx-number">493</div>
+          <div className="pkdx-lens"><span /></div>
+          <div className="pkdx-title-pill">COLLECTION</div>
+          <div className="pkdx-number">{owned?.length || 0}</div>
         </div>
-
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
             <div>
-              <div className="pkdx-kicker">Pokémon TU</div>
-              <h1>Pokémon Collection</h1>
+              <div className="pkdx-kicker">Owned / Uncollected / Wishlist</div>
+              <h1>Collection</h1>
             </div>
             <div className="pkdx-status-light" />
           </div>
-
-          <p className="pkdx-intro">Manage owned cards, uncollected cards, and wishlist entries from one Pokémon collection hub.</p>
+          <p className="pkdx-intro">Track every Pokémon print and variant. Uncollected and Wishlist live inside this Collection hub.</p>
         </div>
       </section>
 
-      <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Framework Status</div>
-            <h2>Coming Online</h2>
-          </div>
-          <div className="pkdx-mini-dpad">
-            <span />
-          </div>
-        </div>
-
-        <p className="pkdx-panel-text">
-          This page is part of the Pokémon Tracker Unlimited framework. TCGDex
-          integration, Pokémon card data, variants, languages, pricing, collection
-          entries, and completion tracking will be connected in a later phase.
-        </p>
-      </section>
-
-      <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Archive Resources</div>
-            <h2>Navigation</h2>
-          </div>
-        </div>
-
-        <div className="pkdx-resource-grid">
-          {resources.map(([label, href, number]) => (
-            <Link key={href} href={href} className="pkdx-resource-card">
-              <div className="pkdx-resource-number">{number}</div>
-              <div>
-                <h3>{label}</h3>
-                <p>Open the {label} section.</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <PokemonCollectionClient prints={prints || []} owned={owned || []} wishlist={wishlist || []} />
     </main>
   );
 }

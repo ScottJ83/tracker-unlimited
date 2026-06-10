@@ -1,80 +1,44 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getPokemonCounts, getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
-const resources = [
-  ["Pokédex", "/pokemon/pokedex", "001"],
-  ["Sets", "/pokemon/sets", "151"],
-  ["Regions", "/pokemon/regions", "025"],
-  ["Collection", "/pokemon/collection", "493"],
-  ["Decks", "/pokemon/decks", "006"],
-  ["Analytics", "/pokemon/analytics", "881"],
-  ["About", "/pokemon/about", "TU"],
-];
+export default async function PokemonAnalyticsPage() {
+  const { supabase, user } = await getPokemonUser();
+  if (!user) redirect("/login");
 
-export default function Page() {
+  const counts = await getPokemonCounts(supabase, user.id);
+
+  const printCompletion = counts.prints ? ((counts.ownedPrints / counts.prints) * 100).toFixed(1) : "0.0";
+
   return (
     <main className="pkdx-page">
       <section className="pkdx-device pkdx-device-small">
         <div className="pkdx-topbar">
-          <div className="pkdx-lens">
-            <span />
-          </div>
-
-          <div className="pkdx-title-pill">POKÉMON</div>
-
-          <div className="pkdx-number">881</div>
+          <div className="pkdx-lens"><span /></div>
+          <div className="pkdx-title-pill">ANALYTICS</div>
+          <div className="pkdx-number">{printCompletion}%</div>
         </div>
-
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
             <div>
-              <div className="pkdx-kicker">Pokémon TU</div>
-              <h1>Pokémon Analytics</h1>
+              <div className="pkdx-kicker">Collection Insights</div>
+              <h1>Analytics</h1>
             </div>
             <div className="pkdx-status-light" />
           </div>
-
-          <p className="pkdx-intro">View collection value, completion, rarity spread, region progress, and variant coverage.</p>
+          <p className="pkdx-intro">Pokémon-specific collection, print, variant, and completion analytics.</p>
         </div>
       </section>
 
       <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Framework Status</div>
-            <h2>Coming Online</h2>
-          </div>
-          <div className="pkdx-mini-dpad">
-            <span />
-          </div>
-        </div>
-
-        <p className="pkdx-panel-text">
-          This page is part of the Pokémon Tracker Unlimited framework. TCGDex
-          integration, Pokémon card data, variants, languages, pricing, collection
-          entries, and completion tracking will be connected in a later phase.
-        </p>
-      </section>
-
-      <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Archive Resources</div>
-            <h2>Navigation</h2>
-          </div>
-        </div>
-
-        <div className="pkdx-resource-grid">
-          {resources.map(([label, href, number]) => (
-            <Link key={href} href={href} className="pkdx-resource-card">
-              <div className="pkdx-resource-number">{number}</div>
-              <div>
-                <h3>{label}</h3>
-                <p>Open the {label} section.</p>
-              </div>
-            </Link>
-          ))}
+        <div className="pkdx-stat-grid">
+          <div><span>Sets</span><strong>{counts.sets}</strong></div>
+          <div><span>Cards</span><strong>{counts.cards}</strong></div>
+          <div><span>Prints / Variants</span><strong>{counts.prints}</strong></div>
+          <div><span>Owned Prints</span><strong>{counts.ownedPrints}</strong></div>
+          <div><span>Wishlist</span><strong>{counts.wishedPrints}</strong></div>
+          <div><span>Print Completion</span><strong>{printCompletion}%</strong></div>
         </div>
       </section>
     </main>

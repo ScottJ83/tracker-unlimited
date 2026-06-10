@@ -1,77 +1,45 @@
 import Link from "next/link";
+import { getPokemonPokedexRows, getPokemonUser } from "@/lib/pokemon/queries";
 
 export const dynamic = "force-dynamic";
 
-const resources = [
-  ["Pokédex", "/pokemon/pokedex", "001"],
-  ["Sets", "/pokemon/sets", "151"],
-  ["Regions", "/pokemon/regions", "025"],
-  ["Collection", "/pokemon/collection", "493"],
-  ["Decks", "/pokemon/decks", "006"],
-  ["Analytics", "/pokemon/analytics", "881"],
-  ["About", "/pokemon/about", "TU"],
-];
+export default async function PokemonPokedexPage() {
+  const { supabase } = await getPokemonUser();
+  const rows = await getPokemonPokedexRows(supabase);
 
-export default function Page() {
   return (
     <main className="pkdx-page">
       <section className="pkdx-device pkdx-device-small">
         <div className="pkdx-topbar">
-          <div className="pkdx-lens">
-            <span />
-          </div>
-
-          <div className="pkdx-title-pill">POKÉMON</div>
-
-          <div className="pkdx-number">001</div>
+          <div className="pkdx-lens"><span /></div>
+          <div className="pkdx-title-pill">POKÉDEX</div>
+          <div className="pkdx-number">{rows.length || "000"}</div>
         </div>
-
         <div className="pkdx-screen">
           <div className="pkdx-screen-header">
             <div>
-              <div className="pkdx-kicker">Pokémon TU</div>
+              <div className="pkdx-kicker">National Archive</div>
               <h1>Pokédex</h1>
             </div>
             <div className="pkdx-status-light" />
           </div>
-
-          <p className="pkdx-intro">Browse Pokémon by National Dex, regional Dex, forms, species, and future card archive coverage.</p>
+          <p className="pkdx-intro">
+            Each Pokémon shows a cycling-style preview of card art. Open a Pokémon to see every card currently imported for that species.
+          </p>
         </div>
       </section>
 
       <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Framework Status</div>
-            <h2>Coming Online</h2>
-          </div>
-          <div className="pkdx-mini-dpad">
-            <span />
-          </div>
-        </div>
-
-        <p className="pkdx-panel-text">
-          This page is part of the Pokémon Tracker Unlimited framework. TCGDex
-          integration, Pokémon card data, variants, languages, pricing, collection
-          entries, and completion tracking will be connected in a later phase.
-        </p>
-      </section>
-
-      <section className="pkdx-panel">
-        <div className="pkdx-panel-header">
-          <div>
-            <div className="pkdx-kicker">Archive Resources</div>
-            <h2>Navigation</h2>
-          </div>
-        </div>
-
         <div className="pkdx-resource-grid">
-          {resources.map(([label, href, number]) => (
-            <Link key={href} href={href} className="pkdx-resource-card">
-              <div className="pkdx-resource-number">{number}</div>
+          {rows.map((row: any) => (
+            <Link key={row.slug} href={`/pokemon/pokedex/${row.slug}`} className="pkdx-pokemon-card">
+              <div className="pkdx-pokemon-image">
+                {row.images?.[0] ? <img src={row.images[0]} alt={row.name} /> : "?"}
+              </div>
               <div>
-                <h3>{label}</h3>
-                <p>Open the {label} section.</p>
+                <div className="pkdx-resource-number">#{String(row.dex || "?").padStart(3, "0")}</div>
+                <h3>{row.name}</h3>
+                <p>{row.cardCount} cards imported</p>
               </div>
             </Link>
           ))}

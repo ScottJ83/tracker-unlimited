@@ -2568,3 +2568,205 @@ body:has(.tu-hub-page) .tu-vault-roadmap {
   display: none !important;
 }
 
+
+
+/* Pokémon Alpha database framework styles */
+.pkdx-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.pkdx-stat-grid div {
+  border: 3px solid rgba(14,165,233,0.18);
+  border-radius: 18px;
+  padding: 16px;
+  background: linear-gradient(105deg, rgba(224,247,250,0.98), rgba(255,255,255,0.96));
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.pkdx-stat-grid span {
+  display: block;
+  color: #164e63;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.pkdx-stat-grid strong {
+  color: #0f172a;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.pkdx-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 14px;
+}
+
+.pkdx-card-tile,
+.pkdx-pokemon-card {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  border: 3px solid rgba(14,165,233,0.18);
+  border-radius: 18px;
+  padding: 14px;
+  background: linear-gradient(105deg, rgba(224,247,250,0.98), rgba(255,255,255,0.96));
+  color: #0f172a;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.pkdx-card-tile:hover,
+.pkdx-pokemon-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(220,38,38,0.52);
+  box-shadow: 0 14px 30px rgba(14,165,233,0.20);
+}
+
+.pkdx-card-image,
+.pkdx-pokemon-image {
+  width: 76px;
+  min-width: 76px;
+  height: 106px;
+  border-radius: 12px;
+  border: 3px solid #fff;
+  background: #e0f2fe;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #0284c7;
+  font-weight: 1000;
+}
+
+.pkdx-card-image img,
+.pkdx-pokemon-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pkdx-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pkdx-card-info h3,
+.pkdx-pokemon-card h3 {
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pkdx-card-info p,
+.pkdx-pokemon-card p {
+  margin: 4px 0;
+  color: #164e63;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.pkdx-card-price {
+  margin-top: 8px;
+  color: #dc2626;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.pkdx-card-actions {
+  display: grid;
+  align-content: end;
+  gap: 8px;
+}
+
+.pkdx-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  background: #0f172a;
+  padding: 5px;
+  color: #fff;
+}
+
+.pkdx-qty button,
+.pkdx-wishlist-button,
+.pkdx-tab-bar button {
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #22d3ee, #0284c7);
+  color: #fff;
+  font-weight: 1000;
+  cursor: pointer;
+}
+
+.pkdx-qty button {
+  width: 26px;
+  height: 26px;
+}
+
+.pkdx-qty span {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 1000;
+}
+
+.pkdx-wishlist-button {
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+}
+
+.pkdx-tab-bar {
+  border-radius: 22px;
+  border: 5px solid rgba(186,230,253,0.95);
+  background: linear-gradient(180deg, #fff, #e9fbff);
+  padding: 14px;
+  margin-bottom: 18px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.14);
+}
+
+.pkdx-tab-bar button {
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #fff, #dbeafe);
+  color: #0f172a;
+  border: 2px solid rgba(14,165,233,0.28);
+}
+
+.pkdx-tab-bar button.pkdx-tab-active {
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  color: #fff;
+  border-color: rgba(255,255,255,0.9);
+}
+
+.pkdx-tab-bar input {
+  flex: 1;
+  min-width: 260px;
+  border-radius: 12px !important;
+  border: 2px solid rgba(14,165,233,0.26) !important;
+  background: #fff !important;
+  color: #0f172a !important;
+  padding: 10px 12px !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 760px) {
+  .pkdx-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pkdx-card-tile,
+  .pkdx-pokemon-card {
+    display: grid;
+  }
+}
