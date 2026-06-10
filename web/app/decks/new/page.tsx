@@ -1,29 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 
-export default async function NewDeckPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const { data, error } = await supabase
-    .from("decks")
-    .insert({
-      user_id: user.id,
-      name: "New Deck",
-    })
-    .select("id")
-    .single();
-
-  if (error || !data) {
-    redirect("/decks");
-  }
-
-  redirect(`/decks/${data.id}`);
+export default function Page() {
+  redirect("/swu/decks/new");
 }

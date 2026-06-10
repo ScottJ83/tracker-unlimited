@@ -3,7 +3,7 @@ import NavBar from "@/components/NavBar";
 import ClientUsernameGate from "@/components/ClientUsernameGate";
 
 export const metadata = {
-  title: "Tracker Unlimited | Star Wars Unlimited Collection Tracker",
+  title: "Tracker Unlimited | Collection Archives",
 };
 
 export default function RootLayout({

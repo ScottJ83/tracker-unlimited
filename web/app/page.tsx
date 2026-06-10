@@ -1,188 +1,168 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 
-async function getAllCollectionForHome(supabase: any, userId: string) {
-  let allRows: any[] = [];
-  let from = 0;
-  const pageSize = 1000;
-
-  while (true) {
-    const { data, error } = await supabase
-      .from("collection_entries")
-      .select(`
-        quantity,
-        cards (
-          name,
-          variant,
-          price,
-          set_code
-        )
-      `)
-      .eq("user_id", userId)
-      .gt("quantity", 0)
-      .range(from, from + pageSize - 1);
-
-    if (error) throw error;
-    if (!data || data.length === 0) break;
-
-    allRows = [...allRows, ...data];
-
-    if (data.length < pageSize) break;
-    from += pageSize;
-  }
-
-  return allRows;
-}
-
-async function getLastPriceRefresh(supabase: any) {
-  const { data } = await supabase
-    .from("price_refresh_log")
-    .select("*")
-    .order("refreshed_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  return data || null;
-}
-
-function StatBox({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
+function ArchiveCard({
+  href,
+  kicker,
+  title,
+  description,
+  accent,
+  disabled,
+}: {
+  href: string;
+  kicker: string;
+  title: string;
+  description: string;
+  accent: string;
+  disabled?: boolean;
+}) {
+  const content = (
     <div
+      className="sw-panel"
       style={{
-        border: "1px solid rgba(255,255,255,0.14)",
-        background: "rgba(8,8,8,0.72)",
-        padding: "16px",
-        minHeight: "108px",
+        minHeight: "260px",
+        padding: "28px",
+        display: "grid",
+        alignContent: "space-between",
+        position: "relative",
+        overflow: "hidden",
+        borderColor: disabled ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.16)",
       }}
     >
-      <div style={{ color: "#9a9a9a", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.12em" }}>
-        {label}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(circle at 80% 18%, ${accent}, transparent 28%)`,
+          opacity: disabled ? 0.18 : 0.34,
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ position: "relative" }}>
+        <div className="sw-kicker" style={{ marginBottom: "14px" }}>
+          {kicker}
+        </div>
+
+        <h2
+          style={{
+            margin: 0,
+            color: "#fff",
+            fontSize: "clamp(34px, 4vw, 58px)",
+            lineHeight: 0.94,
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            textShadow: "0 0 24px rgba(255,255,255,0.18)",
+          }}
+        >
+          {title}
+        </h2>
+
+        <p
+          style={{
+            margin: "18px 0 0",
+            color: "#d5d5d5",
+            lineHeight: 1.65,
+            maxWidth: "520px",
+          }}
+        >
+          {description}
+        </p>
       </div>
-      <div style={{ color: "#fff", fontWeight: 900, fontSize: "26px", marginTop: "8px" }}>{value}</div>
-      {sub ? <div style={{ color: "#bfbfbf", fontSize: "13px", marginTop: "6px" }}>{sub}</div> : null}
+
+      <div
+        className={disabled ? "sw-button" : "sw-button sw-button-primary"}
+        style={{
+          justifySelf: "start",
+          marginTop: "28px",
+          position: "relative",
+          opacity: disabled ? 0.72 : 1,
+        }}
+      >
+        {disabled ? "Framework Ready" : "Open Archive"}
+      </div>
     </div>
+  );
+
+  if (disabled) {
+    return <div>{content}</div>;
+  }
+
+  return (
+    <Link href={href} style={{ display: "block" }}>
+      {content}
+    </Link>
   );
 }
 
-export default async function HomePage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const [collection, lastPriceRefresh] = await Promise.all([
-    getAllCollectionForHome(supabase, user.id),
-    getLastPriceRefresh(supabase),
-  ]);
-
-  const rows = (collection || []).map((item: any) => ({
-    ...item,
-    card: Array.isArray(item.cards) ? item.cards[0] : item.cards,
-  }));
-
-  const totalCardsOwned = rows.reduce(
-    (sum: number, item: any) => sum + Number(item.quantity || 0),
-    0
-  );
-
-  const totalUniqueCards = rows.length;
-
-  const totalValue = rows.reduce(
-    (sum: number, item: any) =>
-      sum + Number(item.quantity || 0) * Number(item.card?.price || 0),
-    0
-  );
-
-  const highest = [...rows].sort(
-    (a: any, b: any) =>
-      Number(b.card?.price || 0) * Number(b.quantity || 0) -
-      Number(a.card?.price || 0) * Number(a.quantity || 0)
-  )[0];
-
-  const lastRefreshLabel = lastPriceRefresh?.refreshed_at
-    ? new Date(lastPriceRefresh.refreshed_at).toLocaleDateString()
-    : "Not recorded yet";
-
+export default function TrackerUnlimitedHomePage() {
   return (
     <main>
       <section
         style={{
           minHeight: "calc(100vh - 190px)",
-          border: "1px solid rgba(255,255,255,0.16)",
-          background:
-            "linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,6,18,0.80) 46%, rgba(0,0,0,0.38) 100%), radial-gradient(circle at 18% 82%, rgba(12,54,105,0.32), transparent 30%), radial-gradient(circle at 76% 42%, rgba(245,197,66,0.13), transparent 25%), linear-gradient(180deg, rgba(15,29,52,0.54), rgba(0,0,0,0.96))",
-          boxShadow: "0 24px 90px rgba(0,0,0,0.62)",
-          padding: "54px 44px",
-          position: "relative",
-          overflow: "hidden",
+          display: "grid",
+          alignContent: "center",
+          gap: "34px",
         }}
       >
+        <div style={{ textAlign: "center", maxWidth: "860px", margin: "0 auto" }}>
+          <div className="sw-kicker">Universal Collection Archives</div>
+
+          <h1
+            className="sw-page-title"
+            style={{
+              marginTop: "14px",
+              marginBottom: "14px",
+            }}
+          >
+            Tracker Unlimited
+          </h1>
+
+          <p
+            className="sw-page-subtitle"
+            style={{
+              maxWidth: "720px",
+              margin: "0 auto",
+            }}
+          >
+            Choose your archive. Track collections, monitor completion, manage wishlists,
+            and build decks across supported trading card games.
+          </p>
+        </div>
+
         <div
           style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(circle at 78% 46%, rgba(255,255,255,0.14), transparent 1px), radial-gradient(circle at 62% 18%, rgba(255,255,255,0.10), transparent 1px), radial-gradient(circle at 89% 73%, rgba(255,255,255,0.10), transparent 1px)",
-            opacity: 0.8,
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "22px",
           }}
-        />
+        >
+          <ArchiveCard
+            href="/swu"
+            kicker="Active Archive"
+            title="Star Wars Unlimited"
+            description="Open the original Tracker Unlimited archive for Star Wars Unlimited cards, sets, collection tracking, decks, wishlist, uncollected cards, and analytics."
+            accent="rgba(245,197,66,0.34)"
+          />
 
-        <div style={{ position: "relative", maxWidth: "920px" }}>
-          <div className="sw-kicker">Star Wars Unlimited</div>
-          <h1
-            style={{
-              fontSize: "clamp(44px, 7vw, 92px)",
-              lineHeight: 0.92,
-              margin: "16px 0 18px",
-              maxWidth: "850px",
-              color: "#fff",
-              textShadow: "0 0 24px rgba(255,255,255,0.18)",
-            }}
-          >
-            Tracker<br />Unlimited
-          </h1>
-          <div style={{ width: "92px", height: "6px", background: "var(--accent)", marginBottom: "28px" }} />
-          <p style={{ color: "#d5d5d5", lineHeight: 1.75, fontSize: "18px", maxWidth: "680px" }}>
-            Track your collection, monitor set completion, manage wishlists, and build decks for Star Wars Unlimited
-          </p>
+          <ArchiveCard
+            href="/pokemon"
+            kicker="New Framework"
+            title="Pokémon"
+            description="Enter the Pokémon archive framework built for Pokédex browsing, regional organization, set tracking, collection management, wishlists, decks, and analytics."
+            accent="rgba(45,212,191,0.32)"
+          />
+        </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-              gap: "14px",
-              marginTop: "34px",
-              maxWidth: "920px",
-            }}
-          >
-            <StatBox label="Cards Owned" value={String(totalCardsOwned)} />
-            <StatBox label="Unique Owned" value={String(totalUniqueCards)} />
-            <StatBox label="Collection Value" value={`$${totalValue.toFixed(2)}`} />
-            <StatBox label="Price Refresh" value={lastRefreshLabel} />
-            <StatBox
-              label="Highest Value"
-              value={highest ? `$${(Number(highest.card?.price || 0) * Number(highest.quantity || 0)).toFixed(2)}` : "-"}
-              sub={highest ? `${highest.card?.name} (${highest.card?.variant})` : undefined}
-            />
-          </div>
-
-          <div style={{ display: "flex", gap: "12px", marginTop: "30px", flexWrap: "wrap" }}>
-            <Link href="/sets" className="sw-button sw-button-primary">
-              Browse Sets
-            </Link>
-            <Link href="/collection" className="sw-button">
-              View Collection
-            </Link>
-            <Link href="/analytics" className="sw-button">
-              Analytics
-            </Link>
-          </div>
+        <div
+          className="sw-panel"
+          style={{
+            padding: "18px",
+            textAlign: "center",
+            color: "#cfd7e4",
+          }}
+        >
+          Future archives may include Magic, Lorcana, One Piece, Yu-Gi-Oh, and more.
         </div>
       </section>
     </main>

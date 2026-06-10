@@ -132,7 +132,7 @@ export default function SetsClient({ sets = [] }: { sets: any[] }) {
           return (
             <Link
               key={set.code}
-              href={`/sets/${set.code}`}
+              href={`/swu/sets/${set.code}`}
               className="sw-card"
               style={{
                 minHeight: 260,
