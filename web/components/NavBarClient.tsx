@@ -49,39 +49,24 @@ function NavLink({ href, label }: { href: string; label: string }) {
 
 function CollectionMenu({ base }: { base: "/swu" | "/pokemon" }) {
   return (
-    <details style={{ position: "relative", display: "inline-block" }}>
-      <summary className="tu-nav-link" style={{ listStyle: "none", cursor: "pointer" }}>
-        Collection ▾
-      </summary>
+    <details className="tu-nav-menu">
+      <summary className="tu-nav-link">Collection ▾</summary>
 
-      <div
-        style={{
-          position: "absolute",
-          top: "24px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          minWidth: "190px",
-          border: "1px solid rgba(246,241,229,0.16)",
-          borderRadius: "12px",
-          background:
-            "linear-gradient(180deg, rgba(15,15,18,0.98), rgba(5,6,8,0.98))",
-          boxShadow: "0 20px 70px rgba(0,0,0,0.55)",
-          padding: "10px",
-          zIndex: 5000,
-          display: "grid",
-          gap: "8px",
-          textAlign: "left",
-        }}
-      >
+      <div className="tu-nav-dropdown">
         <Link className="tu-nav-link" href={`${base}/collection`}>
           Collection
         </Link>
-        <Link className="tu-nav-link" href={`${base}/uncollected`}>
-          Uncollected
-        </Link>
-        <Link className="tu-nav-link" href={`${base}/wishlist`}>
-          Wishlist
-        </Link>
+
+        {base === "/swu" ? (
+          <>
+            <Link className="tu-nav-link" href={`${base}/uncollected`}>
+              Uncollected
+            </Link>
+            <Link className="tu-nav-link" href={`${base}/wishlist`}>
+              Wishlist
+            </Link>
+          </>
+        ) : null}
       </div>
     </details>
   );
@@ -101,44 +86,22 @@ export default function NavBarClient({
     pathname === "/profile" ||
     pathname === "/choose-username";
 
+  const headerClassName = isPokemon
+    ? "tu-site-header tu-header-pokemon"
+    : isSwu
+      ? "tu-site-header tu-header-swu"
+      : "tu-site-header tu-header-home";
+
   return (
-    <header
-      style={{
-        borderBottom: "1px solid rgba(246,241,229,0.12)",
-        background: "rgba(5,6,8,0.88)",
-        backdropFilter: "blur(12px)",
-        position: "sticky",
-        top: 0,
-        zIndex: 2000,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1320px",
-          margin: "0 auto",
-          padding: "12px 24px 8px",
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
-          alignItems: "center",
-          gap: "18px",
-          minHeight: "94px",
-        }}
-      >
+    <header className={headerClassName}>
+      <div className="tu-header-main">
         <div />
 
         <Link href="/" aria-label="Tracker Unlimited Home" className="sw-logo-wordmark">
           TRACKER<br />UNLIMITED
         </Link>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "12px",
-            minWidth: 0,
-          }}
-        >
+        <div className="tu-header-actions">
           <ProfilePill displayName={displayName} avatarUrl={avatarUrl} />
           <AuthButton email={userEmail} />
         </div>
@@ -146,23 +109,7 @@ export default function NavBarClient({
 
       <div className="sw-divider" />
 
-      <nav
-        style={{
-          maxWidth: "1320px",
-          margin: "0 auto",
-          padding: "10px 24px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "24px",
-          color: "#cfcfcf",
-          flexWrap: "wrap",
-          fontSize: "12px",
-          fontWeight: 850,
-          letterSpacing: "0.11em",
-          textTransform: "uppercase",
-        }}
-      >
+      <nav className="tu-main-nav">
         {isPokemon ? (
           <>
             <NavLink href="/" label="Archives" />
