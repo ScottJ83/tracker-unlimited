@@ -1,0 +1,116 @@
+
+/* Pokémon navbar/header theme fix */
+body:has(.pkdx-page) header {
+  background:
+    linear-gradient(180deg, rgba(220,38,38,0.96), rgba(185,28,28,0.96)) !important;
+  border-bottom: 5px solid #0f172a !important;
+  box-shadow: 0 12px 34px rgba(15,23,42,0.24) !important;
+}
+
+body:has(.pkdx-page) header > div:first-child {
+  min-height: 86px !important;
+}
+
+body:has(.pkdx-page) .sw-logo-wordmark {
+  color: #ffffff !important;
+  text-shadow:
+    0 2px 0 rgba(15,23,42,0.75),
+    0 0 18px rgba(255,255,255,0.22) !important;
+  letter-spacing: 0.05em !important;
+}
+
+body:has(.pkdx-page) .sw-divider {
+  height: 6px !important;
+  background:
+    linear-gradient(90deg, #0f172a, #ffffff 48%, #ffffff 52%, #0f172a) !important;
+  border-top: 2px solid rgba(255,255,255,0.95);
+  border-bottom: 2px solid rgba(15,23,42,0.95);
+}
+
+body:has(.pkdx-page) nav {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(224,247,250,0.96)) !important;
+  border-top: 0 !important;
+  border-bottom: 3px solid rgba(14,165,233,0.30);
+  border-radius: 0 0 22px 22px;
+  box-shadow: 0 14px 32px rgba(14,165,233,0.16);
+}
+
+body:has(.pkdx-page) .tu-nav-link {
+  color: #0f172a !important;
+  background:
+    linear-gradient(180deg, #ffffff, #dff7ff) !important;
+  border: 2px solid rgba(14,165,233,0.32) !important;
+  border-radius: 14px !important;
+  padding: 9px 13px !important;
+  box-shadow: 0 5px 0 rgba(14,165,233,0.18);
+  font-weight: 950 !important;
+  letter-spacing: 0.07em !important;
+}
+
+body:has(.pkdx-page) .tu-nav-link:hover {
+  color: #ffffff !important;
+  background:
+    linear-gradient(180deg, #ef4444, #b91c1c) !important;
+  border-color: rgba(255,255,255,0.88) !important;
+  transform: translateY(-1px);
+}
+
+body:has(.pkdx-page) .tu-profile-pill {
+  border-radius: 14px !important;
+  border: 3px solid rgba(255,255,255,0.88) !important;
+  background:
+    linear-gradient(180deg, #ffffff, #e0f2fe) !important;
+  color: #0f172a !important;
+  box-shadow:
+    0 6px 0 rgba(15,23,42,0.18),
+    0 14px 28px rgba(15,23,42,0.22) !important;
+}
+
+body:has(.pkdx-page) .tu-profile-label {
+  color: #dc2626 !important;
+}
+
+body:has(.pkdx-page) .tu-profile-name,
+body:has(.pkdx-page) .tu-profile-initial {
+  color: #0f172a !important;
+}
+
+body:has(.pkdx-page) .tu-profile-avatar {
+  border-radius: 10px !important;
+  border: 2px solid #0ea5e9 !important;
+  background:
+    radial-gradient(circle at 35% 35%, #ffffff 0 28%, #ef4444 30% 48%, #0f172a 50% 54%, #ffffff 56% 100%) !important;
+}
+
+body:has(.pkdx-page) .sw-button,
+body:has(.pkdx-page) button.sw-button,
+body:has(.pkdx-page) a.sw-button {
+  border-radius: 14px !important;
+  border: 3px solid rgba(255,255,255,0.88) !important;
+  background:
+    linear-gradient(180deg, #ffffff, #e0f2fe) !important;
+  color: #0f172a !important;
+  min-height: 44px !important;
+  box-shadow:
+    0 6px 0 rgba(15,23,42,0.18),
+    0 14px 28px rgba(15,23,42,0.18) !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.07em !important;
+}
+
+body:has(.pkdx-page) .sw-button:hover,
+body:has(.pkdx-page) button.sw-button:hover,
+body:has(.pkdx-page) a.sw-button:hover {
+  background:
+    linear-gradient(180deg, #22d3ee, #0284c7) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.95) !important;
+}
+
+/* Keep dropdowns readable on Pokémon pages */
+body:has(.pkdx-page) details > div {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.99), rgba(224,247,250,0.99)) !important;
+  border: 3px solid rgba(14,165,233,0.32) !important;
+}

@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { POKEMON_NATIONAL_TOTAL, pokemonRegions, percent } from "./tcgdex";
 
+const SUPABASE_PAGE_SIZE = 1000;
+
 export async function getPokemonUser() {
   const supabase = await createClient();
   const {
@@ -10,27 +12,57 @@ export async function getPokemonUser() {
   return { supabase, user };
 }
 
+async function fetchAllRows(
+  supabase: any,
+  table: string,
+  select: string,
+  buildQuery?: (query: any) => any
+) {
+  const rows: any[] = [];
+  let from = 0;
+
+  while (true) {
+    let query = supabase
+      .from(table)
+      .select(select)
+      .range(from, from + SUPABASE_PAGE_SIZE - 1);
+
+    if (buildQuery) query = buildQuery(query);
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    if (!data?.length) break;
+
+    rows.push(...data);
+
+    if (data.length < SUPABASE_PAGE_SIZE) break;
+    from += SUPABASE_PAGE_SIZE;
+  }
+
+  return rows;
+}
+
 export async function getPokemonCollectionEntries(supabase: any, userId?: string) {
   if (!userId) return [];
 
-  const { data } = await supabase
-    .from("pokemon_collection_entries")
-    .select("id, print_id, quantity, condition, notes")
-    .eq("user_id", userId)
-    .gt("quantity", 0);
-
-  return data || [];
+  return fetchAllRows(
+    supabase,
+    "pokemon_collection_entries",
+    "id, print_id, quantity, condition, notes",
+    (query) => query.eq("user_id", userId).gt("quantity", 0)
+  );
 }
 
 export async function getPokemonWishlistEntries(supabase: any, userId?: string) {
   if (!userId) return [];
 
-  const { data } = await supabase
-    .from("pokemon_wishlist_entries")
-    .select("id, print_id, priority, notes")
-    .eq("user_id", userId);
-
-  return data || [];
+  return fetchAllRows(
+    supabase,
+    "pokemon_wishlist_entries",
+    "id, print_id, priority, notes",
+    (query) => query.eq("user_id", userId)
+  );
 }
 
 function firstDexId(card: any) {
@@ -71,8 +103,8 @@ export async function getPokemonCounts(supabase: any, userId?: string) {
     supabase.from("pokemon_sets").select("*", { count: "exact", head: true }),
   ]);
 
-  const [{ data: dexCards }, ownedEntries, wishlistEntries] = await Promise.all([
-    supabase.from("pokemon_cards").select("id, name, slug, dex_ids"),
+  const [dexCards, ownedEntries, wishlistEntries] = await Promise.all([
+    fetchAllRows(supabase, "pokemon_cards", "id, name, slug, dex_ids"),
     getPokemonCollectionEntries(supabase, userId),
     getPokemonWishlistEntries(supabase, userId),
   ]);
@@ -92,10 +124,13 @@ export async function getPokemonCounts(supabase: any, userId?: string) {
   let wishlistValue = 0;
 
   if (ownedPrintIds.size) {
-    const { data: ownedPrints } = await supabase
-      .from("pokemon_prints")
-      .select("id, price_market, pokemon_cards(id, name, slug, dex_ids)")
-      .in("id", Array.from(ownedPrintIds));
+    const ownedPrints = await fetchRowsByIds(
+      supabase,
+      "pokemon_prints",
+      "id, price_market, pokemon_cards(id, name, slug, dex_ids)",
+      "id",
+      Array.from(ownedPrintIds)
+    );
 
     const ownedCardIds = new Set<string>();
     const ownedSpecies = new Set<string>();
@@ -117,10 +152,13 @@ export async function getPokemonCounts(supabase: any, userId?: string) {
   }
 
   if (wishedPrintIds.size) {
-    const { data: wishedPrints } = await supabase
-      .from("pokemon_prints")
-      .select("id, price_market")
-      .in("id", Array.from(wishedPrintIds));
+    const wishedPrints = await fetchRowsByIds(
+      supabase,
+      "pokemon_prints",
+      "id, price_market",
+      "id",
+      Array.from(wishedPrintIds)
+    );
 
     for (const print of wishedPrints || []) {
       wishlistValue += Number(print.price_market || 0);
@@ -145,13 +183,34 @@ export async function getPokemonCounts(supabase: any, userId?: string) {
   };
 }
 
+async function fetchRowsByIds(
+  supabase: any,
+  table: string,
+  select: string,
+  column: string,
+  ids: any[]
+) {
+  const rows: any[] = [];
+  const chunkSize = 500;
+
+  for (let i = 0; i < ids.length; i += chunkSize) {
+    const chunk = ids.slice(i, i + chunkSize);
+    const { data, error } = await supabase.from(table).select(select).in(column, chunk);
+    if (error) throw error;
+    rows.push(...(data || []));
+  }
+
+  return rows;
+}
+
 export async function getPokemonPokedexRows(supabase: any, userId?: string) {
-  const [{ data: cards }, ownedEntries] = await Promise.all([
-    supabase
-      .from("pokemon_cards")
-      .select("id, name, slug, dex_ids, image")
-      .not("dex_ids", "eq", "{}")
-      .order("name", { ascending: true }),
+  const [cards, ownedEntries] = await Promise.all([
+    fetchAllRows(
+      supabase,
+      "pokemon_cards",
+      "id, name, slug, dex_ids, image",
+      (query) => query.not("dex_ids", "eq", "{}").order("name", { ascending: true })
+    ),
     getPokemonCollectionEntries(supabase, userId),
   ]);
 
@@ -159,10 +218,13 @@ export async function getPokemonPokedexRows(supabase: any, userId?: string) {
   const ownedCardIds = new Set<string>();
 
   if (ownedPrintIds.size) {
-    const { data: ownedPrints } = await supabase
-      .from("pokemon_prints")
-      .select("id, card_id")
-      .in("id", Array.from(ownedPrintIds));
+    const ownedPrints = await fetchRowsByIds(
+      supabase,
+      "pokemon_prints",
+      "id, card_id",
+      "id",
+      Array.from(ownedPrintIds)
+    );
 
     for (const print of ownedPrints || []) ownedCardIds.add(print.card_id);
   }
@@ -204,9 +266,14 @@ export async function getPokemonPokedexRows(supabase: any, userId?: string) {
 }
 
 export async function getPokemonSetsWithCompletion(supabase: any, userId?: string) {
-  const [{ data: sets }, { data: prints }, ownedEntries] = await Promise.all([
-    supabase.from("pokemon_sets").select("*").order("release_date", { ascending: false, nullsFirst: false }),
-    supabase.from("pokemon_prints").select("id, set_id"),
+  const [sets, prints, ownedEntries] = await Promise.all([
+    fetchAllRows(
+      supabase,
+      "pokemon_sets",
+      "*",
+      (query) => query.order("release_date", { ascending: false, nullsFirst: false })
+    ),
+    fetchAllRows(supabase, "pokemon_prints", "id, set_id"),
     getPokemonCollectionEntries(supabase, userId),
   ]);
 
