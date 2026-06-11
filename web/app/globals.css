@@ -3300,3 +3300,108 @@ body:has(.tu-hub-page) .tu-vault-roadmap {
     gap: 8px !important;
   }
 }
+/* Non-Pokemon navbar center/spread fix
+   Add to the very bottom of web/app/globals.css.
+   Keeps the current Pokemon header untouched. */
+
+.tu-site-header:not(.tu-header-pokemon) {
+  width: 100% !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2000 !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-header-main {
+  width: min(1320px, calc(100% - 48px)) !important;
+  max-width: 1320px !important;
+  margin: 0 auto !important;
+  padding: 16px 24px 12px !important;
+  min-height: 96px !important;
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  align-items: center !important;
+  gap: 18px !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-header-main > div:first-child {
+  display: block !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .sw-logo-wordmark {
+  display: block !important;
+  justify-self: center !important;
+  text-align: center !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-header-actions {
+  justify-self: end !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-main-nav {
+  width: min(1320px, calc(100% - 48px)) !important;
+  max-width: 1320px !important;
+  margin: 0 auto !important;
+  padding: 10px 24px 12px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 24px !important;
+  text-align: center !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-nav-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-nav-menu {
+  position: relative !important;
+  display: inline-block !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-nav-menu > summary {
+  list-style: none !important;
+  cursor: pointer !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-nav-menu > summary::-webkit-details-marker {
+  display: none !important;
+}
+
+.tu-site-header:not(.tu-header-pokemon) .tu-nav-dropdown {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 5000 !important;
+}
+
+@media (max-width: 760px) {
+  .tu-site-header:not(.tu-header-pokemon) .tu-header-main {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+  }
+
+  .tu-site-header:not(.tu-header-pokemon) .tu-header-main > div:first-child {
+    display: none !important;
+  }
+
+  .tu-site-header:not(.tu-header-pokemon) .tu-header-actions {
+    justify-self: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
+
+  .tu-site-header:not(.tu-header-pokemon) .tu-main-nav {
+    width: calc(100% - 24px) !important;
+    gap: 12px !important;
+  }
+}
