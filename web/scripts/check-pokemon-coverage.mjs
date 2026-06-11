@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+
 import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL =
@@ -55,6 +58,12 @@ async function main() {
 
   if (priceError) throw priceError;
 
+  const { data: bulbasaur } = await supabase
+    .from("pokemon_cards")
+    .select("id, name, dex_ids")
+    .ilike("name", "%bulbasaur%")
+    .limit(10);
+
   console.log(JSON.stringify({
     sets,
     cards,
@@ -63,6 +72,7 @@ async function main() {
     missingNationalDexNumbers: missing,
     pricedPrints: pricedPrints || 0,
     unpricedPrints: prints - (pricedPrints || 0),
+    bulbasaurSample: bulbasaur || [],
   }, null, 2));
 }
 
