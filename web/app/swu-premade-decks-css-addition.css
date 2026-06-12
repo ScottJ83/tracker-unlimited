@@ -1,0 +1,265 @@
+/* SWU Pre-Made Decks */
+.tu-nav-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.tu-nav-menu > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.tu-nav-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tu-nav-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 205px;
+  border: 1px solid rgba(246,241,229,0.16);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(15,15,18,0.98), rgba(5,6,8,0.98));
+  box-shadow: 0 20px 70px rgba(0,0,0,0.55);
+  padding: 10px;
+  z-index: 5000;
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.premade-deck-card {
+  display: block;
+  padding: 22px;
+  text-decoration: none;
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.premade-deck-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(246,241,229,0.35);
+  box-shadow: 0 22px 70px rgba(0,0,0,0.36);
+}
+
+.premade-progress-block {
+  margin-top: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.premade-progress-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--sw-muted);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 850;
+}
+
+.premade-progress-top strong {
+  color: var(--sw-cream);
+}
+
+.premade-progress-bar {
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--sw-border);
+  background: rgba(0,0,0,0.42);
+}
+
+.premade-progress-bar.large {
+  height: 16px;
+  margin-top: 8px;
+}
+
+.premade-progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f7d76a, #f97316);
+}
+
+.premade-summary-shell {
+  margin-bottom: 22px;
+}
+
+.premade-summary-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.3fr) repeat(3, minmax(140px, 0.7fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.premade-large-percent {
+  font-size: clamp(42px, 6vw, 72px);
+  line-height: 0.95;
+  color: var(--sw-cream);
+  font-weight: 950;
+  margin-top: 8px;
+}
+
+.premade-stat {
+  border: 1px solid var(--sw-border);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,0.035);
+  display: grid;
+  align-content: center;
+  gap: 8px;
+}
+
+.premade-stat span {
+  color: var(--sw-muted);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 850;
+}
+
+.premade-stat strong {
+  color: var(--sw-cream);
+  font-size: 24px;
+}
+
+.premade-deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 16px;
+}
+
+.premade-card-tile {
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(15,23,42,0.88);
+  display: flex;
+  gap: 12px;
+  min-height: 164px;
+  position: relative;
+  overflow: visible;
+}
+
+.premade-card-tile.complete {
+  border-color: rgba(74,222,128,0.42);
+  box-shadow: 0 14px 44px rgba(22,163,74,0.10);
+}
+
+.premade-card-tile.partial {
+  border-color: rgba(250,204,21,0.38);
+}
+
+.premade-card-tile.missing {
+  filter: grayscale(1);
+  opacity: 0.52;
+}
+
+.premade-card-image {
+  width: 72px;
+  min-width: 72px;
+  height: 102px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #05070d;
+  overflow: visible;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sw-dim);
+}
+
+.premade-card-image img {
+  width: 72px;
+  height: 102px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.premade-card-tile:hover .premade-card-image img {
+  transform: translateY(-12px) scale(2.25);
+  box-shadow: 0 22px 60px rgba(0,0,0,0.64);
+  z-index: 20;
+}
+
+.premade-missing-stamp {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-16deg);
+  border: 2px solid rgba(248,250,252,0.86);
+  color: rgba(248,250,252,0.92);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.45);
+}
+
+.premade-card-body {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+}
+
+.premade-card-topline,
+.premade-card-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  color: var(--sw-muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.premade-card-topline strong {
+  color: var(--sw-cream);
+}
+
+.premade-card-body h3 {
+  margin: 3px 0 0;
+  color: var(--sw-cream);
+  font-size: 16px;
+  line-height: 1.15;
+}
+
+.premade-card-body p {
+  margin: 0;
+  color: var(--sw-muted);
+  font-size: 12px;
+  min-height: 15px;
+}
+
+.premade-owned-note {
+  margin-top: 6px;
+  color: #fde68a;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.premade-card-tile.complete .premade-owned-note {
+  color: #86efac;
+}
+
+.premade-card-tile.missing .premade-owned-note {
+  color: #fca5a5;
+}
+
+@media (max-width: 850px) {
+  .premade-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

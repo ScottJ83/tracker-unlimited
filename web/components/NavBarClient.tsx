@@ -47,28 +47,56 @@ function NavLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-function CollectionMenu({ base }: { base: "/swu" | "/pokemon" }) {
+function NavMenu({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <details className="tu-nav-menu">
-      <summary className="tu-nav-link">Collection ▾</summary>
-
-      <div className="tu-nav-dropdown">
-        <Link className="tu-nav-link" href={`${base}/collection`}>
-          Collection
-        </Link>
-
-        {base === "/swu" ? (
-          <>
-            <Link className="tu-nav-link" href={`${base}/uncollected`}>
-              Uncollected
-            </Link>
-            <Link className="tu-nav-link" href={`${base}/wishlist`}>
-              Wishlist
-            </Link>
-          </>
-        ) : null}
-      </div>
+      <summary className="tu-nav-link">{label} ▾</summary>
+      <div className="tu-nav-dropdown">{children}</div>
     </details>
+  );
+}
+
+function CollectionMenu({ base }: { base: "/swu" | "/pokemon" }) {
+  return (
+    <NavMenu label="Collection">
+      <Link className="tu-nav-link" href={`${base}/collection`}>
+        Collection
+      </Link>
+
+      {base === "/swu" ? (
+        <>
+          <Link className="tu-nav-link" href={`${base}/uncollected`}>
+            Uncollected
+          </Link>
+          <Link className="tu-nav-link" href={`${base}/wishlist`}>
+            Wishlist
+          </Link>
+        </>
+      ) : null}
+    </NavMenu>
+  );
+}
+
+function DecksMenu({ base }: { base: "/swu" | "/pokemon" }) {
+  if (base === "/pokemon") {
+    return <NavLink href="/pokemon/decks" label="Decks" />;
+  }
+
+  return (
+    <NavMenu label="Decks">
+      <Link className="tu-nav-link" href="/swu/decks">
+        My Decks
+      </Link>
+      <Link className="tu-nav-link" href="/swu/decks/premade">
+        Pre-Made Decks
+      </Link>
+    </NavMenu>
   );
 }
 
@@ -118,7 +146,7 @@ export default function NavBarClient({
             <NavLink href="/pokemon/sets" label="Sets" />
             <NavLink href="/pokemon/regions" label="Regions" />
             <CollectionMenu base="/pokemon" />
-            <NavLink href="/pokemon/decks" label="Decks" />
+            <DecksMenu base="/pokemon" />
             <NavLink href="/pokemon/analytics" label="Analytics" />
             <NavLink href="/pokemon/about" label="About" />
           </>
@@ -129,7 +157,7 @@ export default function NavBarClient({
             <NavLink href="/swu/sets" label="Sets" />
             <CollectionMenu base="/swu" />
             <NavLink href="/swu/cards" label="Cards" />
-            <NavLink href="/swu/decks" label="Decks" />
+            <DecksMenu base="/swu" />
             <NavLink href="/swu/analytics" label="Analytics" />
             <NavLink href="/swu/about" label="About" />
           </>
