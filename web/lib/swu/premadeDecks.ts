@@ -1,88 +1,147 @@
-export type PremadeDeckEntry = {
-  code: string;
+import { createClient } from "@/lib/supabase/server";
+
+export type PremadeDeckCard = {
+  id: number;
+  deck_id: string;
+  card_name: string;
   quantity: number;
+  card_number: string | null;
+  set_code_hint: string | null;
+  resolved_card_id: string | null;
+  card_snapshot: any | null;
+  match_status: string | null;
 };
 
 export type PremadeDeck = {
+  id: string;
   slug: string;
   name: string;
-  productType: "Spotlight Deck" | "Twin Suns Deck" | "Starter Deck";
-  game: "Star Wars Unlimited";
-  description: string;
-  entries: PremadeDeckEntry[];
+  deck_type: string;
+  product_wave: string | null;
+  leader_name: string | null;
+  base_name: string | null;
+  sort_order: number | null;
 };
 
-function entry(line: string): PremadeDeckEntry {
-  const match = line.trim().match(/^(\d+)x([A-Z0-9]+_\d+)$/);
+function cardImage(card: any) {
+  return card?._image || card?.image_url || card?.image || card?.front_image_url || card?.art_url || card?.card_image || null;
+}
 
-  if (!match) {
-    throw new Error(`Invalid premade deck entry: ${line}`);
+function cardType(card: any) {
+  return card?.type || card?.card_type || card?.cardType || "Card";
+}
+
+function cardSubtitle(card: any) {
+  return card?.subtitle || card?.subtitle_text || null;
+}
+
+function cardSetLine(card: any, fallbackSet?: string | null, fallbackNumber?: string | null) {
+  const set = card?.set_code || card?.set || card?.setCode || fallbackSet || "";
+  const num = card?.number || card?.card_number || card?.collector_number || card?.collectorNumber || fallbackNumber || "";
+  return [set, num ? `#${num}` : null].filter(Boolean).join(" ");
+}
+
+function getCollectionCardKey(entry: any) {
+  return entry?.card_id || entry?.cardId || entry?.cards_id || entry?.resolved_card_id || null;
+}
+
+async function getOwnedByCardId(supabase: any, userId?: string) {
+  const owned = new Map<string, number>();
+  if (!userId) return owned;
+
+  const { data } = await supabase.from("collection_entries").select("*").eq("user_id", userId);
+  for (const entry of data || []) {
+    const key = getCollectionCardKey(entry);
+    if (!key) continue;
+    owned.set(String(key), (owned.get(String(key)) || 0) + Number(entry.quantity || 0));
   }
+  return owned;
+}
+
+export function decorateDeck(deck: PremadeDeck, cards: PremadeDeckCard[], ownedByCardId: Map<string, number>) {
+  let requiredCopies = 0;
+  let ownedCopies = 0;
+  let completedLines = 0;
+  let totalValue = 0;
+  let ownedValue = 0;
+  let remainingValue = 0;
+
+  const decoratedCards = cards.map((line) => {
+    const required = Number(line.quantity || 0);
+    const owned = line.resolved_card_id ? Number(ownedByCardId.get(String(line.resolved_card_id)) || 0) : 0;
+    const countedOwned = Math.min(owned, required);
+    const card = line.card_snapshot || {};
+    const price = Number(card.price_market || card.price || card.market_price || card.usd || 0);
+    const isComplete = countedOwned >= required;
+
+    requiredCopies += required;
+    ownedCopies += countedOwned;
+    if (isComplete) completedLines += 1;
+    totalValue += price * required;
+    ownedValue += price * countedOwned;
+    remainingValue += price * Math.max(required - countedOwned, 0);
+
+    return {
+      ...line,
+      required,
+      owned,
+      countedOwned,
+      missing: Math.max(required - countedOwned, 0),
+      isComplete,
+      card,
+      image: cardImage(card),
+      displayName: card?.name || line.card_name,
+      subtitle: cardSubtitle(card),
+      type: cardType(card),
+      setLine: cardSetLine(card, line.set_code_hint, line.card_number),
+      price,
+    };
+  });
 
   return {
-    quantity: Number(match[1]),
-    code: match[2],
+    ...deck,
+    cards: decoratedCards,
+    requiredCopies,
+    ownedCopies,
+    missingCopies: Math.max(requiredCopies - ownedCopies, 0),
+    completedLines,
+    totalLines: cards.length,
+    completion: requiredCopies ? Math.round((ownedCopies / requiredCopies) * 1000) / 10 : 0,
+    totalValue,
+    ownedValue,
+    remainingValue,
   };
 }
 
-export const premadeDecks: PremadeDeck[] = [
-  {
-    slug: "padme-amidala-spotlight",
-    name: "Padmé Amidala",
-    productType: "Spotlight Deck",
-    game: "Star Wars Unlimited",
-    description:
-      "Track your collection progress toward the official Padmé Amidala pre-made deck. Cards remain visible even when missing, with missing cards grayed out until they are in your collection.",
-    entries: [
-      "2xSEC_120",
-      "2xSEC_129",
-      "1xSEC_103",
-      "2xLOF_198",
-      "1xLOF_100",
-      "1xSEC_99",
-      "3xSEC_201",
-      "1xSEC_16",
-      "1xSEC_127",
-      "2xJTL_123",
-      "1xSEC_208",
-      "1xSEC_111",
-      "2xSEC_94",
-      "2xSEC_234",
-      "2xSEC_198",
-      "2xLOF_192",
-      "1xJTL_111",
-      "3xSEC_98",
-      "1xSEC_106",
-      "1xSEC_93",
-      "1xSEC_22",
-      "3xSEC_96",
-      "2xSEC_116",
-      "3xSEC_197",
-      "3xLOF_194",
-      "1xSEC_256",
-      "3xSEC_226",
-      "2xSEC_199",
-      "1xSEC_248",
-      "1xSEC_115",
-    ].map(entry),
-  },
-];
+export async function getPremadeDeckList() {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth?.user?.id;
 
-export function getPremadeDeck(slug: string) {
-  return premadeDecks.find((deck) => deck.slug === slug) || null;
+  const [{ data: decks }, { data: cards }, ownedByCardId] = await Promise.all([
+    supabase.from("swu_premade_decks").select("*").order("sort_order", { ascending: true }),
+    supabase.from("swu_premade_deck_cards").select("*").order("card_name", { ascending: true }),
+    getOwnedByCardId(supabase, userId),
+  ]);
+
+  return (decks || []).map((deck: PremadeDeck) => {
+    const deckCards = (cards || []).filter((line: PremadeDeckCard) => line.deck_id === deck.id);
+    return decorateDeck(deck, deckCards, ownedByCardId);
+  });
 }
 
-export function parseCardCode(code: string) {
-  const [setCode, rawNumber] = code.split("_");
+export async function getPremadeDeckBySlug(slug: string) {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth?.user?.id;
 
-  return {
-    code,
-    setCode,
-    cardNumber: rawNumber,
-    paddedCardNumber: rawNumber?.padStart(3, "0"),
-  };
-}
+  const { data: deck } = await supabase.from("swu_premade_decks").select("*").eq("slug", slug).single();
+  if (!deck) return null;
 
-export function getDeckTotalCards(deck: PremadeDeck) {
-  return deck.entries.reduce((sum, entry) => sum + entry.quantity, 0);
+  const [{ data: cards }, ownedByCardId] = await Promise.all([
+    supabase.from("swu_premade_deck_cards").select("*").eq("deck_id", deck.id).order("card_name", { ascending: true }),
+    getOwnedByCardId(supabase, userId),
+  ]);
+
+  return decorateDeck(deck, cards || [], ownedByCardId);
 }
