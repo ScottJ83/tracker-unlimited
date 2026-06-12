@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import PremadeDeckStyles from "@/components/PremadeDeckStyles";
 import { getPremadeDeckBySlug } from "@/lib/swu/premadeDecks";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -15,6 +16,7 @@ export default async function PremadeDeckDetailPage({ params }: PageProps) {
 
   return (
     <main className="sw-page-shell premade-page-shell">
+      <PremadeDeckStyles />
       <section className="sw-hero-block compact premade-detail-hero">
         <div>
           <p className="sw-eyebrow">{deck.deck_type}</p>
@@ -25,22 +27,10 @@ export default async function PremadeDeckDetailPage({ params }: PageProps) {
       </section>
 
       <section className="premade-summary sw-card-panel">
-        <div>
-          <p className="sw-eyebrow">Completion</p>
-          <strong>{deck.completion}%</strong>
-        </div>
-        <div>
-          <p className="sw-eyebrow">Copies Owned</p>
-          <strong>{deck.ownedCopies} / {deck.requiredCopies}</strong>
-        </div>
-        <div>
-          <p className="sw-eyebrow">Cards Complete</p>
-          <strong>{deck.completedLines} / {deck.totalLines}</strong>
-        </div>
-        <div>
-          <p className="sw-eyebrow">Remaining Cost</p>
-          <strong>{money(deck.remainingValue)}</strong>
-        </div>
+        <div><p className="sw-eyebrow">Completion</p><strong>{deck.completion}%</strong></div>
+        <div><p className="sw-eyebrow">Copies Owned</p><strong>{deck.ownedCopies} / {deck.requiredCopies}</strong></div>
+        <div><p className="sw-eyebrow">Cards Complete</p><strong>{deck.completedLines} / {deck.totalLines}</strong></div>
+        <div><p className="sw-eyebrow">Remaining Cost</p><strong>{money(deck.remainingValue)}</strong></div>
       </section>
 
       <section className="premade-progress-card sw-card-panel">

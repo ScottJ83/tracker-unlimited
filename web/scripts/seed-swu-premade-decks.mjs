@@ -129,14 +129,14 @@ async function main() {
         deck_id: item.id,
         card_name: card.name,
         quantity: card.qty,
-        card_number: card.number,
+        card_number: card.number ? String(card.number) : "",
         set_code_hint: card.setCodeHint,
         role: "main",
         resolved_card_id: found?.id || null,
         card_snapshot: found ? { ...found, _image: imageFor(found) } : null,
         match_status: found ? "matched" : "unmatched",
         updated_at: new Date().toISOString(),
-      }, { onConflict: "deck_id,card_name,coalesce(card_number, ''),role" }).throwOnError();
+      }, { onConflict: "deck_id,card_name,card_number,role" }).throwOnError();
       lineCount += 1;
     }
     deckCount += 1;

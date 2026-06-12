@@ -47,39 +47,26 @@ function NavLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-function NavMenu({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <details className="tu-nav-menu">
-      <summary className="tu-nav-link">{label} ▾</summary>
-      <div className="tu-nav-dropdown">{children}</div>
-    </details>
-  );
-}
-
 function CollectionMenu({ base }: { base: "/swu" | "/pokemon" }) {
   return (
-    <NavMenu label="Collection">
-      <Link className="tu-nav-link" href={`${base}/collection`}>
-        Collection
-      </Link>
-
-      {base === "/swu" ? (
-        <>
-          <Link className="tu-nav-link" href={`${base}/uncollected`}>
-            Uncollected
-          </Link>
-          <Link className="tu-nav-link" href={`${base}/wishlist`}>
-            Wishlist
-          </Link>
-        </>
-      ) : null}
-    </NavMenu>
+    <details className="tu-nav-menu">
+      <summary className="tu-nav-link">Collection ▾</summary>
+      <div className="tu-nav-dropdown">
+        <Link className="tu-nav-link" href={`${base}/collection`}>
+          Collection
+        </Link>
+        {base === "/swu" ? (
+          <>
+            <Link className="tu-nav-link" href={`${base}/uncollected`}>
+              Uncollected
+            </Link>
+            <Link className="tu-nav-link" href={`${base}/wishlist`}>
+              Wishlist
+            </Link>
+          </>
+        ) : null}
+      </div>
+    </details>
   );
 }
 
@@ -89,14 +76,17 @@ function DecksMenu({ base }: { base: "/swu" | "/pokemon" }) {
   }
 
   return (
-    <NavMenu label="Decks">
-      <Link className="tu-nav-link" href="/swu/decks">
-        My Decks
-      </Link>
-      <Link className="tu-nav-link" href="/swu/decks/premade">
-        Pre-Made Decks
-      </Link>
-    </NavMenu>
+    <details className="tu-nav-menu">
+      <summary className="tu-nav-link">Decks ▾</summary>
+      <div className="tu-nav-dropdown">
+        <Link className="tu-nav-link" href="/swu/decks">
+          My Decks
+        </Link>
+        <Link className="tu-nav-link" href="/swu/decks/premade">
+          Pre-Made Decks
+        </Link>
+      </div>
+    </details>
   );
 }
 
@@ -124,11 +114,9 @@ export default function NavBarClient({
     <header className={headerClassName}>
       <div className="tu-header-main">
         <div />
-
         <Link href="/" aria-label="Tracker Unlimited Home" className="sw-logo-wordmark">
           TRACKER<br />UNLIMITED
         </Link>
-
         <div className="tu-header-actions">
           <ProfilePill displayName={displayName} avatarUrl={avatarUrl} />
           <AuthButton email={userEmail} />

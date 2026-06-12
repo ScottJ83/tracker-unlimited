@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PremadeDeckStyles from "@/components/PremadeDeckStyles";
 import { getPremadeDeckList } from "@/lib/swu/premadeDecks";
 
 function money(value: number) {
@@ -10,10 +11,10 @@ export default async function PremadeDecksPage() {
 
   return (
     <main className="sw-page-shell premade-page-shell">
+      <PremadeDeckStyles />
       <section className="sw-hero-block compact">
         <p className="sw-eyebrow">Deck Database</p>
         <h1>Pre-Made Decks</h1>
-        <p className="sw-muted">Official starter and spotlight deck checklists tracked against your collection.</p>
       </section>
 
       <section className="premade-deck-grid">
