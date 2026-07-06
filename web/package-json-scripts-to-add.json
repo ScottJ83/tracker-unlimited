@@ -1,0 +1,4 @@
+{
+  "mtg:import": "node scripts/import-mtg-scryfall.mjs",
+  "mtg:check": "node scripts/check-mtg-coverage.mjs"
+}

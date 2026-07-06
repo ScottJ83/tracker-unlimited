@@ -11,7 +11,9 @@
     "pokemon:check": "node scripts/check-pokemon-coverage.mjs",
     "pokemon:prices": "node scripts/check-pokemon-prices.mjs",
     "pokemon:dex-backfill": "node scripts/backfill-pokemon-dex-ids.mjs",
-    "swu:seed-premade-decks": "node scripts/seed-swu-premade-decks.mjs"
+    "swu:seed-premade-decks": "node scripts/seed-swu-premade-decks.mjs",
+    "mtg:import": "node scripts/import-mtg-scryfall.mjs",
+    "mtg:check": "node scripts/check-mtg-coverage.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
