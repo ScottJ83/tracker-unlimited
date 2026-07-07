@@ -1,15 +1,14 @@
-"use client";
-
-import { useState } from "react";
 import MtgQuantityControls from "./MtgQuantityControls";
-import { usd } from "@/lib/mtg/format";
+
+const MTG_CARD_BACK =
+  "https://cards.scryfall.io/back/normal/0/0/00000000-0000-0000-0000-000000000000.jpg";
 
 type Props = {
   card: any;
   muted?: boolean;
-  hidden?: boolean;
   showControls?: boolean;
   compactControls?: boolean;
+  revealUnownedImages?: boolean;
 };
 
 function cardName(card: any) {
@@ -20,92 +19,65 @@ function typeLine(card: any) {
   return card?.mtg_cards?.type_line || card?.type_line || "";
 }
 
-function cardImage(card: any) {
-  return card?.image_normal || card?.image_large || card?.image_small || card?.image_png;
+function manaCost(card: any) {
+  return card?.mtg_cards?.mana_cost || card?.mana_cost || "";
 }
 
-function price(card: any) {
-  return Number(card?.price_usd || card?.price_usd_foil || card?.price_usd_etched || 0);
+function setLine(card: any) {
+  const setCode = String(card?.set_code || "MTG").toUpperCase();
+  const number = card?.collector_number || "—";
+  const rarity = card?.rarity ? String(card.rarity).toUpperCase() : "RARITY UNKNOWN";
+  return `${setCode} #${number} • ${rarity}`;
 }
 
-function totalOwned(card: any) {
-  if (!card?.collectionEntry && card?.ownedCopies !== undefined) return Number(card.ownedCopies || 0);
-
-  return Number(card?.collectionEntry?.quantity || 0)
-    + Number(card?.collectionEntry?.foil_quantity || 0)
-    + Number(card?.collectionEntry?.etched_quantity || 0);
+function priceLine(card: any) {
+  const normal = Number(card?.price_usd || 0);
+  const foil = Number(card?.price_usd_foil || 0);
+  const etched = Number(card?.price_usd_etched || 0);
+  const price = normal || foil || etched;
+  return price ? `$${price.toFixed(2)}` : "No price";
 }
 
-function CardImage({ src, name, hidden }: { src?: string | null; name: string; hidden?: boolean }) {
-  const [hover, setHover] = useState(false);
-
-  return (
-    <div
-      className="mtg-card-image-wrap"
-      onMouseEnter={() => { if (!hidden && src) setHover(true); }}
-      onMouseLeave={() => setHover(false)}
-    >
-      {!hidden && src ? (
-        <>
-          <img src={src} alt={name} className="mtg-card-image" />
-          {hover ? <img src={src} alt={name} className="mtg-card-image-preview" /> : null}
-        </>
-      ) : (
-        <div className="mtg-card-placeholder">?</div>
-      )}
-    </div>
-  );
-}
-
-function FinishPills({ card }: { card: any }) {
-  const finishes = Array.isArray(card?.finishes) ? card.finishes : [];
-  if (!finishes.length) return null;
-
-  return (
-    <div className="mtg-pill-row">
-      {finishes.slice(0, 4).map((finish: string) => (
-        <span key={finish} className="mtg-aspect-pill">{finish}</span>
-      ))}
-    </div>
-  );
-}
-
-export default function MtgCardTile({ card, muted = false, hidden = false, showControls = false, compactControls = false }: Props) {
+export default function MtgCardTile({
+  card,
+  muted = false,
+  showControls = false,
+  compactControls = false,
+  revealUnownedImages = false,
+}: Props) {
   const name = cardName(card);
-  const type = typeLine(card);
-  const image = cardImage(card);
+  const image = card?.image_normal || card?.image_large || card?.image_small;
   const normalQuantity = Number(card?.collectionEntry?.quantity || 0);
   const foilQuantity = Number(card?.collectionEntry?.foil_quantity || 0);
   const etchedQuantity = Number(card?.collectionEntry?.etched_quantity || 0);
-  const qty = totalOwned(card);
-  const unitPrice = price(card);
-  const totalValue = unitPrice * qty;
+  const ownedCopies = normalQuantity + foilQuantity + etchedQuantity;
+  const isOwned = ownedCopies > 0 || card?.isOwned;
+  const shouldShowImage = isOwned || revealUnownedImages;
 
   return (
-    <article className={`mtg-card-tile ${muted ? "is-muted" : ""} ${hidden ? "is-hidden-card" : ""}`}>
-      <CardImage src={image} name={name} hidden={hidden} />
-
-      <div className="mtg-card-tile-body">
-        {hidden ? (
-          <>
-            <p className="mtg-card-kicker">{String(card?.set_code || "MTG").toUpperCase()} #{card?.collector_number || "—"}</p>
-            <h3>Unowned Card</h3>
-            <p>Details hidden. Enable Show Unowned to reveal card information.</p>
-            <div className="mtg-card-value-row"><span>Qty: 0</span></div>
-          </>
+    <article className={`mtg-card-tile mtg-card-row ${muted ? "is-muted" : ""} ${isOwned ? "is-owned" : "is-unowned"}`}>
+      <div className="mtg-card-image-wrap mtg-card-row-image">
+        {shouldShowImage && image ? (
+          <img src={image} alt={name} />
         ) : (
-          <>
-            <p className="mtg-card-kicker">{String(card?.set_code || "MTG").toUpperCase()} #{card?.collector_number || "—"} • {card?.rarity || "—"}</p>
-            <h3>{name}</h3>
-            <p>{type || "—"}</p>
-            <FinishPills card={card} />
-            <div className="mtg-card-value-row">
-              <span className="mtg-card-price">Qty: {qty}</span>
-              <span>Unit: {usd(unitPrice)}</span>
-              <span className="mtg-card-price">Total: {usd(totalValue)}</span>
-            </div>
-          </>
+          <div className="mtg-card-back-placeholder" aria-label="Unowned card image hidden">
+            <img src={MTG_CARD_BACK} alt="Magic card back" />
+            <span>Unowned Card</span>
+          </div>
         )}
+      </div>
+
+      <div className="mtg-card-tile-body mtg-card-row-body">
+        <p className="mtg-card-kicker">{setLine(card)}</p>
+        <div className="mtg-card-title-row">
+          <h3>{name}</h3>
+          {manaCost(card) ? <span className="mtg-mana-cost">{manaCost(card)}</span> : null}
+        </div>
+        <p className="mtg-type-line">{typeLine(card)}</p>
+        <div className="mtg-card-meta-row">
+          <span>{priceLine(card)}</span>
+          <span>{isOwned ? `Owned ${ownedCopies}` : "Not in collection"}</span>
+        </div>
       </div>
 
       {showControls ? (

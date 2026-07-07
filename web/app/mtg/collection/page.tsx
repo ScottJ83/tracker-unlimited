@@ -38,13 +38,13 @@ export default async function Page() {
           </div>
 
           {cards.length ? (
-            <div className="mtg-card-grid">
-              {cards.map((card: any) => <MtgCardTile key={card.id} card={card} showControls />)}
+            <div className="mtg-card-list">
+              {cards.map((card: any) => <MtgCardTile key={card.id} card={card} showControls revealUnownedImages />)}
             </div>
           ) : (
             <div className="mtg-empty-state">
               <h3>No MTG cards added yet</h3>
-              <p>Open a set, click “Show Missing,” and use the + buttons to add your first cards.</p>
+              <p>Open a set and use the + buttons to add your first cards.</p>
             </div>
           )}
         </section>

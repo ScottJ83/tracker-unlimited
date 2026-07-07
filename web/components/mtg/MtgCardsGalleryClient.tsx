@@ -3,67 +3,64 @@
 import { useMemo, useState } from "react";
 import MtgCardTile from "./MtgCardTile";
 
-function haystack(card: any) {
-  const linked = Array.isArray(card?.mtg_cards) ? card.mtg_cards[0] : card?.mtg_cards;
-  return [
-    linked?.name,
-    linked?.type_line,
-    card?.set_code,
-    card?.collector_number,
-    card?.rarity,
-    card?.lang,
-    ...(Array.isArray(card?.finishes) ? card.finishes : []),
-  ].filter(Boolean).join(" ").toLowerCase();
-}
-
 export default function MtgCardsGalleryClient({ cards }: { cards: any[] }) {
-  const [hideMissing, setHideMissing] = useState(true);
+  const [showImages, setShowImages] = useState(false);
   const [search, setSearch] = useState("");
 
   const visibleCards = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return (cards || []).filter((card) => {
-      if (hideMissing && !card.isOwned) return false;
-      return !q || haystack(card).includes(q);
-    });
-  }, [cards, hideMissing, search]);
+    if (!q) return cards;
 
-  const ownedCount = cards.filter((card) => card.isOwned).length;
-  const missingCount = cards.length - ownedCount;
+    return cards.filter((card) => {
+      const name = String(card?.mtg_cards?.name || card?.name || "").toLowerCase();
+      const typeLine = String(card?.mtg_cards?.type_line || card?.type_line || "").toLowerCase();
+      const setCode = String(card?.set_code || "").toLowerCase();
+      const number = String(card?.collector_number || "").toLowerCase();
+      return name.includes(q) || typeLine.includes(q) || setCode.includes(q) || number.includes(q);
+    });
+  }, [cards, search]);
+
+  const owned = cards.filter((card) => card.isOwned).length;
 
   return (
     <section className="mtg-panel">
-      <section className="mtg-filter-panel">
-        <input
-          type="text"
-          placeholder="Search name, set, number, rarity, finish, or type"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
-        <label className="mtg-checkbox-label">
-          <input type="checkbox" checked={!hideMissing} onChange={(event) => setHideMissing(!event.target.checked)} />
-          Show Unowned
-        </label>
-      </section>
-
       <div className="mtg-section-heading mtg-binder-toolbar">
         <div>
-          <p className="mtg-kicker">Card Archive</p>
+          <p className="mtg-kicker">Archive View</p>
           <h2>Recent Printings</h2>
-          <p className="mtg-small-note">Showing {visibleCards.length} of {cards.length} printings • {ownedCount} owned • {missingCount} missing</p>
+          <p className="mtg-small-note">Showing {visibleCards.length} of {cards.length} imported printings • {owned} owned</p>
         </div>
+        <button className="mtg-button secondary mtg-toggle-button" type="button" onClick={() => setShowImages((value) => !value)}>
+          {showImages ? "Hide Card Images" : "Show Card Images"}
+        </button>
+      </div>
+
+      <div className="mtg-filter-row">
+        <input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search cards, types, set code, or number..."
+          aria-label="Search MTG cards"
+        />
       </div>
 
       {visibleCards.length ? (
-        <div className="mtg-card-grid mtg-list-card-grid">
+        <div className="mtg-card-list">
           {visibleCards.map((card: any) => (
-            <MtgCardTile key={card.id} card={card} muted={!card.isOwned} showControls compactControls />
+            <MtgCardTile
+              key={card.id}
+              card={card}
+              muted={!card.isOwned}
+              showControls
+              compactControls
+              revealUnownedImages={showImages}
+            />
           ))}
         </div>
       ) : (
         <div className="mtg-empty-state">
-          <h3>No owned cards in this view yet</h3>
-          <p>Enable “Show Unowned” to reveal imported cards and add copies.</p>
+          <h3>No cards match that search</h3>
+          <p>Clear the search to return to the imported MTG archive.</p>
         </div>
       )}
     </section>
