@@ -1,8 +1,8 @@
 import "../../mtg.css";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import MtgCardTile from "@/components/mtg/MtgCardTile";
 import MtgProgress from "@/components/mtg/MtgProgress";
+import MtgSetBinderClient from "@/components/mtg/MtgSetBinderClient";
 import { getMtgSetDetail, getMtgUser } from "@/lib/mtg/queries";
 import { usd } from "@/lib/mtg/format";
 
@@ -57,24 +57,7 @@ export default async function MtgSetDetailPage({ params }: Props) {
         </section>
 
         <section className="mtg-panel">
-          <div className="mtg-section-heading">
-            <div>
-              <p className="mtg-kicker">Set Binder</p>
-              <h2>{set.name} Printings</h2>
-            </div>
-            <p>{stats.totalPrintings} cards</p>
-          </div>
-
-          <div className="mtg-card-grid">
-            {printings.map((printing: any) => (
-              <div key={printing.id} className="mtg-set-printing-wrap">
-                <MtgCardTile card={printing} muted={!printing.isOwned} />
-                <div className={printing.isOwned ? "mtg-owned-badge is-owned" : "mtg-owned-badge"}>
-                  {printing.isOwned ? `Owned ${printing.ownedCopies}` : "Missing"}
-                </div>
-              </div>
-            ))}
-          </div>
+          <MtgSetBinderClient printings={printings} defaultHideMissing />
         </section>
       </div>
     </main>

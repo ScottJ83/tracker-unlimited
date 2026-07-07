@@ -1,7 +1,20 @@
-export default function MtgCardTile({ card, muted = false }: { card: any; muted?: boolean }) {
+import MtgQuantityControls from "./MtgQuantityControls";
+
+type Props = {
+  card: any;
+  muted?: boolean;
+  showControls?: boolean;
+  compactControls?: boolean;
+};
+
+export default function MtgCardTile({ card, muted = false, showControls = false, compactControls = false }: Props) {
   const name = card?.mtg_cards?.name || card?.name || "Unknown Card";
   const typeLine = card?.mtg_cards?.type_line || card?.type_line || "";
   const image = card?.image_normal || card?.image_large || card?.image_small;
+  const normalQuantity = Number(card?.collectionEntry?.quantity || 0);
+  const foilQuantity = Number(card?.collectionEntry?.foil_quantity || 0);
+  const etchedQuantity = Number(card?.collectionEntry?.etched_quantity || 0);
+
   return (
     <article className={`mtg-card-tile ${muted ? "is-muted" : ""}`}>
       <div className="mtg-card-image-wrap">
@@ -12,6 +25,15 @@ export default function MtgCardTile({ card, muted = false }: { card: any; muted?
         <h3>{name}</h3>
         <p>{typeLine}</p>
       </div>
+      {showControls ? (
+        <MtgQuantityControls
+          printingId={card.id}
+          normalQuantity={normalQuantity}
+          foilQuantity={foilQuantity}
+          etchedQuantity={etchedQuantity}
+          compact={compactControls}
+        />
+      ) : null}
     </article>
   );
 }

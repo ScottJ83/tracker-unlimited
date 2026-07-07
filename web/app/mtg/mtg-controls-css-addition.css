@@ -1,0 +1,22 @@
+/* MTG collection controls + hidden-missing binder behavior */
+.mtg-section-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:18px; margin-bottom:20px; }
+.mtg-section-heading h2 { margin:0; }
+.mtg-binder-toolbar { border-bottom:1px solid rgba(220,173,83,.22); padding-bottom:18px; }
+.mtg-small-note { color:#cbbda5; margin:6px 0 0; font-size:13px; }
+.mtg-toggle-button { cursor:pointer; }
+.mtg-set-printing-wrap { position:relative; }
+.mtg-owned-badge { position:absolute; top:12px; left:12px; z-index:5; border:1px solid rgba(220,173,83,.46); border-radius:999px; padding:6px 10px; background:rgba(8,7,5,.84); color:#d8a64f; font-size:11px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; box-shadow:0 8px 18px rgba(0,0,0,.32); }
+.mtg-owned-badge.is-owned { background:linear-gradient(180deg,#f1c36c,#a66c20); color:#120e08; }
+.mtg-empty-state { border:1px dashed rgba(220,173,83,.34); border-radius:20px; padding:34px; text-align:center; background:rgba(255,255,255,.035); }
+.mtg-empty-state h3 { margin:0 0 8px; text-transform:uppercase; letter-spacing:.08em; }
+.mtg-empty-state p { margin:0; color:#cbbda5; }
+.mtg-qty { margin-top:12px; border:1px solid rgba(220,173,83,.22); border-radius:14px; padding:10px; background:rgba(255,255,255,.035); display:grid; gap:8px; }
+.mtg-qty-total { color:#f5ead7; font-size:12px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; }
+.mtg-qty-row { display:grid; grid-template-columns:1fr 28px 28px 28px; align-items:center; gap:6px; color:#cbbda5; font-size:12px; }
+.mtg-qty-row button { width:28px; height:28px; border-radius:8px; border:1px solid rgba(220,173,83,.48); background:linear-gradient(180deg,#f1c36c,#a66c20); color:#120e08; font-weight:1000; cursor:pointer; }
+.mtg-qty-row button:disabled { opacity:.5; cursor:not-allowed; }
+.mtg-qty-row strong { color:#f5ead7; text-align:center; }
+.mtg-qty-compact .mtg-qty-row { grid-template-columns:1fr 30px 30px 30px; }
+.mtg-card-tile.is-muted .mtg-qty { filter:grayscale(0); opacity:1; }
+.mtg-card-tile.is-muted:hover { opacity:.72; }
+@media(max-width:700px){ .mtg-section-heading{align-items:stretch; flex-direction:column} .mtg-toggle-button{width:100%} }

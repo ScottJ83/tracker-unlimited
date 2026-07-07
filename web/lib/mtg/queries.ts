@@ -55,6 +55,21 @@ export async function getMtgCollectionEntries(supabase: any, userId?: string) {
   );
 }
 
+function totalEntryCopies(entry: any) {
+  return Number(entry?.quantity || 0) + Number(entry?.foil_quantity || 0) + Number(entry?.etched_quantity || 0);
+}
+
+function withCollection(printing: any, ownedByPrinting: Map<string, any>) {
+  const entry = ownedByPrinting.get(String(printing.id));
+  const ownedCopies = totalEntryCopies(entry);
+  return {
+    ...printing,
+    ownedCopies,
+    isOwned: ownedCopies > 0,
+    collectionEntry: entry || null,
+  };
+}
+
 export async function getMtgCounts(supabase: any, userId?: string) {
   const [{ count: sets }, { count: cards }, { count: printings }] = await Promise.all([
     supabase.from("mtg_sets").select("*", { count: "exact", head: true }),
@@ -63,8 +78,8 @@ export async function getMtgCounts(supabase: any, userId?: string) {
   ]);
 
   const entries = await getMtgCollectionEntries(supabase, userId);
-  const ownedPrintings = entries.filter((e: any) => Number(e.quantity || 0) + Number(e.foil_quantity || 0) + Number(e.etched_quantity || 0) > 0).length;
-  const ownedCopies = entries.reduce((sum: number, e: any) => sum + Number(e.quantity || 0) + Number(e.foil_quantity || 0) + Number(e.etched_quantity || 0), 0);
+  const ownedPrintings = entries.filter((e: any) => totalEntryCopies(e) > 0).length;
+  const ownedCopies = entries.reduce((sum: number, e: any) => sum + totalEntryCopies(e), 0);
 
   return {
     sets: sets || 0,
@@ -83,7 +98,7 @@ export async function getMtgSets(supabase: any, userId?: string) {
     getMtgCollectionEntries(supabase, userId),
   ]);
 
-  const owned = new Set(entries.map((e: any) => e.printing_id));
+  const owned = new Set(entries.filter((e: any) => totalEntryCopies(e) > 0).map((e: any) => e.printing_id));
   const totals = new Map<string, { total: number; owned: number }>();
 
   for (const p of printings) {
@@ -124,20 +139,9 @@ export async function getMtgSetDetail(supabase: any, code: string, userId?: stri
   ]);
 
   const ownedByPrinting = new Map<string, any>();
-  for (const entry of entries || []) {
-    ownedByPrinting.set(String(entry.printing_id), entry);
-  }
+  for (const entry of entries || []) ownedByPrinting.set(String(entry.printing_id), entry);
 
-  const enrichedPrintings = (printings || []).map((printing: any) => {
-    const entry = ownedByPrinting.get(String(printing.id));
-    const ownedCopies = Number(entry?.quantity || 0) + Number(entry?.foil_quantity || 0) + Number(entry?.etched_quantity || 0);
-    return {
-      ...printing,
-      ownedCopies,
-      isOwned: ownedCopies > 0,
-      collectionEntry: entry || null,
-    };
-  });
+  const enrichedPrintings = (printings || []).map((printing: any) => withCollection(printing, ownedByPrinting));
 
   const ownedPrintings = enrichedPrintings.filter((printing: any) => printing.isOwned).length;
   const ownedCopies = enrichedPrintings.reduce((sum: number, printing: any) => sum + Number(printing.ownedCopies || 0), 0);
@@ -161,13 +165,39 @@ export async function getMtgSetDetail(supabase: any, code: string, userId?: stri
   };
 }
 
-export async function getMtgRecentCards(supabase: any, limit = 24) {
-  const { data, error } = await supabase
-    .from("mtg_printings")
-    .select("id, set_code, collector_number, rarity, image_normal, image_large, price_usd, mtg_cards(name, type_line)")
-    .order("released_at", { ascending: false, nullsFirst: false })
-    .limit(limit);
+export async function getMtgRecentCards(supabase: any, userId?: string, limit = 80) {
+  const [printings, entries] = await Promise.all([
+    fetchAllRows(
+      supabase,
+      "mtg_printings",
+      "id, set_code, collector_number, rarity, image_normal, image_large, image_small, price_usd, mtg_cards(name, type_line)",
+      (q) => q.order("released_at", { ascending: false, nullsFirst: false }).limit(limit)
+    ),
+    getMtgCollectionEntries(supabase, userId),
+  ]);
 
-  if (error) throw error;
-  return data || [];
+  const ownedByPrinting = new Map<string, any>();
+  for (const entry of entries || []) ownedByPrinting.set(String(entry.printing_id), entry);
+
+  return printings.map((printing: any) => withCollection(printing, ownedByPrinting));
+}
+
+export async function getMtgOwnedCollection(supabase: any, userId?: string) {
+  const entries = await getMtgCollectionEntries(supabase, userId);
+  const ownedEntries = entries.filter((entry: any) => totalEntryCopies(entry) > 0);
+  const ids = ownedEntries.map((entry: any) => entry.printing_id);
+  if (!ids.length) return [];
+
+  const printings = await fetchRowsByIds(
+    supabase,
+    "mtg_printings",
+    "id, set_code, collector_number, rarity, image_normal, image_large, image_small, price_usd, price_usd_foil, price_usd_etched, mtg_cards(name, type_line)",
+    "id",
+    ids
+  );
+
+  const ownedByPrinting = new Map<string, any>();
+  for (const entry of entries || []) ownedByPrinting.set(String(entry.printing_id), entry);
+
+  return printings.map((printing: any) => withCollection(printing, ownedByPrinting));
 }
