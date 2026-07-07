@@ -6,7 +6,7 @@ import MtgCardTile from "@/components/mtg/MtgCardTile";
 export default async function MtgPage() {
   const { supabase, user } = await getMtgUser();
   const counts = await getMtgCounts(supabase, user?.id);
-const recent = await getMtgRecentCards(supabase, "8");
+const recent = await getMtgRecentCards(supabase, user?.id, 8);
 
   return (
     <main className="mtg-page">
