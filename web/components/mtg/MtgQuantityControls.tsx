@@ -50,10 +50,10 @@ export default function MtgQuantityControls({
 
   if (compact) {
     return (
-      <div className="mtg-quick-actions" aria-label="MTG quantity controls">
-        <button disabled={loading !== null} onClick={() => update("normal", "decrement")} title="Remove normal copy">−</button>
-        <span>{total}</span>
-        <button disabled={loading !== null} onClick={() => update("normal", "increment")} title="Add normal copy">+</button>
+      <div className="mtg-qty mtg-qty-compact" aria-label="MTG quantity controls">
+        <button disabled={loading !== null} onClick={() => update("normal", "decrement")} aria-label="Remove one normal copy">−</button>
+        <strong>{total}</strong>
+        <button disabled={loading !== null} onClick={() => update("normal", "increment")} aria-label="Add one normal copy">+</button>
       </div>
     );
   }

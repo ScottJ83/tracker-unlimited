@@ -20,7 +20,8 @@ export default function MtgSetBinderClient({ printings }: Props) {
       const typeLine = String(printing?.mtg_cards?.type_line || printing?.type_line || "").toLowerCase();
       const setCode = String(printing?.set_code || "").toLowerCase();
       const number = String(printing?.collector_number || "").toLowerCase();
-      return name.includes(q) || typeLine.includes(q) || setCode.includes(q) || number.includes(q);
+      const rarity = String(printing?.rarity || "").toLowerCase();
+      return name.includes(q) || typeLine.includes(q) || setCode.includes(q) || number.includes(q) || rarity.includes(q);
     });
   }, [printings, search]);
 
@@ -34,12 +35,12 @@ export default function MtgSetBinderClient({ printings }: Props) {
           <p className="mtg-kicker">Set Checklist</p>
           <h2>Printings</h2>
           <p className="mtg-small-note">
-            Showing {visiblePrintings.length} of {printings.length} printings • {ownedCount} owned • {missingCount} unowned
+            {visiblePrintings.length} shown • {ownedCount} owned • {missingCount} unowned
           </p>
         </div>
 
         <button className="mtg-button secondary mtg-toggle-button" type="button" onClick={() => setShowImages((value) => !value)}>
-          {showImages ? "Hide Card Images" : "Show Card Images"}
+          {showImages ? "Hide Card Art" : "Show Card Art"}
         </button>
       </div>
 
@@ -47,7 +48,7 @@ export default function MtgSetBinderClient({ printings }: Props) {
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search cards, types, set code, or number..."
+          placeholder="Search name, type, rarity, set code, or number..."
           aria-label="Search MTG set printings"
         />
       </div>

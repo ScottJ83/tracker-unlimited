@@ -1,8 +1,5 @@
 import MtgQuantityControls from "./MtgQuantityControls";
 
-const MTG_CARD_BACK =
-  "https://cards.scryfall.io/back/normal/0/0/00000000-0000-0000-0000-000000000000.jpg";
-
 type Props = {
   card: any;
   muted?: boolean;
@@ -46,7 +43,7 @@ export default function MtgCardTile({
   revealUnownedImages = false,
 }: Props) {
   const name = cardName(card);
-  const image = card?.image_normal || card?.image_large || card?.image_small;
+  const image = card?.image_small || card?.image_normal || card?.image_large;
   const normalQuantity = Number(card?.collectionEntry?.quantity || 0);
   const foilQuantity = Number(card?.collectionEntry?.foil_quantity || 0);
   const etchedQuantity = Number(card?.collectionEntry?.etched_quantity || 0);
@@ -60,9 +57,10 @@ export default function MtgCardTile({
         {shouldShowImage && image ? (
           <img src={image} alt={name} />
         ) : (
-          <div className="mtg-card-back-placeholder" aria-label="Unowned card image hidden">
-            <img src={MTG_CARD_BACK} alt="Magic card back" />
-            <span>Unowned Card</span>
+          <div className="mtg-card-back-placeholder" aria-label="Card art hidden">
+            <span className="mtg-card-back-logo">MAGIC</span>
+            <span className="mtg-card-back-orbs" />
+            <span className="mtg-card-back-label">Art Hidden</span>
           </div>
         )}
       </div>
