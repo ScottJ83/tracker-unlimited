@@ -10,7 +10,7 @@ function ArchiveCard({
   href: string;
   title: string;
   description: string;
-  tone: "swu" | "pokemon";
+  tone: "swu" | "pokemon" | "mtg";
   badge: string;
 }) {
   return (
@@ -33,6 +33,9 @@ function ArchiveCard({
 export default function TrackerUnlimitedHomePage() {
   return (
     <main className="tu-hub-page">
+      <style dangerouslySetInnerHTML={{ __html: `
+.tu-hub-card-mtg{background:linear-gradient(135deg,rgba(32,24,16,.92),rgba(8,7,5,.92));border-color:rgba(216,166,79,.42);box-shadow:0 24px 70px rgba(0,0,0,.35)}.tu-hub-card-mtg .tu-hub-card-bg{background:radial-gradient(circle at 75% 15%,rgba(241,195,108,.24),transparent 35%),radial-gradient(circle at 20% 85%,rgba(111,66,193,.16),transparent 35%)}.tu-hub-card-mtg .tu-hub-badge{background:linear-gradient(180deg,#f1c36c,#a66c20);color:#120e08;border-color:rgba(245,234,215,.5)}.tu-hub-card-mtg h2{color:#f5ead7;text-shadow:0 0 22px rgba(216,166,79,.22)}.tu-hub-card-mtg p{color:#d9cab0}.tu-hub-card-mtg .tu-hub-open{background:linear-gradient(180deg,#f1c36c,#a66c20);color:#120e08;border-color:rgba(245,234,215,.45)}
+` }} />
       <section className="tu-hub-hero">
         <div className="tu-hub-kicker">Universal Collection Archives</div>
         <h1>Tracker Unlimited</h1>
@@ -57,6 +60,14 @@ export default function TrackerUnlimitedHomePage() {
           description="A Pokédex-inspired archive for regions, sets, Pokédex browsing, collection tracking, wishlists, decks, and analytics."
           tone="pokemon"
           badge="PKMN"
+        />
+
+        <ArchiveCard
+          href="/mtg"
+          title="Magic: The Gathering"
+          description="A dark fantasy spell archive for MTG sets, cards, printings, foils, promos, variants, collection tracking, decks, and analytics."
+          tone="mtg"
+          badge="MTG"
         />
       </section>
     </main>
