@@ -48,8 +48,18 @@ export default function MtgQuantityControls({
 
   const total = Number(normalQuantity || 0) + Number(foilQuantity || 0) + Number(etchedQuantity || 0);
 
+  if (compact) {
+    return (
+      <div className="mtg-quick-actions" aria-label="MTG quantity controls">
+        <button disabled={loading !== null} onClick={() => update("normal", "decrement")} title="Remove normal copy">−</button>
+        <span>{total}</span>
+        <button disabled={loading !== null} onClick={() => update("normal", "increment")} title="Add normal copy">+</button>
+      </div>
+    );
+  }
+
   return (
-    <div className={compact ? "mtg-qty mtg-qty-compact" : "mtg-qty"}>
+    <div className="mtg-qty">
       <div className="mtg-qty-total">Owned {total}</div>
 
       <div className="mtg-qty-row">
@@ -59,23 +69,19 @@ export default function MtgQuantityControls({
         <button disabled={loading !== null} onClick={() => update("normal", "increment")}>+</button>
       </div>
 
-      {!compact ? (
-        <>
-          <div className="mtg-qty-row">
-            <span>Foil</span>
-            <button disabled={loading !== null} onClick={() => update("foil", "decrement")}>−</button>
-            <strong>{foilQuantity}</strong>
-            <button disabled={loading !== null} onClick={() => update("foil", "increment")}>+</button>
-          </div>
+      <div className="mtg-qty-row">
+        <span>Foil</span>
+        <button disabled={loading !== null} onClick={() => update("foil", "decrement")}>−</button>
+        <strong>{foilQuantity}</strong>
+        <button disabled={loading !== null} onClick={() => update("foil", "increment")}>+</button>
+      </div>
 
-          <div className="mtg-qty-row">
-            <span>Etched</span>
-            <button disabled={loading !== null} onClick={() => update("etched", "decrement")}>−</button>
-            <strong>{etchedQuantity}</strong>
-            <button disabled={loading !== null} onClick={() => update("etched", "increment")}>+</button>
-          </div>
-        </>
-      ) : null}
+      <div className="mtg-qty-row">
+        <span>Etched</span>
+        <button disabled={loading !== null} onClick={() => update("etched", "decrement")}>−</button>
+        <strong>{etchedQuantity}</strong>
+        <button disabled={loading !== null} onClick={() => update("etched", "increment")}>+</button>
+      </div>
     </div>
   );
 }

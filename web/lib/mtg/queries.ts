@@ -143,6 +143,15 @@ export async function getMtgSetDetail(supabase: any, code: string, userId?: stri
 
   const enrichedPrintings = (printings || []).map((printing: any) => withCollection(printing, ownedByPrinting));
 
+  const baseKeys = new Set<string>();
+  const ownedBaseKeys = new Set<string>();
+
+  for (const printing of enrichedPrintings) {
+    const key = String(printing.oracle_id || printing.card_id || printing.id);
+    baseKeys.add(key);
+    if (printing.isOwned) ownedBaseKeys.add(key);
+  }
+
   const ownedPrintings = enrichedPrintings.filter((printing: any) => printing.isOwned).length;
   const ownedCopies = enrichedPrintings.reduce((sum: number, printing: any) => sum + Number(printing.ownedCopies || 0), 0);
   const totalValue = enrichedPrintings.reduce((sum: number, printing: any) => sum + Number(printing.price_usd || printing.price_usd_foil || printing.price_usd_etched || 0), 0);
@@ -150,17 +159,37 @@ export async function getMtgSetDetail(supabase: any, code: string, userId?: stri
     if (!printing.isOwned) return sum;
     return sum + Number(printing.ownedCopies || 0) * Number(printing.price_usd || printing.price_usd_foil || printing.price_usd_etched || 0);
   }, 0);
+  const missingBaseCost = Array.from(baseKeys).reduce((sum: number, key: string) => {
+    if (ownedBaseKeys.has(key)) return sum;
+    const options = enrichedPrintings.filter((printing: any) => String(printing.oracle_id || printing.card_id || printing.id) === key);
+    const cheapest = options.reduce((best: number | null, printing: any) => {
+      const value = Number(printing.price_usd || printing.price_usd_foil || printing.price_usd_etched || 0);
+      if (value <= 0) return best;
+      if (best === null || value < best) return value;
+      return best;
+    }, null);
+    return sum + Number(cheapest || 0);
+  }, 0);
+  const missingFullCost = enrichedPrintings.reduce((sum: number, printing: any) => {
+    if (printing.isOwned) return sum;
+    return sum + Number(printing.price_usd || printing.price_usd_foil || printing.price_usd_etched || 0);
+  }, 0);
 
   return {
     set,
     printings: enrichedPrintings,
     stats: {
+      baseTotal: baseKeys.size,
+      baseOwned: ownedBaseKeys.size,
       totalPrintings: enrichedPrintings.length,
       ownedPrintings,
       ownedCopies,
+      baseCompletion: percent(ownedBaseKeys.size, baseKeys.size),
       completion: percent(ownedPrintings, enrichedPrintings.length),
       totalValue,
       ownedValue,
+      missingBaseCost,
+      missingFullCost,
     },
   };
 }
