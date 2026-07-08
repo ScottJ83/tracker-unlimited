@@ -39,7 +39,7 @@ export default async function Page() {
 
           {cards.length ? (
             <div className="mtg-card-list">
-              {cards.map((card: any) => <MtgCardTile key={card.id} card={card} showControls revealUnownedImages />)}
+              {cards.map((card: any) => <MtgCardTile key={card.id} card={card} showControls revealUnowned />)}
             </div>
           ) : (
             <div className="mtg-empty-state">
