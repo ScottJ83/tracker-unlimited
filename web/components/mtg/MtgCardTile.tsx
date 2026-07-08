@@ -1,43 +1,56 @@
 import MtgQuantityControls from "./MtgQuantityControls";
-import { usd } from "@/lib/mtg/format";
 
 type Props = {
   card: any;
   muted?: boolean;
   showControls?: boolean;
   compactControls?: boolean;
-  revealUnowned?: boolean;
 };
 
-export default function MtgCardTile({ card, muted = false, showControls = false, compactControls = false, revealUnowned = false }: Props) {
-  const isOwned = Boolean(card?.isOwned);
-  const hidden = !isOwned && !revealUnowned;
-  const name = card?.mtg_cards?.name || card?.name || "Unknown Card";
+function price(card: any) {
+  const value = Number(card?.price_usd || card?.price_usd_foil || card?.price_usd_etched || 0);
+  return value ? `$${value.toFixed(2)}` : "—";
+}
+
+export default function MtgCardTile({ card, muted = false, showControls = false, compactControls = false }: Props) {
+  const isOwned = Boolean(card?.isOwned || Number(card?.ownedCopies || 0) > 0);
+  const name = card?.display_name || card?.full_name || card?.mtg_cards?.name || card?.name || "Unknown Card";
   const typeLine = card?.mtg_cards?.type_line || card?.type_line || "";
-  const manaCost = card?.mtg_cards?.mana_cost || card?.mana_cost || "";
   const image = card?.image_normal || card?.image_large || card?.image_small;
-  const quantity = Number(card?.collectionEntry?.quantity || 0);
+  const quantity = Number(card?.collectionEntry?.quantity || card?.ownedCopies || 0);
   const finish = card?.finish_label || card?.finish || "Printing";
   const variant = card?.variant_label || "Standard";
-  const price = Number(card?.price_usd || 0);
-  const setCode = String(card?.set_code || "MTG").toUpperCase();
-  const number = card?.collector_number || "—";
+  const collectibleType = card?.collectible_type || (card?.is_token ? "token" : "card");
 
   return (
-    <article className={`mtg-card-tile mtg-binder-card ${muted ? "is-muted" : ""} ${hidden ? "is-hidden-card" : ""}`}>
-      <div className="mtg-card-image-wrap mtg-hover-preview">
-        {!hidden && image ? <img src={image} alt={name} /> : <div className="mtg-card-back-placeholder"><span>MTG</span></div>}
+    <article className={`mtg-card-tile mtg-binder-card ${muted || !isOwned ? "is-muted" : ""} ${!isOwned ? "is-hidden-card" : "is-owned-card"}`}>
+      <div className="mtg-card-image-wrap mtg-hover-zoom-wrap">
+        {isOwned && image ? <img src={image} alt={name} /> : <div className="mtg-card-back-placeholder">MTG</div>}
       </div>
 
       <div className="mtg-card-tile-body">
-        <p className="mtg-card-kicker">{setCode} #{number} • {finish}</p>
-        <h3>{hidden ? "Unowned Card" : name}</h3>
-        <p>{hidden ? "Add a copy to reveal this collectible." : typeLine}</p>
-        {!hidden ? <p className="mtg-card-detail-line">{manaCost || "—"} • {card?.rarity || "unknown"} • {variant}</p> : null}
-        {!hidden && price ? <p className="mtg-card-price">{usd(price)}</p> : null}
+        <p className="mtg-card-kicker">
+          {String(card?.set_code || "MTG").toUpperCase()} #{card?.collector_number || "—"} • {finish}
+        </p>
+
+        <h3>{isOwned ? name : "Unowned Card"}</h3>
+
+        <p>{isOwned ? typeLine : "Add this printing to reveal details."}</p>
+
+        {isOwned ? (
+          <p className="mtg-printing-meta">{variant} • {collectibleType} • {price(card)}</p>
+        ) : (
+          <p className="mtg-printing-meta">Hidden until collected</p>
+        )}
       </div>
 
-      {showControls ? <MtgQuantityControls printingId={card.id} quantity={quantity} compact={compactControls} /> : null}
+      {showControls ? (
+        <MtgQuantityControls
+          printingId={card.id}
+          quantity={quantity}
+          compact={compactControls}
+        />
+      ) : null}
     </article>
   );
 }

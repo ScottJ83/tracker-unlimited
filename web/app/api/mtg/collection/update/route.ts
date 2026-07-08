@@ -5,12 +5,18 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
 
   const body = await request.json().catch(() => ({}));
   const printingId = String(body?.printingId || "").trim();
   const action = String(body?.action || "").trim();
+
   if (!printingId || !["increment", "decrement", "set"].includes(action)) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -21,10 +27,14 @@ export async function POST(request: Request) {
     .eq("user_id", user.id)
     .eq("printing_id", printingId)
     .maybeSingle();
-  if (readError) return NextResponse.json({ error: readError.message }, { status: 500 });
+
+  if (readError) {
+    return NextResponse.json({ error: readError.message }, { status: 500 });
+  }
 
   const current = Number(existing?.quantity || 0);
   let next = current;
+
   if (action === "increment") next = current + 1;
   if (action === "decrement") next = Math.max(0, current - 1);
   if (action === "set") next = Math.max(0, Number(body?.value || 0));
@@ -43,6 +53,10 @@ export async function POST(request: Request) {
     .upsert(row, { onConflict: "user_id,printing_id" })
     .select("id, quantity, foil_quantity, etched_quantity")
     .single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({ ok: true, entry: data });
 }
