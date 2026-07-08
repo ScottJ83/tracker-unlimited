@@ -59,6 +59,24 @@ function totalEntryCopies(entry: any) {
   return Number(entry?.quantity || 0) + Number(entry?.foil_quantity || 0) + Number(entry?.etched_quantity || 0);
 }
 
+
+function collectorSortValue(value: any) {
+  const raw = String(value || "").trim();
+  const numeric = raw.match(/\d+/);
+  const number = numeric ? Number(numeric[0]) : 999999;
+  const suffix = raw.replace(/\d+/g, "").toLowerCase();
+  return { number, suffix, raw: raw.toLowerCase() };
+}
+
+function compareCollectorNumbers(a: any, b: any) {
+  const left = collectorSortValue(a?.collector_number);
+  const right = collectorSortValue(b?.collector_number);
+
+  if (left.number !== right.number) return left.number - right.number;
+  if (left.suffix !== right.suffix) return left.suffix.localeCompare(right.suffix);
+  return left.raw.localeCompare(right.raw);
+}
+
 function withCollection(printing: any, ownedByPrinting: Map<string, any>) {
   const entry = ownedByPrinting.get(String(printing.id));
   const ownedCopies = totalEntryCopies(entry);
@@ -141,7 +159,9 @@ export async function getMtgSetDetail(supabase: any, code: string, userId?: stri
   const ownedByPrinting = new Map<string, any>();
   for (const entry of entries || []) ownedByPrinting.set(String(entry.printing_id), entry);
 
-  const enrichedPrintings = (printings || []).map((printing: any) => withCollection(printing, ownedByPrinting));
+  const enrichedPrintings = (printings || [])
+    .map((printing: any) => withCollection(printing, ownedByPrinting))
+    .sort(compareCollectorNumbers);
 
   const baseKeys = new Set<string>();
   const ownedBaseKeys = new Set<string>();

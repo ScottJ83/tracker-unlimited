@@ -95,3 +95,139 @@
 @media(max-width:900px){ .mtg-grid{grid-template-columns:repeat(2,1fr)} .mtg-hero{padding:30px} .mtg-card-row{grid-template-columns:60px minmax(0,1fr);}.mtg-qty-compact{grid-column:2; justify-self:start;} }
 @media(max-width:700px){ .mtg-set-detail-hero { grid-template-columns:1fr; } .mtg-set-detail-symbol { grid-row:auto; grid-column:1; margin-bottom:14px; } .mtg-set-detail-hero .mtg-kicker, .mtg-set-detail-hero h1, .mtg-set-detail-hero p, .mtg-set-detail-hero .mtg-actions { grid-column:1; } .mtg-section-heading{align-items:flex-start; flex-direction:column;} }
 @media(max-width:560px){ .mtg-grid{grid-template-columns:1fr} .mtg-shell{width:calc(100% - 24px)} .mtg-card-row{grid-template-columns:54px minmax(0,1fr); gap:10px; padding:10px;} .mtg-card-row-image{width:54px; min-width:54px;} .mtg-mana-cost{max-width:120px; font-size:12px;} }
+
+/* MTG Increment 7: SWU-style binder grid, hidden unowned cards, hover previews */
+.mtg-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(410px, 1fr));
+  gap: 12px;
+}
+
+.mtg-card-row {
+  position: relative;
+  grid-template-columns: 76px minmax(0, 1fr) 88px;
+  gap: 14px;
+  min-height: 116px;
+  padding: 12px;
+  overflow: visible;
+}
+
+.mtg-card-row-image {
+  position: relative;
+  width: 76px;
+  min-width: 76px;
+  overflow: visible;
+  z-index: 2;
+}
+
+.mtg-card-row-image img,
+.mtg-card-row-image .mtg-card-back-placeholder {
+  border-radius: 10px;
+  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+  transform-origin: left center;
+}
+
+.mtg-card-row-image:hover {
+  z-index: 50;
+}
+
+.mtg-card-row-image:hover img,
+.mtg-card-row-image:hover .mtg-card-back-placeholder {
+  transform: scale(2.75);
+  box-shadow: 0 20px 70px rgba(0,0,0,.72), 0 0 0 2px rgba(244,203,116,.58);
+}
+
+.mtg-card-row.is-hidden-card {
+  background: linear-gradient(135deg, rgba(16,15,14,.82), rgba(5,5,5,.84));
+  border-color: rgba(190,181,165,.18);
+}
+
+.mtg-card-row.is-hidden-card .mtg-card-kicker {
+  color: rgba(216,166,79,.72)!important;
+}
+
+.mtg-card-row.is-hidden-card h3,
+.mtg-card-row.is-hidden-card .mtg-type-line,
+.mtg-card-row.is-hidden-card .mtg-card-meta-row {
+  color: rgba(245,234,214,.52);
+}
+
+.mtg-card-row.is-revealed-card.is-unowned {
+  filter: grayscale(.85);
+}
+
+.mtg-card-row.is-revealed-card.is-unowned .mtg-card-row-body {
+  opacity: .72;
+}
+
+.mtg-card-title-row h3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.mtg-type-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mtg-qty-compact {
+  align-self: center;
+  width: 82px;
+  min-width: 82px;
+  grid-template-columns: 26px 1fr 26px;
+  gap: 5px;
+  padding: 7px;
+}
+
+.mtg-qty-compact button,
+.mtg-qty-row button {
+  color: #120e08!important;
+  background: linear-gradient(180deg,#f1c36c,#a66c20)!important;
+  border-color: rgba(244,203,116,.78)!important;
+  appearance: none;
+}
+
+.mtg-qty-compact strong {
+  font-size: 12px;
+}
+
+.mtg-card-back-placeholder {
+  background:
+    radial-gradient(circle at 50% 43%, rgba(248,233,184,.20), transparent 17%),
+    radial-gradient(circle at 41% 54%, rgba(67,180,92,.32), transparent 8%),
+    radial-gradient(circle at 59% 54%, rgba(65,150,235,.30), transparent 8%),
+    radial-gradient(circle at 45% 66%, rgba(221,62,52,.30), transparent 8%),
+    radial-gradient(circle at 56% 66%, rgba(40,39,36,.34), transparent 8%),
+    linear-gradient(145deg,#2b1b12 0%, #a56e3b 43%, #5d361d 100%);
+}
+
+.mtg-card-back-logo {
+  color: #1d242b;
+  font-family: Georgia, serif;
+  font-size: 10px;
+  font-weight: 1000;
+}
+
+.mtg-card-back-label {
+  border: 1px solid rgba(244,203,116,.25);
+  background: rgba(0,0,0,.78);
+}
+
+@media(max-width:900px){
+  .mtg-card-list { grid-template-columns: 1fr; }
+  .mtg-card-row { grid-template-columns: 68px minmax(0,1fr) 82px; }
+  .mtg-card-row-image { width:68px; min-width:68px; }
+  .mtg-qty-compact { grid-column:auto; justify-self:end; }
+}
+
+@media(max-width:640px){
+  .mtg-card-row { grid-template-columns: 58px minmax(0,1fr); }
+  .mtg-card-row-image { width:58px; min-width:58px; }
+  .mtg-qty-compact { grid-column: 2; justify-self:start; }
+  .mtg-card-row-image:hover img,
+  .mtg-card-row-image:hover .mtg-card-back-placeholder { transform: scale(2.1); }
+}

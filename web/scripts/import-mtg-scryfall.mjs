@@ -10,7 +10,7 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 }
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const args = new Map(process.argv.slice(2).map((arg) => { const [k, v = "true"] = arg.replace(/^--/, "").split("="); return [k, v]; }));
-const query = args.get("query") || "set:spm or set:fin";
+const query = args.get("query") || "(set:spm or set:fin) include:extras";
 const limit = args.has("limit") ? Number(args.get("limit")) : null;
 
 function norm(value) { return String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }

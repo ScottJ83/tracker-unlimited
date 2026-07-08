@@ -20,10 +20,10 @@ function manaCost(card: any) {
   return card?.mtg_cards?.mana_cost || card?.mana_cost || "";
 }
 
-function setLine(card: any) {
+function setLine(card: any, hidden = false) {
   const setCode = String(card?.set_code || "MTG").toUpperCase();
   const number = card?.collector_number || "—";
-  const rarity = card?.rarity ? String(card.rarity).toUpperCase() : "RARITY UNKNOWN";
+  const rarity = hidden ? "Hidden" : card?.rarity ? String(card.rarity).toUpperCase() : "RARITY UNKNOWN";
   return `${setCode} #${number} • ${rarity}`;
 }
 
@@ -49,31 +49,32 @@ export default function MtgCardTile({
   const etchedQuantity = Number(card?.collectionEntry?.etched_quantity || 0);
   const ownedCopies = normalQuantity + foilQuantity + etchedQuantity;
   const isOwned = ownedCopies > 0 || card?.isOwned;
-  const shouldShowImage = isOwned || revealUnownedImages;
+  const revealUnowned = isOwned || revealUnownedImages;
+  const hidden = !revealUnowned;
 
   return (
-    <article className={`mtg-card-tile mtg-card-row ${muted ? "is-muted" : ""} ${isOwned ? "is-owned" : "is-unowned"}`}>
+    <article className={`mtg-card-tile mtg-card-row ${muted ? "is-muted" : ""} ${isOwned ? "is-owned" : "is-unowned"} ${hidden ? "is-hidden-card" : "is-revealed-card"}`}>
       <div className="mtg-card-image-wrap mtg-card-row-image">
-        {shouldShowImage && image ? (
+        {revealUnowned && image ? (
           <img src={image} alt={name} />
         ) : (
-          <div className="mtg-card-back-placeholder" aria-label="Card art hidden">
+          <div className="mtg-card-back-placeholder" aria-label="Magic card back">
             <span className="mtg-card-back-logo">MAGIC</span>
             <span className="mtg-card-back-orbs" />
-            <span className="mtg-card-back-label">Art Hidden</span>
+            <span className="mtg-card-back-label">Unowned Card</span>
           </div>
         )}
       </div>
 
       <div className="mtg-card-tile-body mtg-card-row-body">
-        <p className="mtg-card-kicker">{setLine(card)}</p>
+        <p className="mtg-card-kicker">{setLine(card, hidden)}</p>
         <div className="mtg-card-title-row">
-          <h3>{name}</h3>
-          {manaCost(card) ? <span className="mtg-mana-cost">{manaCost(card)}</span> : null}
+          <h3>{hidden ? "Unowned Card" : name}</h3>
+          {!hidden && manaCost(card) ? <span className="mtg-mana-cost">{manaCost(card)}</span> : null}
         </div>
-        <p className="mtg-type-line">{typeLine(card)}</p>
+        <p className="mtg-type-line">{hidden ? "Details hidden until collected." : typeLine(card)}</p>
         <div className="mtg-card-meta-row">
-          <span>{priceLine(card)}</span>
+          <span>{hidden ? "Hidden Price" : priceLine(card)}</span>
           <span>{isOwned ? `Owned ${ownedCopies}` : "Not in collection"}</span>
         </div>
       </div>

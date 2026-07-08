@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default function MtgSetBinderClient({ printings }: Props) {
-  const [showImages, setShowImages] = useState(false);
+  const [revealUnowned, setRevealUnowned] = useState(false);
   const [search, setSearch] = useState("");
 
   const visiblePrintings = useMemo(() => {
@@ -39,8 +39,8 @@ export default function MtgSetBinderClient({ printings }: Props) {
           </p>
         </div>
 
-        <button className="mtg-button secondary mtg-toggle-button" type="button" onClick={() => setShowImages((value) => !value)}>
-          {showImages ? "Hide Card Art" : "Show Card Art"}
+        <button className="mtg-button secondary mtg-toggle-button" type="button" onClick={() => setRevealUnowned((value) => !value)}>
+          {revealUnowned ? "Hide Unowned" : "Reveal Unowned"}
         </button>
       </div>
 
@@ -62,7 +62,7 @@ export default function MtgSetBinderClient({ printings }: Props) {
               muted={!printing.isOwned}
               showControls
               compactControls
-              revealUnownedImages={showImages}
+              revealUnownedImages={revealUnowned}
             />
           ))}
         </div>
