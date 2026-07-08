@@ -17,7 +17,8 @@ export default function MtgSetBinderClient({ printings }: Props) {
       const number = String(printing?.collector_number || "").toLowerCase();
       const type = String(printing?.mtg_cards?.type_line || "").toLowerCase();
       const finish = String(printing?.finish_label || printing?.finish || "").toLowerCase();
-      return name.includes(term) || number.includes(term) || type.includes(term) || finish.includes(term);
+      const variant = String(printing?.variant_label || "").toLowerCase();
+      return name.includes(term) || number.includes(term) || type.includes(term) || finish.includes(term) || variant.includes(term);
     });
   }, [printings, search]);
 
@@ -29,14 +30,21 @@ export default function MtgSetBinderClient({ printings }: Props) {
       <div className="mtg-section-heading mtg-binder-toolbar">
         <div>
           <p className="mtg-kicker">Set Binder</p>
-          <h2>Printings</h2>
-          <p className="mtg-small-note">Showing {visiblePrintings.length} of {printings.length} printings • {ownedCount} owned • {missingCount} missing</p>
+          <h2>Printings & Variants</h2>
+          <p className="mtg-small-note">
+            Showing {visiblePrintings.length} of {printings.length} collectibles • {ownedCount} owned • {missingCount} missing
+          </p>
         </div>
 
         <div className="mtg-toolbar-actions">
-          <input className="mtg-search-input" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search cards, numbers, types..." />
+          <input
+            className="mtg-search-input"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search cards, numbers, variants..."
+          />
           <button className="mtg-button secondary mtg-toggle-button" type="button" onClick={() => setRevealUnowned((value) => !value)}>
-            {revealUnowned ? "Hide Unowned Cards" : "Reveal Unowned Cards"}
+            {revealUnowned ? "Hide Card Names" : "Reveal Card Names"}
           </button>
         </div>
       </div>
@@ -46,12 +54,17 @@ export default function MtgSetBinderClient({ printings }: Props) {
           {visiblePrintings.map((printing: any) => (
             <div key={printing.id} className="mtg-set-printing-wrap">
               <MtgCardTile card={printing} muted={!printing.isOwned} showControls compactControls revealUnowned={revealUnowned} />
-              <div className={printing.isOwned ? "mtg-owned-badge is-owned" : "mtg-owned-badge"}>{printing.isOwned ? `Owned ${printing.ownedCopies}` : "Missing"}</div>
+              <div className={printing.isOwned ? "mtg-owned-badge is-owned" : "mtg-owned-badge"}>
+                {printing.isOwned ? `Owned ${printing.ownedCopies}` : "Missing"}
+              </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="mtg-empty-state"><h3>No cards match that search</h3><p>Clear the search to return to the full set checklist.</p></div>
+        <div className="mtg-empty-state">
+          <h3>No cards match that search</h3>
+          <p>Clear the search to return to the full set checklist.</p>
+        </div>
       )}
     </>
   );

@@ -20,6 +20,8 @@ export default function MtgCardTile({ card, muted = false, showControls = false,
   const finish = card?.finish_label || card?.finish || "Printing";
   const variant = card?.variant_label || "Standard";
   const price = Number(card?.price_usd || 0);
+  const setCode = String(card?.set_code || "MTG").toUpperCase();
+  const number = card?.collector_number || "—";
 
   return (
     <article className={`mtg-card-tile mtg-binder-card ${muted ? "is-muted" : ""} ${hidden ? "is-hidden-card" : ""}`}>
@@ -28,9 +30,9 @@ export default function MtgCardTile({ card, muted = false, showControls = false,
       </div>
 
       <div className="mtg-card-tile-body">
-        <p className="mtg-card-kicker">{String(card?.set_code || "MTG").toUpperCase()} #{card?.collector_number || "—"} • {finish}</p>
+        <p className="mtg-card-kicker">{setCode} #{number} • {finish}</p>
         <h3>{hidden ? "Unowned Card" : name}</h3>
-        <p>{hidden ? "Add a copy to reveal this card." : typeLine}</p>
+        <p>{hidden ? "Add a copy to reveal this collectible." : typeLine}</p>
         {!hidden ? <p className="mtg-card-detail-line">{manaCost || "—"} • {card?.rarity || "unknown"} • {variant}</p> : null}
         {!hidden && price ? <p className="mtg-card-price">{usd(price)}</p> : null}
       </div>
