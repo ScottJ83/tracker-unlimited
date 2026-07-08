@@ -3,34 +3,17 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-type Finish = "normal" | "foil" | "etched";
-
-function columnForFinish(finish: Finish) {
-  if (finish === "foil") return "foil_quantity";
-  if (finish === "etched") return "etched_quantity";
-  return "quantity";
-}
-
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json().catch(() => ({}));
   const printingId = String(body?.printingId || "").trim();
   const action = String(body?.action || "").trim();
-  const finish = (String(body?.finish || "normal") as Finish) || "normal";
-
   if (!printingId || !["increment", "decrement", "set"].includes(action)) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
-
-  const column = columnForFinish(finish);
 
   const { data: existing, error: readError } = await supabase
     .from("mtg_collection_entries")
@@ -38,14 +21,10 @@ export async function POST(request: Request) {
     .eq("user_id", user.id)
     .eq("printing_id", printingId)
     .maybeSingle();
+  if (readError) return NextResponse.json({ error: readError.message }, { status: 500 });
 
-  if (readError) {
-    return NextResponse.json({ error: readError.message }, { status: 500 });
-  }
-
-  const current = Number(existing?.[column] || 0);
+  const current = Number(existing?.quantity || 0);
   let next = current;
-
   if (action === "increment") next = current + 1;
   if (action === "decrement") next = Math.max(0, current - 1);
   if (action === "set") next = Math.max(0, Number(body?.value || 0));
@@ -53,10 +32,9 @@ export async function POST(request: Request) {
   const row = {
     user_id: user.id,
     printing_id: printingId,
-    quantity: Number(existing?.quantity || 0),
-    foil_quantity: Number(existing?.foil_quantity || 0),
-    etched_quantity: Number(existing?.etched_quantity || 0),
-    [column]: next,
+    quantity: next,
+    foil_quantity: 0,
+    etched_quantity: 0,
     updated_at: new Date().toISOString(),
   };
 
@@ -65,10 +43,6 @@ export async function POST(request: Request) {
     .upsert(row, { onConflict: "user_id,printing_id" })
     .select("id, quantity, foil_quantity, etched_quantity")
     .single();
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true, entry: data });
 }

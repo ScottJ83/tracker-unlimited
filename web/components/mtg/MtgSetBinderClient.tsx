@@ -3,25 +3,21 @@
 import { useMemo, useState } from "react";
 import MtgCardTile from "./MtgCardTile";
 
-type Props = {
-  printings: any[];
-};
+type Props = { printings: any[] };
 
 export default function MtgSetBinderClient({ printings }: Props) {
   const [revealUnowned, setRevealUnowned] = useState(false);
   const [search, setSearch] = useState("");
 
   const visiblePrintings = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return printings;
-
+    const term = search.trim().toLowerCase();
+    if (!term) return printings;
     return printings.filter((printing) => {
-      const name = String(printing?.mtg_cards?.name || printing?.name || "").toLowerCase();
-      const typeLine = String(printing?.mtg_cards?.type_line || printing?.type_line || "").toLowerCase();
-      const setCode = String(printing?.set_code || "").toLowerCase();
+      const name = String(printing?.mtg_cards?.name || "").toLowerCase();
       const number = String(printing?.collector_number || "").toLowerCase();
-      const rarity = String(printing?.rarity || "").toLowerCase();
-      return name.includes(q) || typeLine.includes(q) || setCode.includes(q) || number.includes(q) || rarity.includes(q);
+      const type = String(printing?.mtg_cards?.type_line || "").toLowerCase();
+      const finish = String(printing?.finish_label || printing?.finish || "").toLowerCase();
+      return name.includes(term) || number.includes(term) || type.includes(term) || finish.includes(term);
     });
   }, [printings, search]);
 
@@ -32,45 +28,30 @@ export default function MtgSetBinderClient({ printings }: Props) {
     <>
       <div className="mtg-section-heading mtg-binder-toolbar">
         <div>
-          <p className="mtg-kicker">Set Checklist</p>
+          <p className="mtg-kicker">Set Binder</p>
           <h2>Printings</h2>
-          <p className="mtg-small-note">
-            {visiblePrintings.length} shown • {ownedCount} owned • {missingCount} unowned
-          </p>
+          <p className="mtg-small-note">Showing {visiblePrintings.length} of {printings.length} printings • {ownedCount} owned • {missingCount} missing</p>
         </div>
 
-        <button className="mtg-button secondary mtg-toggle-button" type="button" onClick={() => setRevealUnowned((value) => !value)}>
-          {revealUnowned ? "Hide Unowned" : "Reveal Unowned"}
-        </button>
-      </div>
-
-      <div className="mtg-filter-row">
-        <input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search name, type, rarity, set code, or number..."
-          aria-label="Search MTG set printings"
-        />
+        <div className="mtg-toolbar-actions">
+          <input className="mtg-search-input" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search cards, numbers, types..." />
+          <button className="mtg-button secondary mtg-toggle-button" type="button" onClick={() => setRevealUnowned((value) => !value)}>
+            {revealUnowned ? "Hide Unowned Cards" : "Reveal Unowned Cards"}
+          </button>
+        </div>
       </div>
 
       {visiblePrintings.length ? (
-        <div className="mtg-card-list">
+        <div className="mtg-binder-grid">
           {visiblePrintings.map((printing: any) => (
-            <MtgCardTile
-              key={printing.id}
-              card={printing}
-              muted={!printing.isOwned}
-              showControls
-              compactControls
-              revealUnownedImages={revealUnowned}
-            />
+            <div key={printing.id} className="mtg-set-printing-wrap">
+              <MtgCardTile card={printing} muted={!printing.isOwned} showControls compactControls revealUnowned={revealUnowned} />
+              <div className={printing.isOwned ? "mtg-owned-badge is-owned" : "mtg-owned-badge"}>{printing.isOwned ? `Owned ${printing.ownedCopies}` : "Missing"}</div>
+            </div>
           ))}
         </div>
       ) : (
-        <div className="mtg-empty-state">
-          <h3>No cards match that search</h3>
-          <p>Clear the search to return to the full set checklist.</p>
-        </div>
+        <div className="mtg-empty-state"><h3>No cards match that search</h3><p>Clear the search to return to the full set checklist.</p></div>
       )}
     </>
   );

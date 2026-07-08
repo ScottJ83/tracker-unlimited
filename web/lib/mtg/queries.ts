@@ -12,27 +12,22 @@ export async function getMtgUser() {
 async function fetchAllRows(supabase: any, table: string, select: string, build?: (q: any) => any) {
   const rows: any[] = [];
   let from = 0;
-
   while (true) {
     let query = supabase.from(table).select(select).range(from, from + PAGE_SIZE - 1);
     if (build) query = build(query);
-
     const { data, error } = await query;
     if (error) throw error;
     if (!data?.length) break;
-
     rows.push(...data);
     if (data.length < PAGE_SIZE) break;
     from += PAGE_SIZE;
   }
-
   return rows;
 }
 
 async function fetchRowsByIds(supabase: any, table: string, select: string, column: string, ids: any[]) {
   const rows: any[] = [];
   const chunkSize = 500;
-
   for (let i = 0; i < ids.length; i += chunkSize) {
     const chunk = ids.slice(i, i + chunkSize);
     if (!chunk.length) continue;
@@ -40,13 +35,11 @@ async function fetchRowsByIds(supabase: any, table: string, select: string, colu
     if (error) throw error;
     rows.push(...(data || []));
   }
-
   return rows;
 }
 
 export async function getMtgCollectionEntries(supabase: any, userId?: string) {
   if (!userId) return [];
-
   return fetchAllRows(
     supabase,
     "mtg_collection_entries",
@@ -56,69 +49,56 @@ export async function getMtgCollectionEntries(supabase: any, userId?: string) {
 }
 
 function totalEntryCopies(entry: any) {
-  return Number(entry?.quantity || 0) + Number(entry?.foil_quantity || 0) + Number(entry?.etched_quantity || 0);
-}
-
-
-function collectorSortValue(value: any) {
-  const raw = String(value || "").trim();
-  const numeric = raw.match(/\d+/);
-  const number = numeric ? Number(numeric[0]) : 999999;
-  const suffix = raw.replace(/\d+/g, "").toLowerCase();
-  return { number, suffix, raw: raw.toLowerCase() };
-}
-
-function compareCollectorNumbers(a: any, b: any) {
-  const left = collectorSortValue(a?.collector_number);
-  const right = collectorSortValue(b?.collector_number);
-
-  if (left.number !== right.number) return left.number - right.number;
-  if (left.suffix !== right.suffix) return left.suffix.localeCompare(right.suffix);
-  return left.raw.localeCompare(right.raw);
+  return Number(entry?.quantity || 0);
 }
 
 function withCollection(printing: any, ownedByPrinting: Map<string, any>) {
   const entry = ownedByPrinting.get(String(printing.id));
   const ownedCopies = totalEntryCopies(entry);
-  return {
-    ...printing,
-    ownedCopies,
-    isOwned: ownedCopies > 0,
-    collectionEntry: entry || null,
-  };
+  return { ...printing, ownedCopies, isOwned: ownedCopies > 0, collectionEntry: entry || null };
+}
+
+const PRINTING_SELECT = "id, base_scryfall_id, card_id, oracle_id, set_id, set_code, collector_number, lang, layout, rarity, released_at, finishes, finish, finish_label, variant_label, frame_effects, promo_types, border_color, security_stamp, digital, foil, nonfoil, oversized, variation, booster, is_token, is_extra, image_small, image_normal, image_large, image_png, image_art_crop, image_border_crop, price_usd, price_usd_foil, price_usd_etched, price_eur, price_tix, mtg_cards(name, type_line, mana_cost, colors, color_identity)";
+
+function printableQuery(q: any) {
+  return q.not("finish", "is", null);
+}
+
+function collectorSortValue(value: any) {
+  const raw = String(value || "");
+  const match = raw.match(/\d+/);
+  const number = match ? Number(match[0]) : 999999;
+  return { number, raw };
+}
+
+function sortPrintings(a: any, b: any) {
+  const av = collectorSortValue(a.collector_number);
+  const bv = collectorSortValue(b.collector_number);
+  if (av.number !== bv.number) return av.number - bv.number;
+  if (av.raw !== bv.raw) return av.raw.localeCompare(bv.raw);
+  return String(a.finish_label || a.finish || "").localeCompare(String(b.finish_label || b.finish || ""));
 }
 
 export async function getMtgCounts(supabase: any, userId?: string) {
   const [{ count: sets }, { count: cards }, { count: printings }] = await Promise.all([
     supabase.from("mtg_sets").select("*", { count: "exact", head: true }),
     supabase.from("mtg_cards").select("*", { count: "exact", head: true }),
-    supabase.from("mtg_printings").select("*", { count: "exact", head: true }),
+    printableQuery(supabase.from("mtg_printings").select("*", { count: "exact", head: true })),
   ]);
-
   const entries = await getMtgCollectionEntries(supabase, userId);
   const ownedPrintings = entries.filter((e: any) => totalEntryCopies(e) > 0).length;
   const ownedCopies = entries.reduce((sum: number, e: any) => sum + totalEntryCopies(e), 0);
-
-  return {
-    sets: sets || 0,
-    cards: cards || 0,
-    printings: printings || 0,
-    ownedPrintings,
-    ownedCopies,
-    printCompletion: percent(ownedPrintings, printings || 0),
-  };
+  return { sets: sets || 0, cards: cards || 0, printings: printings || 0, ownedPrintings, ownedCopies, printCompletion: percent(ownedPrintings, printings || 0) };
 }
 
 export async function getMtgSets(supabase: any, userId?: string) {
   const [sets, printings, entries] = await Promise.all([
-    fetchAllRows(supabase, "mtg_sets", "*", (q) => q.order("released_at", { ascending: false, nullsFirst: false })),
-    fetchAllRows(supabase, "mtg_printings", "id, set_code"),
+    fetchAllRows(supabase, "mtg_sets", "*", (q) => q.not("code", "like", "t%").order("released_at", { ascending: false, nullsFirst: false })),
+    fetchAllRows(supabase, "mtg_printings", "id, set_code, finish", (q) => q.not("finish", "is", null)),
     getMtgCollectionEntries(supabase, userId),
   ]);
-
   const owned = new Set(entries.filter((e: any) => totalEntryCopies(e) > 0).map((e: any) => e.printing_id));
   const totals = new Map<string, { total: number; owned: number }>();
-
   for (const p of printings) {
     const code = String(p.set_code || "").toLowerCase();
     if (!code) continue;
@@ -127,7 +107,6 @@ export async function getMtgSets(supabase: any, userId?: string) {
     item.total += 1;
     if (owned.has(p.id)) item.owned += 1;
   }
-
   return sets.map((set: any) => {
     const item = totals.get(String(set.code || "").toLowerCase()) || { total: 0, owned: 0 };
     return { ...set, printTotal: item.total, ownedPrintings: item.owned, completion: percent(item.owned, item.total) };
@@ -136,98 +115,31 @@ export async function getMtgSets(supabase: any, userId?: string) {
 
 export async function getMtgSetDetail(supabase: any, code: string, userId?: string) {
   const normalizedCode = String(code || "").toLowerCase();
-
-  const { data: set, error: setError } = await supabase
-    .from("mtg_sets")
-    .select("*")
-    .eq("code", normalizedCode)
-    .maybeSingle();
-
+  const { data: set, error: setError } = await supabase.from("mtg_sets").select("*").eq("code", normalizedCode).maybeSingle();
   if (setError) throw setError;
   if (!set) return null;
 
   const [printings, entries] = await Promise.all([
-    fetchAllRows(
-      supabase,
-      "mtg_printings",
-      "id, card_id, oracle_id, set_id, set_code, collector_number, lang, layout, rarity, released_at, finishes, frame_effects, promo_types, border_color, security_stamp, digital, foil, nonfoil, oversized, variation, booster, image_small, image_normal, image_large, image_png, image_art_crop, image_border_crop, price_usd, price_usd_foil, price_usd_etched, price_eur, price_tix, mtg_cards(name, type_line, mana_cost, colors, color_identity)",
-      (q) => q.eq("set_code", normalizedCode).order("collector_number", { ascending: true })
-    ),
+    fetchAllRows(supabase, "mtg_printings", PRINTING_SELECT, (q) => q.eq("set_code", normalizedCode).not("finish", "is", null).order("collector_number", { ascending: true })),
     getMtgCollectionEntries(supabase, userId),
   ]);
-
   const ownedByPrinting = new Map<string, any>();
   for (const entry of entries || []) ownedByPrinting.set(String(entry.printing_id), entry);
-
-  const enrichedPrintings = (printings || [])
-    .map((printing: any) => withCollection(printing, ownedByPrinting))
-    .sort(compareCollectorNumbers);
-
-  const baseKeys = new Set<string>();
-  const ownedBaseKeys = new Set<string>();
-
-  for (const printing of enrichedPrintings) {
-    const key = String(printing.oracle_id || printing.card_id || printing.id);
-    baseKeys.add(key);
-    if (printing.isOwned) ownedBaseKeys.add(key);
-  }
-
+  const enrichedPrintings = (printings || []).map((printing: any) => withCollection(printing, ownedByPrinting)).sort(sortPrintings);
   const ownedPrintings = enrichedPrintings.filter((printing: any) => printing.isOwned).length;
   const ownedCopies = enrichedPrintings.reduce((sum: number, printing: any) => sum + Number(printing.ownedCopies || 0), 0);
-  const totalValue = enrichedPrintings.reduce((sum: number, printing: any) => sum + Number(printing.price_usd || printing.price_usd_foil || printing.price_usd_etched || 0), 0);
-  const ownedValue = enrichedPrintings.reduce((sum: number, printing: any) => {
-    if (!printing.isOwned) return sum;
-    return sum + Number(printing.ownedCopies || 0) * Number(printing.price_usd || printing.price_usd_foil || printing.price_usd_etched || 0);
-  }, 0);
-  const missingBaseCost = Array.from(baseKeys).reduce((sum: number, key: string) => {
-    if (ownedBaseKeys.has(key)) return sum;
-    const options = enrichedPrintings.filter((printing: any) => String(printing.oracle_id || printing.card_id || printing.id) === key);
-    const cheapest = options.reduce((best: number | null, printing: any) => {
-      const value = Number(printing.price_usd || printing.price_usd_foil || printing.price_usd_etched || 0);
-      if (value <= 0) return best;
-      if (best === null || value < best) return value;
-      return best;
-    }, null);
-    return sum + Number(cheapest || 0);
-  }, 0);
-  const missingFullCost = enrichedPrintings.reduce((sum: number, printing: any) => {
-    if (printing.isOwned) return sum;
-    return sum + Number(printing.price_usd || printing.price_usd_foil || printing.price_usd_etched || 0);
-  }, 0);
-
-  return {
-    set,
-    printings: enrichedPrintings,
-    stats: {
-      baseTotal: baseKeys.size,
-      baseOwned: ownedBaseKeys.size,
-      totalPrintings: enrichedPrintings.length,
-      ownedPrintings,
-      ownedCopies,
-      baseCompletion: percent(ownedBaseKeys.size, baseKeys.size),
-      completion: percent(ownedPrintings, enrichedPrintings.length),
-      totalValue,
-      ownedValue,
-      missingBaseCost,
-      missingFullCost,
-    },
-  };
+  const totalValue = enrichedPrintings.reduce((sum: number, printing: any) => sum + Number(printing.price_usd || 0), 0);
+  const ownedValue = enrichedPrintings.reduce((sum: number, printing: any) => printing.isOwned ? sum + Number(printing.ownedCopies || 0) * Number(printing.price_usd || 0) : sum, 0);
+  return { set, printings: enrichedPrintings, stats: { totalPrintings: enrichedPrintings.length, ownedPrintings, ownedCopies, completion: percent(ownedPrintings, enrichedPrintings.length), totalValue, ownedValue } };
 }
 
 export async function getMtgRecentCards(supabase: any, userId?: string, limit = 80) {
   const [printings, entries] = await Promise.all([
-    fetchAllRows(
-      supabase,
-      "mtg_printings",
-      "id, set_code, collector_number, rarity, image_normal, image_large, image_small, price_usd, mtg_cards(name, type_line)",
-      (q) => q.order("released_at", { ascending: false, nullsFirst: false }).limit(limit)
-    ),
+    fetchAllRows(supabase, "mtg_printings", PRINTING_SELECT, (q) => q.not("finish", "is", null).order("released_at", { ascending: false, nullsFirst: false }).limit(limit)),
     getMtgCollectionEntries(supabase, userId),
   ]);
-
   const ownedByPrinting = new Map<string, any>();
   for (const entry of entries || []) ownedByPrinting.set(String(entry.printing_id), entry);
-
   return printings.map((printing: any) => withCollection(printing, ownedByPrinting));
 }
 
@@ -236,17 +148,8 @@ export async function getMtgOwnedCollection(supabase: any, userId?: string) {
   const ownedEntries = entries.filter((entry: any) => totalEntryCopies(entry) > 0);
   const ids = ownedEntries.map((entry: any) => entry.printing_id);
   if (!ids.length) return [];
-
-  const printings = await fetchRowsByIds(
-    supabase,
-    "mtg_printings",
-    "id, set_code, collector_number, rarity, image_normal, image_large, image_small, price_usd, price_usd_foil, price_usd_etched, mtg_cards(name, type_line)",
-    "id",
-    ids
-  );
-
+  const printings = await fetchRowsByIds(supabase, "mtg_printings", PRINTING_SELECT, "id", ids);
   const ownedByPrinting = new Map<string, any>();
   for (const entry of entries || []) ownedByPrinting.set(String(entry.printing_id), entry);
-
   return printings.map((printing: any) => withCollection(printing, ownedByPrinting));
 }
